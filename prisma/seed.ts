@@ -407,7 +407,7 @@ async function main() {
         customerPhone: conversation.customerPhone,
         duration: conversation.duration ? `${Math.floor(conversation.duration / 60)}m ${conversation.duration % 60}s` : null,
         outcome: conversation.outcome,
-        status: conversation.status,
+        status: conversation.status.toLowerCase(),
         sentiment: conversation.sentiment,
         timestamp: conversation.createdAt,
       },
