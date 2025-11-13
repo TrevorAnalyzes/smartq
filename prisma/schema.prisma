@@ -1,0 +1,210 @@
+// SmartQ - AI Voice Agent Dashboard
+// Prisma Schema for PostgreSQL Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  ERROR
+}
+
+enum AccentType {
+  BRITISH_RP
+  BRITISH_COCKNEY
+  BRITISH_SCOTTISH
+  BRITISH_WELSH
+  BRITISH_NORTHERN
+}
+
+enum ConversationStatus {
+  CONNECTED
+  RINGING
+  ENDED
+  FAILED
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  AGENT
+  VIEWER
+}
+
+enum OrganizationPlan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum CRMProvider {
+  HUBSPOT
+  SALESFORCE
+  PIPEDRIVE
+}
+
+enum CRMStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String   @unique
+  plan      OrganizationPlan @default(FREE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Settings (JSON)
+  defaultAccent           AccentType @default(BRITISH_RP)
+  crmProvider             CRMProvider?
+  crmApiKey               String?
+  emailAlerts             Boolean @default(true)
+  smsAlerts               Boolean @default(false)
+  webhookUrl              String?
+  brandingPrimaryColor    String @default("#0066CC")
+  brandingLogo            String?
+  brandingCompanyName     String?
+
+  // Relations
+  users         User[]
+  voiceAgents   VoiceAgent[]
+  conversations Conversation[]
+  crmIntegration CRMIntegration?
+
+  @@index([domain])
+  @@index([plan])
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  role           UserRole @default(VIEWER)
+  organizationId String
+  permissions    String[] // Array of permission strings
+  createdAt      DateTime @default(now())
+  lastLoginAt    DateTime?
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([organizationId])
+  @@index([role])
+}
+
+model VoiceAgent {
+  id             String      @id @default(cuid())
+  name           String
+  status         AgentStatus @default(INACTIVE)
+  accentType     AccentType  @default(BRITISH_RP)
+  phoneNumber    String?
+  description    String?
+  organizationId String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([accentType])
+}
+
+model Conversation {
+  id             String             @id @default(cuid())
+  agentId        String
+  organizationId String
+  customerPhone  String
+  customerName   String?
+  status         ConversationStatus @default(RINGING)
+  duration       Int?               // Duration in seconds
+  transcript     String?            @db.Text
+  sentiment      Sentiment?
+  outcome        String?
+  topic          String?
+  startedAt      DateTime           @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  // Relations
+  agent        VoiceAgent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([sentiment])
+  @@index([startedAt])
+  @@index([customerPhone])
+}
+
+model CRMIntegration {
+  id             String    @id @default(cuid())
+  organizationId String    @unique
+  provider       CRMProvider
+  status         CRMStatus @default(DISCONNECTED)
+  apiKey         String?
+  webhookUrl     String?
+  lastSync       DateTime?
+  contactsCount  Int       @default(0)
+  dealsCount     Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([provider])
+  @@index([status])
+}
+
+model Activity {
+  id             String   @id @default(cuid())
+  organizationId String
+  type           String   // call_completed, call_started, call_failed, etc.
+  agentName      String?
+  customerName   String?
+  customerPhone  String?
+  duration       String?
+  outcome        String?
+  status         String?  // success, active, failed
+  sentiment      Sentiment?
+  timestamp      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([type])
+  @@index([timestamp])
+}
