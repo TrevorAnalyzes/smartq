@@ -3,19 +3,20 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { subDays, startOfDay, endOfDay } from 'date-fns'
+import { subDays, startOfDay, endOfDay, addDays, format } from 'date-fns'
 
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
     const organizationId = searchParams.get('organizationId') || 'demo-org-id'
-    const days = parseInt(searchParams.get('days') || '7') // Default to last 7 days
+    const daysParam = parseInt(searchParams.get('days') || '7') // Default to last 7 days
+    const days = Number.isNaN(daysParam) || daysParam < 1 ? 7 : daysParam
     const agentId = searchParams.get('agentId')
 
     // Calculate date range
     const endDate = endOfDay(new Date())
-    const startDate = startOfDay(subDays(endDate, days))
+    const startDate = startOfDay(subDays(endDate, days - 1))
 
     // Build where clause
     const where: any = {
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
     // Get hourly distribution (calls by hour of day)
     const allConversations = await prisma.conversation.findMany({
       where,
-      select: { startedAt: true },
+      select: { startedAt: true, status: true },
     })
 
     const hourlyDistribution = Array.from({ length: 24 }, (_, hour) => ({
@@ -89,6 +90,49 @@ export async function GET(request: NextRequest) {
       const hour = conv.startedAt.getHours()
       if (hourlyDistribution[hour]) {
         hourlyDistribution[hour].count++
+      }
+    })
+
+    // Build daily stats for the selected date range
+    const dailyStatsMap = new Map<
+      string,
+      { totalCalls: number; successfulCalls: number }
+    >()
+
+    allConversations.forEach((conv) => {
+      const dayKey = format(startOfDay(conv.startedAt), 'yyyy-MM-dd')
+      const current = dailyStatsMap.get(dayKey) || {
+        totalCalls: 0,
+        successfulCalls: 0,
+      }
+
+      current.totalCalls += 1
+
+      if (conv.status === 'ENDED') {
+        current.successfulCalls += 1
+      }
+
+      dailyStatsMap.set(dayKey, current)
+    })
+
+    const dailyStats = Array.from({ length: days }, (_, index) => {
+      const date = startOfDay(addDays(startDate, index))
+      const dayKey = format(date, 'yyyy-MM-dd')
+      const statsForDay = dailyStatsMap.get(dayKey) || {
+        totalCalls: 0,
+        successfulCalls: 0,
+      }
+
+      const successRate =
+        statsForDay.totalCalls > 0
+          ? Math.round((statsForDay.successfulCalls / statsForDay.totalCalls) * 1000) / 10
+          : 0
+
+      return {
+        date: format(date, 'MMM d'),
+        totalCalls: statsForDay.totalCalls,
+        successfulCalls: statsForDay.successfulCalls,
+        successRate,
       }
     })
 
@@ -128,6 +172,7 @@ export async function GET(request: NextRequest) {
       })),
       performanceByAgent,
       hourlyDistribution,
+      dailyStats,
     })
   } catch (error) {
     console.error('Analytics API Error:', error)

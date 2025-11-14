@@ -34,8 +34,9 @@ interface AnalyticsData {
   }>
   dailyStats?: Array<{
     date: string
-    calls: number
-    avgDuration: number
+    totalCalls: number
+    successfulCalls: number
+    successRate: number
   }>
 }
 

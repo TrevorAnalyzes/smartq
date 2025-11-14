@@ -64,14 +64,15 @@ export function GlobalSearch() {
   return (
     <>
       <div className="relative hidden md:block">
-        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/70" />
         <Input
-          placeholder="Search agents, conversations..."
-          className="w-64 pl-10 cursor-pointer"
+          placeholder=""
+          aria-label="Open global search"
+          className="w-64 pl-10 cursor-pointer bg-transparent text-sidebar-foreground border-sidebar-foreground/40 placeholder:text-transparent"
           onClick={() => setOpen(true)}
           readOnly
         />
-        <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+        <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border border-sidebar-border bg-sidebar/80 px-1.5 font-mono text-[10px] font-medium text-sidebar-foreground/80 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </div>

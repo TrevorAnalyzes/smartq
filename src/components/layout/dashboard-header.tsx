@@ -25,7 +25,7 @@ const getPageTitle = (pathname: string, organizationName?: string) => {
   }
 
   const routes: Record<string, string> = {
-    '/': 'Dashboard Overview',
+    '/': 'Overview',
     '/agents': 'Voice Agent Management',
     '/conversations': 'Conversation Logs',
     '/analytics': 'Analytics & Reporting',
@@ -57,11 +57,11 @@ export function DashboardHeader() {
   }
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
+    <header className="bg-sidebar text-sidebar-foreground sticky top-0 z-50 w-full border-b border-sidebar-border">
       <div className="flex h-14 items-center gap-4 px-6">
         {/* Page Title */}
         <div className="flex items-center gap-2">
-          <h1 className="text-foreground text-lg font-semibold">{pageTitle}</h1>
+          <h1 className="text-lg font-semibold">{pageTitle}</h1>
           {currentOrganization && isOrgSpecificPage && (
             <Badge variant={getPlanBadgeVariant(currentOrganization.plan)} className="text-xs">
               {currentOrganization.plan.toUpperCase()}
@@ -76,7 +76,10 @@ export function DashboardHeader() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 px-3">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 px-3 text-sidebar-foreground hover:bg-sidebar-accent/60"
+              >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
                   <AvatarFallback>JD</AvatarFallback>

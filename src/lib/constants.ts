@@ -16,10 +16,10 @@ export const ROUTES = {
 } as const
 
 export const COLORS = {
-  primary: '#0066CC', // Professional blue
-  secondary: '#004225', // British racing green
-  accent: '#FF6B35', // Warm orange
-  success: '#10B981',
+  primary: '#2563EB', // Clean SaaS Blue primary
+  secondary: '#0F172A', // Deep navy text / secondary
+  accent: '#22C55E', // Green accent
+  success: '#22C55E',
   warning: '#F59E0B',
   error: '#EF4444',
 } as const

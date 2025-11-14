@@ -82,7 +82,7 @@ export function DashboardSidebar() {
                 <PanelLeft className="h-4 w-4" />
               </button>
               {state === 'expanded' && (
-                <span className="text-foreground text-lg font-bold tracking-tight">SmartQ</span>
+                <span className="text-sidebar-foreground text-lg font-bold tracking-tight">SmartQ</span>
               )}
             </div>
           </SidebarMenuItem>

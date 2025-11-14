@@ -1,7 +1,6 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   XAxis,
   YAxis,
@@ -22,6 +21,12 @@ export function PerformanceChart({ organizationId }: PerformanceChartProps = {})
 
   const performanceData = analyticsData?.dailyStats || []
 
+  const todayStats = performanceData[performanceData.length - 1]
+  const totalCallsToday = todayStats?.totalCalls ?? 0
+  const successfulCallsToday = todayStats?.successfulCalls ?? 0
+  const successRateToday = todayStats?.successRate ?? 0
+
+
   return (
     <Card>
       <CardHeader>
@@ -29,14 +34,6 @@ export function PerformanceChart({ organizationId }: PerformanceChartProps = {})
           <div>
             <CardTitle>Performance Overview</CardTitle>
             <CardDescription>Real-time call volume and success rates for today</CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-brand-primary border-brand-primary">
-              Live Data
-            </Badge>
-            <Badge variant="secondary" className="bg-brand-secondary text-white">
-              British Agents
-            </Badge>
           </div>
         </div>
       </CardHeader>
@@ -111,15 +108,21 @@ export function PerformanceChart({ organizationId }: PerformanceChartProps = {})
 
         <div className="mt-4 grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-brand-primary text-2xl font-bold">-</p>
+            <p className="text-brand-primary text-2xl font-bold">
+              {totalCallsToday.toLocaleString()}
+            </p>
             <p className="text-muted-foreground text-xs">Total Calls Today</p>
           </div>
           <div>
-            <p className="text-brand-secondary text-2xl font-bold">-</p>
+            <p className="text-brand-secondary text-2xl font-bold">
+              {successfulCallsToday.toLocaleString()}
+            </p>
             <p className="text-muted-foreground text-xs">Successful Calls</p>
           </div>
           <div>
-            <p className="text-brand-accent text-2xl font-bold">-</p>
+            <p className="text-brand-accent text-2xl font-bold">
+              {`${successRateToday.toFixed(1)}%`}
+            </p>
             <p className="text-muted-foreground text-xs">Success Rate</p>
           </div>
         </div>
