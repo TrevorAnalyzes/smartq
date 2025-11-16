@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 // GET /api/users/[id] - Get single user
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
 
     const user = await prisma.user.findUnique({
       where: { id },
@@ -19,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       },
     })
 
-    if (!user) {
+    if (!user || user.organizationId !== organizationId) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
@@ -50,12 +58,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const { id } = await params
     const body = await request.json()
 
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id },
     })
 
-    if (!existingUser) {
+    if (!existingUser || existingUser.organizationId !== organizationId) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
@@ -109,12 +124,19 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const { id } = await params
 
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id },
     })
 
-    if (!existingUser) {
+    if (!existingUser || existingUser.organizationId !== organizationId) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 

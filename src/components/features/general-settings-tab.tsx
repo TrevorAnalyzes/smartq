@@ -81,6 +81,7 @@ export function GeneralSettingsTab() {
   }
 
   const selectedAccent = ACCENT_OPTIONS.find(a => a.value === formData.defaultAccent)
+  const planKey = (currentOrganization.plan || 'FREE').toUpperCase() as keyof typeof PLAN_COLORS
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -113,12 +114,12 @@ export function GeneralSettingsTab() {
           <div className="space-y-2">
             <Label>Current Plan</Label>
             <div className="flex items-center gap-2">
-              <Badge className={PLAN_COLORS[currentOrganization.plan]}>
-                {currentOrganization.plan}
+              <Badge className={PLAN_COLORS[planKey]}>
+                {planKey}
               </Badge>
-              {currentOrganization.plan !== 'ENTERPRISE' && (
+              {planKey !== 'ENTERPRISE' && (
                 <span className="text-sm text-muted-foreground">
-                  • Upgrade to {currentOrganization.plan === 'FREE' ? 'PRO or ENTERPRISE' : 'ENTERPRISE'} for more features
+                  • Upgrade to {planKey === 'FREE' ? 'PRO or ENTERPRISE' : 'ENTERPRISE'} for more features
                 </span>
               )}
             </div>

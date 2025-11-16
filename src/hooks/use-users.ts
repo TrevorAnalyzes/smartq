@@ -40,14 +40,22 @@ export function useUsers(organizationId?: string) {
 
 // Fetch single user
 export function useUser(id: string) {
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id
+
   return useQuery({
-    queryKey: ['users', id],
+    queryKey: ['users', id, organizationId],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${id}`)
+      if (!organizationId) throw new Error('organizationId is required to fetch user')
+
+      const params = new URLSearchParams()
+      params.append('organizationId', organizationId)
+
+      const response = await fetch(`/api/users/${id}?${params.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch user')
       return response.json()
     },
-    enabled: !!id,
+    enabled: !!id && !!organizationId,
   })
 }
 
@@ -84,10 +92,17 @@ export function useCreateUser() {
 // Update user
 export function useUpdateUser(id: string) {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id
 
   return useMutation({
     mutationFn: async (data: Partial<User>) => {
-      const response = await fetch(`/api/users/${id}`, {
+      if (!organizationId) throw new Error('organizationId is required to update user')
+
+      const params = new URLSearchParams()
+      params.append('organizationId', organizationId)
+
+      const response = await fetch(`/api/users/${id}?${params.toString()}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -109,10 +124,17 @@ export function useUpdateUser(id: string) {
 // Delete user
 export function useDeleteUser() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/users/${id}`, {
+      if (!organizationId) throw new Error('organizationId is required to delete user')
+
+      const params = new URLSearchParams()
+      params.append('organizationId', organizationId)
+
+      const response = await fetch(`/api/users/${id}?${params.toString()}`, {
         method: 'DELETE',
       })
       if (!response.ok) {

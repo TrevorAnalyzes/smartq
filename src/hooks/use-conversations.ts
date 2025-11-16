@@ -45,8 +45,8 @@ async function fetchConversations(
 }
 
 // Fetch single conversation
-async function fetchConversation(id: string): Promise<Conversation> {
-  const response = await fetch(`/api/conversations/${id}`)
+async function fetchConversation(id: string, organizationId: string): Promise<Conversation> {
+  const response = await fetch(`/api/conversations/${id}?organizationId=${organizationId}`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch conversation')
@@ -56,8 +56,8 @@ async function fetchConversation(id: string): Promise<Conversation> {
 }
 
 // Create new conversation
-async function createConversation(data: Partial<Conversation>): Promise<Conversation> {
-  const response = await fetch('/api/conversations', {
+async function createConversation(data: Partial<Conversation>, organizationId: string): Promise<Conversation> {
+  const response = await fetch(`/api/conversations?organizationId=${organizationId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -74,8 +74,9 @@ async function createConversation(data: Partial<Conversation>): Promise<Conversa
 async function updateConversation(
   id: string,
   data: Partial<Conversation>,
+  organizationId: string,
 ): Promise<Conversation> {
-  const response = await fetch(`/api/conversations/${id}`, {
+  const response = await fetch(`/api/conversations/${id}?organizationId=${organizationId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -89,8 +90,8 @@ async function updateConversation(
 }
 
 // Delete conversation
-async function deleteConversation(id: string): Promise<void> {
-  const response = await fetch(`/api/conversations/${id}`, {
+async function deleteConversation(id: string, organizationId: string): Promise<void> {
+  const response = await fetch(`/api/conversations/${id}?organizationId=${organizationId}`, {
     method: 'DELETE',
   })
 
@@ -137,19 +138,24 @@ export function useOrganizationConversations(
 
 // Hook to fetch single conversation
 export function useConversation(id: string) {
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
+
   return useQuery({
-    queryKey: ['conversations', id],
-    queryFn: () => fetchConversation(id),
-    enabled: !!id,
+    queryKey: ['conversations', id, organizationId],
+    queryFn: () => fetchConversation(id, organizationId),
+    enabled: !!id && !!organizationId,
   })
 }
 
 // Hook to create conversation
 export function useCreateConversation() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
-    mutationFn: createConversation,
+    mutationFn: (data: Partial<Conversation>) => createConversation(data, organizationId),
     onSuccess: () => {
       // Invalidate and refetch conversations list
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
@@ -161,10 +167,12 @@ export function useCreateConversation() {
 // Hook to update conversation
 export function useUpdateConversation() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Conversation> }) =>
-      updateConversation(id, data),
+      updateConversation(id, data, organizationId),
     onSuccess: (_, variables) => {
       // Invalidate specific conversation and conversations list
       queryClient.invalidateQueries({ queryKey: ['conversations', variables.id] })
@@ -177,9 +185,11 @@ export function useUpdateConversation() {
 // Hook to delete conversation
 export function useDeleteConversation() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
-    mutationFn: deleteConversation,
+    mutationFn: (id: string) => deleteConversation(id, organizationId),
     onSuccess: () => {
       // Invalidate conversations list
       queryClient.invalidateQueries({ queryKey: ['conversations'] })

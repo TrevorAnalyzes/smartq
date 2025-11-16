@@ -29,8 +29,8 @@ async function fetchAgents(
 }
 
 // Fetch single agent
-async function fetchAgent(id: string): Promise<VoiceAgent> {
-  const response = await fetch(`/api/agents/${id}`)
+async function fetchAgent(id: string, organizationId: string): Promise<VoiceAgent> {
+  const response = await fetch(`/api/agents/${id}?organizationId=${organizationId}`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch agent')
@@ -40,8 +40,9 @@ async function fetchAgent(id: string): Promise<VoiceAgent> {
 }
 
 // Create new agent
-async function createAgent(data: Partial<VoiceAgent>): Promise<VoiceAgent> {
-  const response = await fetch('/api/agents', {
+async function createAgent(data: Partial<VoiceAgent>, organizationId: string): Promise<VoiceAgent> {
+  const url = `/api/agents?organizationId=${organizationId}`
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -55,8 +56,8 @@ async function createAgent(data: Partial<VoiceAgent>): Promise<VoiceAgent> {
 }
 
 // Update agent
-async function updateAgent(id: string, data: Partial<VoiceAgent>): Promise<VoiceAgent> {
-  const response = await fetch(`/api/agents/${id}`, {
+async function updateAgent(id: string, data: Partial<VoiceAgent>, organizationId: string): Promise<VoiceAgent> {
+  const response = await fetch(`/api/agents/${id}?organizationId=${organizationId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -70,8 +71,8 @@ async function updateAgent(id: string, data: Partial<VoiceAgent>): Promise<Voice
 }
 
 // Delete agent
-async function deleteAgent(id: string): Promise<void> {
-  const response = await fetch(`/api/agents/${id}`, {
+async function deleteAgent(id: string, organizationId: string): Promise<void> {
+  const response = await fetch(`/api/agents/${id}?organizationId=${organizationId}`, {
     method: 'DELETE',
   })
 
@@ -103,10 +104,13 @@ export function useOrganizationAgents(organizationId: string, filters?: { status
 
 // Hook to fetch single agent
 export function useAgent(id: string) {
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
+
   return useQuery({
-    queryKey: ['agents', id],
-    queryFn: () => fetchAgent(id),
-    enabled: !!id,
+    queryKey: ['agents', id, organizationId],
+    queryFn: () => fetchAgent(id, organizationId),
+    enabled: !!id && !!organizationId,
   })
 }
 
@@ -114,10 +118,14 @@ export function useAgent(id: string) {
 export function useCreateAgent() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
     mutationFn: (data: any) =>
-      createAgent({ ...data, organizationId: data.organizationId || currentOrganization?.id || 'demo-org-id' }),
+      createAgent(
+        { ...data, organizationId: data.organizationId || organizationId },
+        organizationId,
+      ),
     onSuccess: () => {
       // Invalidate and refetch agents list
       queryClient.invalidateQueries({ queryKey: ['agents'] })
@@ -128,10 +136,12 @@ export function useCreateAgent() {
 // Hook to update agent
 export function useUpdateAgent() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<VoiceAgent> }) =>
-      updateAgent(id, data),
+      updateAgent(id, data, organizationId),
     onSuccess: (_, variables) => {
       // Invalidate specific agent and agents list
       queryClient.invalidateQueries({ queryKey: ['agents', variables.id] })
@@ -143,9 +153,11 @@ export function useUpdateAgent() {
 // Hook to delete agent
 export function useDeleteAgent() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
-    mutationFn: deleteAgent,
+    mutationFn: (id: string) => deleteAgent(id, organizationId),
     onSuccess: () => {
       // Invalidate agents list
       queryClient.invalidateQueries({ queryKey: ['agents'] })

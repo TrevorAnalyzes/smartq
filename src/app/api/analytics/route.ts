@@ -4,12 +4,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { subDays, startOfDay, endOfDay, addDays, format } from 'date-fns'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
-    const organizationId = searchParams.get('organizationId') || 'demo-org-id'
+    const organizationId = getOrganizationIdFromRequest(request)
     const daysParam = parseInt(searchParams.get('days') || '7') // Default to last 7 days
     const days = Number.isNaN(daysParam) || daysParam < 1 ? 7 : daysParam
     const agentId = searchParams.get('agentId')

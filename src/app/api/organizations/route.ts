@@ -131,7 +131,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request data', details: error.errors }, { status: 400 })
     }
 
-    return NextResponse.json({ error: 'Failed to create organization' }, { status: 500 })
+    const message = typeof error?.message === 'string' ? error.message : 'Failed to create organization'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 

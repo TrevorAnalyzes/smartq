@@ -17,385 +17,157 @@ async function main() {
   await prisma.cRMIntegration.deleteMany()
   await prisma.organization.deleteMany()
 
-  // Create multiple demo organizations
-  console.log('🏢 Creating demo organizations...')
+  // Create single SmartQ demo organization
+  console.log('🏢 Creating SmartQ demo organization...')
 
-  // Organization 1: TechCorp UK
-  const org1 = await prisma.organization.create({
+  const org = await prisma.organization.create({
     data: {
-      id: 'org-techcorp-uk',
-      name: 'TechCorp UK Ltd',
-      domain: 'https://techcorp.co.uk',
-      plan: 'ENTERPRISE',
-      brandingPrimaryColor: '#0066CC',
-      brandingCompanyName: 'TechCorp UK',
-      emailAlerts: true,
-      smsAlerts: true,
-    },
-  })
-
-  // Organization 2: HealthPlus (default - will be selected by default)
-  const org2 = await prisma.organization.create({
-    data: {
-      id: 'demo-org-id', // Keep this as default
-      name: 'HealthPlus Medical Services',
-      domain: 'https://healthplus.co.uk',
+      id: 'demo-org-id', // Stable demo org id
+      name: 'SmartQ Demo Org',
+      domain: 'https://demo.smartq.local',
       plan: 'PRO',
       brandingPrimaryColor: '#10B981',
-      brandingCompanyName: 'HealthPlus',
+      brandingCompanyName: 'SmartQ',
       emailAlerts: true,
       smsAlerts: false,
     },
   })
 
-  // Organization 3: RetailHub
-  const org3 = await prisma.organization.create({
-    data: {
-      id: 'org-retailhub',
-      name: 'RetailHub Commerce',
-      domain: 'https://retailhub.co.uk',
-      plan: 'FREE',
-      brandingPrimaryColor: '#F59E0B',
-      brandingCompanyName: 'RetailHub',
-      emailAlerts: true,
-      smsAlerts: false,
-    },
-  })
-
-  const organizations = [org1, org2, org3]
-  console.log(`✅ Created ${organizations.length} organizations`)
+  const organizations = [org]
+  console.log(`✅ Created ${organizations.length} organization`)
 
   // Create users for each organization
-  console.log('👥 Creating demo users...')
+  console.log('👥 Creating SmartQ demo users...')
 
-  // TechCorp users
   await prisma.user.create({
     data: {
-      email: 'admin@techcorp.co.uk',
-      name: 'Sarah Mitchell',
+      email: 'admin@smartq.local',
+      name: 'SmartQ Admin',
       role: 'ADMIN',
-      organizationId: org1.id,
+      organizationId: org.id,
       permissions: ['manage_agents', 'manage_users', 'view_analytics', 'manage_settings'],
     },
   })
 
   await prisma.user.create({
     data: {
-      email: 'manager@techcorp.co.uk',
-      name: 'James Thompson',
+      email: 'manager@smartq.local',
+      name: 'SmartQ Manager',
       role: 'MANAGER',
-      organizationId: org1.id,
-      permissions: ['manage_agents', 'view_analytics'],
-    },
-  })
-
-  // HealthPlus users
-  await prisma.user.create({
-    data: {
-      email: 'admin@healthplus.co.uk',
-      name: 'Dr. Emily Watson',
-      role: 'ADMIN',
-      organizationId: org2.id,
-      permissions: ['manage_agents', 'manage_users', 'view_analytics', 'manage_settings'],
-    },
-  })
-
-  await prisma.user.create({
-    data: {
-      email: 'manager@healthplus.co.uk',
-      name: 'Michael Brown',
-      role: 'MANAGER',
-      organizationId: org2.id,
+      organizationId: org.id,
       permissions: ['manage_agents', 'view_analytics'],
     },
   })
 
   await prisma.user.create({
     data: {
-      email: 'agent@healthplus.co.uk',
-      name: 'Sophie Davies',
+      email: 'agent@smartq.local',
+      name: 'SmartQ Agent',
       role: 'AGENT',
-      organizationId: org2.id,
+      organizationId: org.id,
       permissions: ['view_analytics'],
     },
   })
 
-  // RetailHub users
-  await prisma.user.create({
-    data: {
-      email: 'admin@retailhub.co.uk',
-      name: 'David Wilson',
-      role: 'ADMIN',
-      organizationId: org3.id,
-      permissions: ['manage_agents', 'manage_users', 'view_analytics', 'manage_settings'],
-    },
-  })
+  console.log('✅ Created 3 SmartQ demo users')
 
-  await prisma.user.create({
-    data: {
-      email: 'viewer@retailhub.co.uk',
-      name: 'Emma Roberts',
-      role: 'VIEWER',
-      organizationId: org3.id,
-      permissions: [],
-    },
-  })
+  // Create voice agents for SmartQ demo organization
+  console.log('🤖 Creating SmartQ demo voice agents...')
 
-  console.log('✅ Created 7 users across all organizations')
-
-  // Create voice agents for each organization
-  console.log('🤖 Creating voice agents...')
-
-  // TechCorp agents (4 agents)
-  const techCorpAgents = await Promise.all([
+  const smartQAgents = await Promise.all([
     prisma.voiceAgent.create({
       data: {
-        name: 'Alexander',
+        id: 'demo-agent-1',
+        name: 'Receptionist Anna',
         accentType: 'BRITISH_RP',
         status: 'ACTIVE',
-        phoneNumber: '+442071111001',
-        description: 'Enterprise sales specialist with British RP accent',
-        organizationId: org1.id,
+        phoneNumber: '+447700900001',
+        description: 'Handles incoming customer enquiries and bookings.',
+        organizationId: org.id,
       },
     }),
     prisma.voiceAgent.create({
       data: {
-        name: 'Victoria',
+        id: 'demo-agent-2',
+        name: 'Support Bot Leo',
         accentType: 'BRITISH_RP',
         status: 'ACTIVE',
-        phoneNumber: '+442071111002',
-        description: 'Technical support expert with professional tone',
-        organizationId: org1.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Benjamin',
-        accentType: 'BRITISH_SCOTTISH',
-        status: 'ACTIVE',
-        phoneNumber: '+442071111003',
-        description: 'Customer success manager with Scottish accent',
-        organizationId: org1.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Isabella',
-        accentType: 'BRITISH_NORTHERN',
-        status: 'INACTIVE',
-        phoneNumber: '+442071111004',
-        description: 'Account manager with Northern accent',
-        organizationId: org1.id,
+        phoneNumber: '+447700900002',
+        description: 'Follows up on open support tickets and collects feedback.',
+        organizationId: org.id,
       },
     }),
   ])
 
-  // HealthPlus agents (5 agents - default org)
-  const healthPlusAgents = await Promise.all([
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Sarah',
-        accentType: 'BRITISH_RP',
-        status: 'ACTIVE',
-        phoneNumber: '+442072222001',
-        description: 'Medical appointment scheduler with British RP accent',
-        organizationId: org2.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'James',
-        accentType: 'BRITISH_RP',
-        status: 'ACTIVE',
-        phoneNumber: '+442072222002',
-        description: 'Patient support specialist with warm, professional tone',
-        organizationId: org2.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Emily',
-        accentType: 'BRITISH_COCKNEY',
-        status: 'ACTIVE',
-        phoneNumber: '+442072222003',
-        description: 'Friendly reception agent with London accent',
-        organizationId: org2.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Oliver',
-        accentType: 'BRITISH_SCOTTISH',
-        status: 'INACTIVE',
-        phoneNumber: '+442072222004',
-        description: 'Prescription refill specialist with Scottish accent',
-        organizationId: org2.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Charlotte',
-        accentType: 'BRITISH_WELSH',
-        status: 'MAINTENANCE',
-        phoneNumber: '+442072222005',
-        description: 'Patient follow-up specialist with Welsh accent',
-        organizationId: org2.id,
-      },
-    }),
-  ])
+  const [agentAnna, agentLeo] = smartQAgents
+  const allAgents = smartQAgents
+  console.log(`✅ Created ${allAgents.length} SmartQ voice agents`)
 
-  // RetailHub agents (3 agents)
-  const retailHubAgents = await Promise.all([
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Lucy',
-        accentType: 'BRITISH_RP',
-        status: 'ACTIVE',
-        phoneNumber: '+442073333001',
-        description: 'Order tracking and customer service agent',
-        organizationId: org3.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Thomas',
-        accentType: 'BRITISH_COCKNEY',
-        status: 'ACTIVE',
-        phoneNumber: '+442073333002',
-        description: 'Returns and refunds specialist with London accent',
-        organizationId: org3.id,
-      },
-    }),
-    prisma.voiceAgent.create({
-      data: {
-        name: 'Grace',
-        accentType: 'BRITISH_NORTHERN',
-        status: 'INACTIVE',
-        phoneNumber: '+442073333003',
-        description: 'Product inquiry specialist with Northern accent',
-        organizationId: org3.id,
-      },
-    }),
-  ])
-
-  const allAgents = [...techCorpAgents, ...healthPlusAgents, ...retailHubAgents]
-  console.log(`✅ Created ${allAgents.length} voice agents (TechCorp: ${techCorpAgents.length}, HealthPlus: ${healthPlusAgents.length}, RetailHub: ${retailHubAgents.length})`)
-
-  // Create conversations for each organization
-  console.log('💬 Creating conversations...')
+  // Create SmartQ conversations (small, controlled set)
+  console.log('💬 Creating SmartQ conversations...')
   const now = new Date()
   const allConversations = []
 
-  // Helper function to create random date within last 7 days
-  const randomDate = (daysAgo: number) => {
-    const date = new Date(now)
-    date.setDate(date.getDate() - Math.floor(Math.random() * daysAgo))
-    date.setHours(Math.floor(Math.random() * 24))
-    date.setMinutes(Math.floor(Math.random() * 60))
-    return date
-  }
+  const conv1 = await prisma.conversation.create({
+    data: {
+      agentId: agentAnna.id,
+      organizationId: org.id,
+      customerPhone: '+447700900001',
+      customerName: 'Alice Johnson',
+      status: 'ENDED',
+      duration: 420,
+      transcript: 'Customer called to confirm a booking. Call completed successfully.',
+      sentiment: 'POSITIVE',
+      outcome: 'Booking confirmed',
+      topic: 'Booking',
+      startedAt: new Date(now.getTime() - 1000 * 60 * 60 * 4),
+      endedAt: new Date(now.getTime() - 1000 * 60 * 60 * 4 + 420 * 1000),
+    },
+  })
+  allConversations.push(conv1)
 
-  const statuses: Array<'CONNECTED' | 'RINGING' | 'ENDED' | 'FAILED'> = [
-    'ENDED',
-    'ENDED',
-    'ENDED',
-    'ENDED',
-    'ENDED',
-    'CONNECTED',
-    'RINGING',
-    'FAILED',
-  ]
-  const sentiments: Array<'POSITIVE' | 'NEUTRAL' | 'NEGATIVE'> = ['POSITIVE', 'NEUTRAL', 'NEGATIVE']
-  const outcomes: Array<'SUCCESSFUL' | 'FAILED' | 'NO_ANSWER' | 'VOICEMAIL'> = [
-    'SUCCESSFUL',
-    'SUCCESSFUL',
-    'SUCCESSFUL',
-    'FAILED',
-    'NO_ANSWER',
-    'VOICEMAIL',
-  ]
+  const conv2 = await prisma.conversation.create({
+    data: {
+      agentId: agentAnna.id,
+      organizationId: org.id,
+      customerPhone: '+447700900002',
+      customerName: 'Brian Smith',
+      status: 'CONNECTED',
+      duration: 180,
+      transcript: 'Customer asked about pricing for the Pro plan.',
+      sentiment: 'NEUTRAL',
+      outcome: 'Sent pricing details',
+      topic: 'Pricing',
+      startedAt: new Date(now.getTime() - 1000 * 60 * 60 * 2),
+    },
+  })
+  allConversations.push(conv2)
 
-  const customerNames = [
-    'John Smith',
-    'Emma Johnson',
-    'Michael Brown',
-    'Sophie Williams',
-    'David Jones',
-    'Olivia Taylor',
-    'James Davies',
-    'Isabella Wilson',
-    'William Evans',
-    'Amelia Thomas',
-    'George Roberts',
-    'Mia Robinson',
-    'Harry Walker',
-    'Ava White',
-    'Jack Harris',
-  ]
+  const conv3 = await prisma.conversation.create({
+    data: {
+      agentId: agentLeo.id,
+      organizationId: org.id,
+      customerPhone: '+447700900003',
+      customerName: 'Carla Gomez',
+      status: 'FAILED',
+      duration: 30,
+      transcript: 'Call dropped due to poor connection.',
+      sentiment: 'NEGATIVE',
+      outcome: 'Call failed',
+      topic: 'Support',
+      startedAt: new Date(now.getTime() - 1000 * 60 * 30),
+      endedAt: new Date(now.getTime() - 1000 * 60 * 30 + 30 * 1000),
+    },
+  })
+  allConversations.push(conv3)
 
-  const topics = [
-    'Product inquiry',
-    'Technical support',
-    'Billing question',
-    'Order status',
-    'Complaint resolution',
-    'Feature request',
-    'Account setup',
-    'Cancellation request',
-    'Upgrade inquiry',
-    'General information',
-  ]
-
-  // Create conversations for each organization
-  const orgAgentMap = [
-    { org: org1, agents: techCorpAgents, count: 20 },
-    { org: org2, agents: healthPlusAgents, count: 50 }, // Default org gets more data
-    { org: org3, agents: retailHubAgents, count: 15 },
-  ]
-
-  for (const { org, agents, count } of orgAgentMap) {
-    for (let i = 0; i < count; i++) {
-      const agent = agents[Math.floor(Math.random() * agents.length)]
-      if (!agent) continue // Skip if no agent found
-
-      const status = statuses[Math.floor(Math.random() * statuses.length)]
-      const isEnded = status === 'ENDED'
-      const createdAt = randomDate(7)
-      const startedAt = createdAt
-      const endedAt = isEnded ? new Date(createdAt.getTime() + Math.floor(Math.random() * 600000) + 60000) : null
-
-      const conversation = await prisma.conversation.create({
-        data: {
-          agentId: agent.id,
-          organizationId: org.id,
-          status,
-          sentiment: isEnded ? sentiments[Math.floor(Math.random() * sentiments.length)] : null,
-          duration: isEnded ? Math.floor(Math.random() * 600) + 60 : null, // 1-10 minutes
-          outcome: isEnded ? outcomes[Math.floor(Math.random() * outcomes.length)] : null,
-          customerName: customerNames[Math.floor(Math.random() * customerNames.length)],
-          customerPhone: `+4479${Math.floor(Math.random() * 100000000)
-            .toString()
-            .padStart(8, '0')}`,
-          topic: topics[Math.floor(Math.random() * topics.length)],
-          startedAt,
-          endedAt,
-          createdAt,
-          updatedAt: createdAt,
-        },
-      })
-
-      allConversations.push(conversation)
-    }
-  }
-
-  console.log(`✅ Created ${allConversations.length} conversations (TechCorp: 20, HealthPlus: 50, RetailHub: 15)`)
+  console.log(`✅ Created ${allConversations.length} SmartQ conversations`)
 
   // Create activities based on conversations
-  console.log('📊 Creating activities...')
+  console.log('📊 Creating SmartQ activities...')
   const allActivities = []
 
-  for (const conversation of allConversations.slice(0, 50)) {
-    // Create activity for first 50 conversations
+  for (const conversation of allConversations) {
     const agent = allAgents.find(a => a.id === conversation.agentId)
 
     const activity = await prisma.activity.create({
@@ -416,60 +188,34 @@ async function main() {
     allActivities.push(activity)
   }
 
-  console.log(`✅ Created ${allActivities.length} activities`)
+  console.log(`✅ Created ${allActivities.length} SmartQ activities`)
 
-  // Create CRM integrations for each organization
-  console.log('🔗 Creating CRM integrations...')
+  // Optional: simple CRM integration for SmartQ
+  console.log('🔗 Creating SmartQ CRM integration...')
   await prisma.cRMIntegration.create({
     data: {
-      organizationId: org1.id,
-      provider: 'SALESFORCE',
+      organizationId: org.id,
+      provider: 'HUBSPOT',
       status: 'CONNECTED',
       lastSync: new Date(),
-      contactsCount: 1250,
-      dealsCount: 45,
+      contactsCount: 150,
+      dealsCount: 8,
     },
   })
 
-  await prisma.cRMIntegration.create({
-    data: {
-      organizationId: org2.id,
-      provider: 'HUBSPOT',
-      status: 'DISCONNECTED',
-      lastSync: null,
-    },
-  })
-
-  await prisma.cRMIntegration.create({
-    data: {
-      organizationId: org3.id,
-      provider: 'PIPEDRIVE',
-      status: 'ERROR',
-      lastSync: new Date(Date.now() - 86400000), // 1 day ago
-      contactsCount: 320,
-      dealsCount: 12,
-    },
-  })
-
-  console.log('✅ Created 3 CRM integrations')
-
-  // Print summary
   console.log('\n✅ Database seeded successfully!')
   console.log('\n📊 Summary:')
   console.log(`   Organizations: ${organizations.length}`)
-  console.log(`     - TechCorp UK (Enterprise)`)
-  console.log(`     - HealthPlus Medical (Pro) - Default`)
-  console.log(`     - RetailHub Commerce (Free)`)
-  console.log(`   Users: 7`)
+  console.log('     - SmartQ Demo Org (Pro)')
+  console.log('   Users: 3')
   console.log(`   Voice Agents: ${allAgents.length}`)
   console.log(`   Conversations: ${allConversations.length}`)
   console.log(`   Activities: ${allActivities.length}`)
-  console.log(`   CRM Integrations: 3`)
-  console.log('\n🎉 You can now view the dashboard with sample data!')
+  console.log('   CRM Integrations: 1')
+  console.log('\n🎉 You can now view the dashboard with SmartQ demo data!')
   console.log('   Run: npm run dev')
   console.log('   Open: http://localhost:3001')
-  console.log('\n💡 Default organization: HealthPlus Medical Services (demo-org-id)')
-  console.log('   Switch organizations using the organization switcher (coming next!)\n')
+  console.log('\n💡 Default organization: SmartQ Demo Org (demo-org-id)')
 }
 
 main()

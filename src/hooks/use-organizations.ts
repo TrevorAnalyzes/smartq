@@ -99,6 +99,47 @@ export function useUpdateOrganization(id: string) {
   })
 }
 
+// Change organization plan via billing API
+export function useChangePlan() {
+  const queryClient = useQueryClient()
+  const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization)
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+
+  return useMutation({
+    mutationFn: async (params: {
+      organizationId: string
+      targetPlan: 'FREE' | 'PRO' | 'ENTERPRISE'
+    }) => {
+      const response = await fetch('/api/billing/plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      })
+
+      if (!response.ok) {
+        let errorMessage = 'Failed to change plan'
+        try {
+          const errorBody = await response.json()
+          if (errorBody?.error) errorMessage = errorBody.error
+        } catch {
+          // ignore JSON parse errors
+        }
+        throw new Error(errorMessage)
+      }
+
+      return response.json()
+    },
+    onSuccess: (updatedOrg) => {
+      queryClient.invalidateQueries({ queryKey: ['organizations'] })
+
+      if (currentOrganization?.id === updatedOrg.id) {
+        setCurrentOrganization(updatedOrg)
+      }
+    },
+  })
+}
+
+
 // Delete organization
 export function useDeleteOrganization() {
   const queryClient = useQueryClient()

@@ -3,11 +3,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const organizationId = searchParams.get('organizationId') || 'demo-org-id'
+    const organizationId = getOrganizationIdFromRequest(request)
 
     // Get active agents count
     const activeAgents = await prisma.voiceAgent.count({

@@ -3,12 +3,13 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
-    const organizationId = searchParams.get('organizationId') || 'demo-org-id'
+    const organizationId = getOrganizationIdFromRequest(request)
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
 
@@ -56,8 +57,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
-    const organizationId = 'demo-org-id'
+    // TODO: Add authentication/authorization check here
+    const organizationId = getOrganizationIdFromRequest(request)
 
     const body = await request.json()
 

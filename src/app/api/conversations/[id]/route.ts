@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -13,6 +14,13 @@ type RouteContext = {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
 
     const conversation = await prisma.conversation.findUnique({
       where: { id },
@@ -28,7 +36,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     })
 
-    if (!conversation) {
+    if (!conversation || conversation.organizationId !== organizationId) {
       return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
     }
 
@@ -60,6 +68,21 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
     const body = await request.json()
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
+    const existing = await prisma.conversation.findUnique({
+      where: { id },
+    })
+
+    if (!existing || existing.organizationId !== organizationId) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+    }
 
     // Build update data
     const updateData: any = {}
@@ -119,6 +142,21 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
+    const existing = await prisma.conversation.findUnique({
+      where: { id },
+    })
+
+    if (!existing || existing.organizationId !== organizationId) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+    }
 
     // Delete conversation
     await prisma.conversation.delete({

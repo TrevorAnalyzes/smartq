@@ -26,11 +26,23 @@ export interface Conversation {
   endedAt?: Date
 }
 
+export interface UsageEvent {
+  id: string
+  organizationId: string
+  type: string
+  units: number
+  createdAt: Date
+}
+
+
 export interface Organization {
   id: string
   name: string
   domain: string
   plan: 'FREE' | 'PRO' | 'ENTERPRISE'
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+  monthlyCallLimit?: number
   settings: OrganizationSettings
   createdAt: Date
   updatedAt: Date

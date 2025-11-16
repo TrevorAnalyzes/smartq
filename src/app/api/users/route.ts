@@ -12,9 +12,12 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
+    if (!organizationId) {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
     // Build where clause
-    const where: any = {}
-    if (organizationId) where.organizationId = organizationId
+    const where: any = { organizationId }
     if (role) where.role = role.toUpperCase()
 
     // Fetch users

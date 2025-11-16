@@ -49,8 +49,9 @@ async function fetchActivities(
   return response.json()
 }
 
-async function createActivity(data: Partial<Activity>): Promise<Activity> {
-  const response = await fetch('/api/activities', {
+async function createActivity(data: Partial<Activity>, organizationId: string): Promise<Activity> {
+  const url = `/api/activities?organizationId=${organizationId}`
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -77,9 +78,11 @@ export function useActivities(organizationId?: string, params?: { limit?: number
 
 export function useCreateActivity() {
   const queryClient = useQueryClient()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
-    mutationFn: createActivity,
+    mutationFn: (data: Partial<Activity>) => createActivity(data, organizationId),
     onSuccess: () => {
       // Invalidate and refetch activities list
       queryClient.invalidateQueries({ queryKey: ['activities'] })

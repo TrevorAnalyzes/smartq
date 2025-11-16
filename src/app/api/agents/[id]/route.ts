@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { voiceAgentSchema } from '@/lib/validations'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -14,6 +15,13 @@ type RouteContext = {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
 
     const agent = await prisma.voiceAgent.findUnique({
       where: { id },
@@ -24,7 +32,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     })
 
-    if (!agent) {
+    if (!agent || agent.organizationId !== organizationId) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
 
@@ -52,6 +60,21 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
     const body = await request.json()
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
+    const existing = await prisma.voiceAgent.findUnique({
+      where: { id },
+    })
+
+    if (!existing || existing.organizationId !== organizationId) {
+      return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
+    }
 
     // Partial validation
     const validatedData = voiceAgentSchema.partial().parse(body)
@@ -96,6 +119,21 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
+
+    let organizationId: string
+    try {
+      organizationId = getOrganizationIdFromRequest(request)
+    } catch {
+      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+    }
+
+    const existing = await prisma.voiceAgent.findUnique({
+      where: { id },
+    })
+
+    if (!existing || existing.organizationId !== organizationId) {
+      return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
+    }
 
     // Delete agent (conversations will be cascade deleted)
     await prisma.voiceAgent.delete({

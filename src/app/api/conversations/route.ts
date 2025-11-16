@@ -5,12 +5,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { conversationSchema } from '@/lib/validations'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters for filtering
     const searchParams = request.nextUrl.searchParams
-    const organizationId = searchParams.get('organizationId') || 'demo-org-id'
+    const organizationId = getOrganizationIdFromRequest(request)
     const status = searchParams.get('status')
     const agentId = searchParams.get('agentId')
     const sentiment = searchParams.get('sentiment')
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const organizationId = body.organizationId || 'demo-org-id'
+    const organizationId = getOrganizationIdFromRequest(request)
 
     // Validate request body
     const validatedData = conversationSchema.parse(body)
