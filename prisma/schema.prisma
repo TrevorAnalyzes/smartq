@@ -60,12 +60,14 @@ enum CRMProvider {
   HUBSPOT
   SALESFORCE
   PIPEDRIVE
+  ZOHO
 }
 
 enum CRMStatus {
   CONNECTED
   DISCONNECTED
   ERROR
+  SYNCING
 }
 
 // ============================================
@@ -95,12 +97,15 @@ model Organization {
   brandingCompanyName     String?
 
   // Relations
-  users         User[]
-  voiceAgents   VoiceAgent[]
-  conversations Conversation[]
-  crmIntegration CRMIntegration?
-  usageEvents   UsageEvent[]
-  activities    Activity[]
+  users          User[]
+  voiceAgents    VoiceAgent[]
+  conversations  Conversation[]
+  crmIntegrations CRMIntegration[]
+  crmContacts    CRMContact[]
+  crmDeals       CRMDeal[]
+  crmCompanies   CRMCompany[]
+  usageEvents    UsageEvent[]
+  activities     Activity[]
 
   @@index([domain])
   @@index([plan])
@@ -175,24 +180,114 @@ model Conversation {
 }
 
 model CRMIntegration {
-  id             String    @id @default(cuid())
-  organizationId String    @unique
-  provider       CRMProvider
-  status         CRMStatus @default(DISCONNECTED)
-  apiKey         String?
-  webhookUrl     String?
-  lastSync       DateTime?
-  contactsCount  Int       @default(0)
-  dealsCount     Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  organizationId   String
+  provider         CRMProvider
+  status           CRMStatus @default(DISCONNECTED)
+  config           Json      // Stores CRMConfig including credentials
+  webhookSecret    String?
+  lastSync         DateTime?
+  lastSyncResult   Json?     // Stores SyncResult
+  contactsCount    Int       @default(0)
+  dealsCount       Int       @default(0)
+  companiesCount   Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   // Relations
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  contacts     CRMContact[]
+  deals        CRMDeal[]
+  companies    CRMCompany[]
 
+  @@unique([organizationId, provider])
   @@index([organizationId])
   @@index([provider])
   @@index([status])
+}
+
+model CRMContact {
+  id             String   @id @default(cuid())
+  organizationId String
+  provider       CRMProvider
+  externalId     String   // ID from the CRM system
+  email          String
+  firstName      String?
+  lastName       String?
+  fullName       String?
+  phone          String?
+  company        String?
+  jobTitle       String?
+  tags           String[]
+  customFields   Json?
+  lastActivityAt DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crmIntegration CRMIntegration @relation(fields: [organizationId, provider], references: [organizationId, provider], onDelete: Cascade)
+
+  @@unique([organizationId, provider, externalId])
+  @@index([organizationId])
+  @@index([provider])
+  @@index([email])
+  @@index([externalId])
+}
+
+model CRMDeal {
+  id                String   @id @default(cuid())
+  organizationId    String
+  provider          CRMProvider
+  externalId        String   // ID from the CRM system
+  title             String
+  value             Float
+  currency          String   @default("GBP")
+  stage             String
+  probability       Float?
+  contactId         String?
+  companyId         String?
+  ownerId           String?
+  expectedCloseDate DateTime?
+  customFields      Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crmIntegration CRMIntegration @relation(fields: [organizationId, provider], references: [organizationId, provider], onDelete: Cascade)
+
+  @@unique([organizationId, provider, externalId])
+  @@index([organizationId])
+  @@index([provider])
+  @@index([stage])
+  @@index([externalId])
+}
+
+model CRMCompany {
+  id             String   @id @default(cuid())
+  organizationId String
+  provider       CRMProvider
+  externalId     String   // ID from the CRM system
+  name           String
+  domain         String?
+  industry       String?
+  size           String?
+  phone          String?
+  address        String?
+  customFields   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  crmIntegration CRMIntegration @relation(fields: [organizationId, provider], references: [organizationId, provider], onDelete: Cascade)
+
+  @@unique([organizationId, provider, externalId])
+  @@index([organizationId])
+  @@index([provider])
+  @@index([name])
+  @@index([externalId])
 }
 
 model UsageEvent {

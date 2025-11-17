@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { userSchema } from '@/lib/validations'
+import { UserWhereInput, toErrorWithMessage } from '@/lib/types'
+import { UserRole } from '@prisma/client'
 
 // GET /api/users - Get all users (filtered by organization)
 export async function GET(request: NextRequest) {
@@ -17,8 +19,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build where clause
-    const where: any = { organizationId }
-    if (role) where.role = role.toUpperCase()
+    const where: UserWhereInput = { organizationId }
+    if (role) where.role = role.toUpperCase() as UserRole
 
     // Fetch users
     const users = await prisma.user.findMany({
@@ -105,7 +107,7 @@ export async function POST(request: NextRequest) {
       data: {
         email: validatedData.email,
         name: validatedData.name,
-        role: validatedData.role.toUpperCase() as any,
+        role: validatedData.role.toUpperCase() as UserRole,
         organizationId: body.organizationId,
         permissions: body.permissions || [],
       },
@@ -135,11 +137,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(transformedUser, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating user:', error)
 
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid request data', details: error.errors }, { status: 400 })
+    const errorWithMessage = toErrorWithMessage(error)
+
+    if (errorWithMessage.name === 'ZodError') {
+      return NextResponse.json({ error: 'Invalid request data', details: error }, { status: 400 })
     }
 
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })

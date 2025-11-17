@@ -15,6 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useOrganizations } from '@/hooks/use-organizations'
 import { useOrganizationStore } from '@/store/organization-store'
+import { Organization } from '@/lib/types'
 import { useState } from 'react'
 
 export function OrganizationSwitcher() {
@@ -80,7 +81,7 @@ export function OrganizationSwitcher() {
           <CommandList>
             <CommandEmpty>No organization found.</CommandEmpty>
             <CommandGroup heading="Organizations">
-              {organizations.map((org: any) => (
+              {organizations.map((org: Organization) => (
                 <CommandItem
                   key={org.id}
                   value={org.id}

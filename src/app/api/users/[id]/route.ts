@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { UserUpdateInput } from '@/lib/types'
 
 // GET /api/users/[id] - Get single user
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -75,7 +76,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     // Build update data
-    const updateData: any = {}
+    const updateData: UserUpdateInput = {}
 
     if (body.name !== undefined) updateData.name = body.name
     if (body.email !== undefined) updateData.email = body.email

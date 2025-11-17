@@ -1,12 +1,13 @@
-// Single Voice Agent API Route
-// GET /api/agents/[id] - Get a single agent
-// PATCH /api/agents/[id] - Update an agent
-// DELETE /api/agents/[id] - Delete an agent
+// Single Assistant API Route
+// GET /api/agents/[id] - Get a single assistant
+// PATCH /api/agents/[id] - Update an assistant
+// DELETE /api/agents/[id] - Delete an assistant
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { voiceAgentSchema } from '@/lib/validations'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { AccentType } from '@prisma/client'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -79,13 +80,13 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     // Partial validation
     const validatedData = voiceAgentSchema.partial().parse(body)
 
-    // Update agent
+    // Update assistant
     const agent = await prisma.voiceAgent.update({
       where: { id },
       data: {
         ...(validatedData.name && { name: validatedData.name }),
         ...(validatedData.accentType && {
-          accentType: validatedData.accentType.toUpperCase().replace(/-/g, '_') as any,
+          accentType: validatedData.accentType.toUpperCase().replace(/-/g, '_') as AccentType,
         }),
         ...(validatedData.phoneNumber !== undefined && { phoneNumber: validatedData.phoneNumber }),
         ...(validatedData.description !== undefined && { description: validatedData.description }),

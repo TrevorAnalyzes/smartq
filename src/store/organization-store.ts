@@ -30,7 +30,7 @@ interface OrganizationState {
   error: string | null
 
   // Actions
-  setCurrentOrganization: (organization: Organization) => void
+  setCurrentOrganization: (organization: Organization | null) => void
   setOrganizations: (organizations: Organization[]) => void
   switchOrganization: (organizationId: string) => void
   setLoading: (isLoading: boolean) => void

@@ -57,7 +57,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   // Computed values
   getAgentById: id => get().agents.find(agent => agent.id === id),
-  getActiveAgentsCount: () => get().agents.filter(agent => agent.status === 'active').length,
+  getActiveAgentsCount: () => get().agents.filter(agent => agent.status === 'ACTIVE').length,
   getTotalCallsToday: () => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)

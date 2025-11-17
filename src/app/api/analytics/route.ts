@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { subDays, startOfDay, endOfDay, addDays, format } from 'date-fns'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { ConversationWhereInput } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     const startDate = startOfDay(subDays(endDate, days - 1))
 
     // Build where clause
-    const where: any = {
+    const where: ConversationWhereInput = {
       organizationId,
       startedAt: {
         gte: startDate,

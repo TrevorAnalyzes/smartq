@@ -22,8 +22,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Bot } from 'lucide-react'
+import { Plus, Bot, Loader2 } from 'lucide-react'
 import { ACCENT_TYPES } from '@/lib/constants'
+import { useCreateAgent } from '@/hooks/use-agents'
+import { toast } from 'sonner'
+import { useOrganizationStore } from '@/store/organization-store'
 
 const accentOptions = [
   {
@@ -91,19 +94,51 @@ export function CreateAgentDialog() {
     description: '',
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const createAgent = useCreateAgent()
+  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const organizationId = currentOrganization?.id
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your API
-    console.log('Creating agent:', formData)
-    setOpen(false)
-    // Reset form
-    setFormData({
-      name: '',
-      role: '',
-      accent: '',
-      phoneNumber: '',
-      description: '',
-    })
+
+    if (!organizationId) {
+      toast.error('No organization selected')
+      return
+    }
+
+    if (!formData.name.trim()) {
+      toast.error('Assistant name is required')
+      return
+    }
+
+    if (!formData.accent) {
+      toast.error('Please select an accent type')
+      return
+    }
+
+    try {
+      await createAgent.mutateAsync({
+        name: formData.name.trim(),
+        accentType: formData.accent as any,
+        phoneNumber: formData.phoneNumber.trim() || undefined,
+        description: formData.description.trim() || undefined,
+      })
+
+      toast.success('Assistant created successfully!')
+      setOpen(false)
+
+      // Reset form
+      setFormData({
+        name: '',
+        role: '',
+        accent: '',
+        phoneNumber: '',
+        description: '',
+      })
+    } catch (error) {
+      console.error('Failed to create assistant:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create assistant')
+    }
   }
 
   return (
@@ -111,24 +146,24 @@ export function CreateAgentDialog() {
       <DialogTrigger asChild>
         <Button className="bg-brand-primary hover:bg-brand-primary/90">
           <Plus className="mr-2 h-4 w-4" />
-          Create New Agent
+          Create New Assistant
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bot className="text-brand-primary h-5 w-5" />
-            Create New Voice Agent
+            Create New Assistant
           </DialogTitle>
           <DialogDescription>
-            Configure a new AI voice agent with British accent for your business needs.
+            Configure a new AI assistant with British accent for your business needs.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Agent Name</Label>
+              <Label htmlFor="name">Assistant Name</Label>
               <Input
                 id="name"
                 placeholder="e.g., Sarah, James, Emma"
@@ -205,7 +240,7 @@ export function CreateAgentDialog() {
             <Label htmlFor="description">Description (Optional)</Label>
             <Textarea
               id="description"
-              placeholder="Describe the agent's specific purpose or personality traits..."
+              placeholder="Describe the assistant's specific purpose or personality traits..."
               value={formData.description}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
               rows={3}
@@ -213,11 +248,21 @@ export function CreateAgentDialog() {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={createAgent.isPending}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-brand-primary hover:bg-brand-primary/90">
-              Create Agent
+            <Button type="submit" className="bg-brand-primary hover:bg-brand-primary/90" disabled={createAgent.isPending}>
+              {createAgent.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Assistant
+                </>
+              )}
             </Button>
           </DialogFooter>
         </form>

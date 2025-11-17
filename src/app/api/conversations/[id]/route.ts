@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { ConversationUpdateInput } from '@/lib/types'
 
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -85,7 +86,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     // Build update data
-    const updateData: any = {}
+    const updateData: ConversationUpdateInput = {}
 
     if (body.status) updateData.status = body.status.toUpperCase()
     if (body.duration !== undefined) updateData.duration = body.duration

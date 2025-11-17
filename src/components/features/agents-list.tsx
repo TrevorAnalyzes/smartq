@@ -34,6 +34,8 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { useAgents } from '@/hooks/use-agents'
+import { VoiceAgentWithCount } from '@/lib/types'
+import { CallDialog } from './call-dialog'
 
 const getStatusBadge = (status: string) => {
   switch (status) {
@@ -67,16 +69,16 @@ export function AgentsList() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Voice Agents</CardTitle>
+            <CardTitle>Assistants</CardTitle>
             <CardDescription>
-              Manage and monitor your AI voice agents with British accents
+              Manage and monitor your AI assistants with British accents
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <Input
-                placeholder="Search agents..."
+                placeholder="Search assistants..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-64 pl-10"
@@ -88,7 +90,7 @@ export function AgentsList() {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">Loading agents...</div>
+            <div className="text-muted-foreground">Loading assistants...</div>
           </div>
         ) : (
           <Table>
@@ -100,13 +102,14 @@ export function AgentsList() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Total Calls</TableHead>
                 <TableHead>Last Active</TableHead>
+                <TableHead>Actions</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAgents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={8} className="h-24 text-center">
                     <p className="text-muted-foreground">
                       No agents found. Create your first agent to get started.
                     </p>
@@ -122,7 +125,7 @@ export function AgentsList() {
                       </Avatar>
                       <div>
                         <p className="font-medium">{agent.name}</p>
-                        <p className="text-muted-foreground text-sm">{agent.description || 'Voice Agent'}</p>
+                        <p className="text-muted-foreground text-sm">{agent.description || 'AI Assistant'}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -141,11 +144,19 @@ export function AgentsList() {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <TrendingUp className="text-muted-foreground h-3 w-3" />
-                      {(agent as any).totalCalls || 0}
+                      {(agent as VoiceAgentWithCount)._count?.conversations || 0}
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(agent.updatedAt), { addSuffix: true })}
+                  </TableCell>
+                  <TableCell>
+                    <CallDialog agentId={agent.id} agentName={agent.name}>
+                      <Button variant="outline" size="sm">
+                        <Phone className="h-4 w-4 mr-2" />
+                        Test Call
+                      </Button>
+                    </CallDialog>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -157,6 +168,12 @@ export function AgentsList() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <CallDialog agentId={agent.id} agentName={agent.name}>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Phone className="mr-2 h-4 w-4" />
+                            Test Call
+                          </DropdownMenuItem>
+                        </CallDialog>
                         <DropdownMenuItem>
                           <Play className="mr-2 h-4 w-4" />
                           Start Agent

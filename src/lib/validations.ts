@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-// Validation schemas using Zod for the AI Voice Agent Dashboard
+// Validation schemas using Zod for the AI Assistant Dashboard
 
 export const voiceAgentSchema = z.object({
-  name: z.string().min(1, 'Agent name is required').max(100, 'Name too long'),
+  name: z.string().min(1, 'Assistant name is required').max(100, 'Name too long'),
   accentType: z.enum([
     'british-rp',
     'british-cockney',
@@ -20,6 +20,11 @@ export const conversationSchema = z.object({
   customerName: z.string().optional(),
   outcome: z.string().optional(),
 })
+
+export const callInitiationSchema = conversationSchema.extend({
+  agentId: z.string().min(1, 'Assistant ID is required'),
+})
+
 
 export const organizationSchema = z.object({
   name: z.string().min(1, 'Organization name is required').max(100, 'Name too long'),
@@ -60,6 +65,7 @@ export const crmIntegrationSchema = z.object({
 // Type inference from schemas
 export type VoiceAgentInput = z.infer<typeof voiceAgentSchema>
 export type ConversationInput = z.infer<typeof conversationSchema>
+export type CallInitiationInput = z.infer<typeof callInitiationSchema>
 export type OrganizationInput = z.infer<typeof organizationSchema>
 export type UserInput = z.infer<typeof userSchema>
 export type OrganizationSettingsInput = z.infer<typeof organizationSettingsSchema>

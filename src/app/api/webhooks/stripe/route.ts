@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
-        const organizationId = (subscription.metadata as any)?.organizationId as string | undefined
+        const organizationId = subscription.metadata?.organizationId as string | undefined
 
         if (!organizationId) {
           console.warn('Stripe subscription event without organizationId metadata')

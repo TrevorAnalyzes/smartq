@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { OrganizationUpdateInput } from '@/lib/types'
 
 // GET /api/organizations/[id] - Get single organization
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -65,7 +66,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     // Build update data
-    const updateData: any = {}
+    const updateData: OrganizationUpdateInput = {}
 
     if (body.name !== undefined) updateData.name = body.name
     if (body.domain !== undefined) updateData.domain = body.domain

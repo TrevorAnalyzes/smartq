@@ -109,12 +109,13 @@ export function useConversations(filters?: {
   offset?: number
 }) {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useQuery({
     queryKey: ['conversations', organizationId, filters],
-    queryFn: () => fetchConversations(organizationId, filters),
+    queryFn: () => fetchConversations(organizationId!, filters),
     refetchInterval: 10000, // Refetch every 10 seconds for live updates
+    enabled: !!organizationId,
   })
 }
 
@@ -168,11 +169,13 @@ export function useCreateConversation() {
 export function useUpdateConversation() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Conversation> }) =>
-      updateConversation(id, data, organizationId),
+    mutationFn: ({ id, data }: { id: string; data: Partial<Conversation> }) => {
+      if (!organizationId) throw new Error('No organization selected')
+      return updateConversation(id, data, organizationId)
+    },
     onSuccess: (_, variables) => {
       // Invalidate specific conversation and conversations list
       queryClient.invalidateQueries({ queryKey: ['conversations', variables.id] })

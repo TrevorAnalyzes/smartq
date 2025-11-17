@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
+import { toErrorWithMessage } from '@/lib/types'
 
 interface CreateOrganizationDialogProps {
   open: boolean
@@ -57,8 +58,9 @@ export function CreateOrganizationDialog({ open, onOpenChange }: CreateOrganizat
       await createOrganization.mutateAsync(formData)
       onOpenChange(false)
       setFormData({ name: '', domain: '', plan: 'free' })
-    } catch (error: any) {
-      setErrors({ submit: error.message || 'Failed to create organization' })
+    } catch (error: unknown) {
+      const errorWithMessage = toErrorWithMessage(error)
+      setErrors({ submit: errorWithMessage.message || 'Failed to create organization' })
     }
   }
 

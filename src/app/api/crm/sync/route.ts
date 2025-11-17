@@ -1,72 +1,112 @@
+// CRM Sync API Route
+// POST /api/crm/sync - Trigger CRM data synchronization
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { CRMProviderFactory } from '@/lib/crm/provider-factory'
+import { CRMConfig } from '@/lib/crm/types'
 
 export async function POST(request: NextRequest) {
   try {
+    const organizationId = getOrganizationIdFromRequest(request)
     const body = await request.json()
-    const { organizationId, provider } = body
+    const { provider } = body
 
-    if (!organizationId || !provider) {
-      return NextResponse.json(
-        { error: 'Organization ID and provider are required' },
-        { status: 400 }
-      )
+    if (!provider) {
+      return NextResponse.json({ error: 'Provider is required' }, { status: 400 })
     }
 
     // Find the CRM integration
-    const crmIntegration = await prisma.cRMIntegration.findFirst({
+    const crmIntegration = await prisma.cRMIntegration.findUnique({
       where: {
-        organizationId,
-        provider,
-      },
+        organizationId_provider: {
+          organizationId,
+          provider
+        }
+      }
     })
 
     if (!crmIntegration) {
-      return NextResponse.json(
-        { error: 'CRM integration not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'CRM integration not found' }, { status: 404 })
     }
 
     if (crmIntegration.status !== 'CONNECTED') {
-      return NextResponse.json(
-        { error: 'CRM is not connected' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'CRM is not connected' }, { status: 400 })
     }
 
-    // TODO: In production, this would:
-    // 1. Fetch contacts and deals from the CRM API
-    // 2. Sync them to the database
-    // 3. Update contactsCount and dealsCount
-    
-    // For now, we'll simulate a sync by updating the lastSync timestamp
-    // and incrementing the counts slightly
-    const updatedIntegration = await prisma.cRMIntegration.update({
+    // Update status to syncing
+    await prisma.cRMIntegration.update({
       where: { id: crmIntegration.id },
-      data: {
-        lastSync: new Date(),
-        contactsCount: crmIntegration.contactsCount + Math.floor(Math.random() * 10),
-        dealsCount: crmIntegration.dealsCount + Math.floor(Math.random() * 5),
-      },
+      data: { status: 'SYNCING' }
     })
 
-    return NextResponse.json({
-      success: true,
-      message: 'CRM sync started',
-      integration: {
-        id: updatedIntegration.id,
-        provider: updatedIntegration.provider,
-        status: updatedIntegration.status,
-        lastSync: updatedIntegration.lastSync?.toISOString(),
-        contactsCount: updatedIntegration.contactsCount,
-        dealsCount: updatedIntegration.dealsCount,
-      },
-    })
+    try {
+      // Create provider instance
+      const config = crmIntegration.config as unknown as CRMConfig
+      const crmProvider = CRMProviderFactory.createProvider(config, organizationId)
+
+      // Test connection before syncing
+      const connectionTest = await crmProvider.testConnection()
+      if (!connectionTest) {
+        await prisma.cRMIntegration.update({
+          where: { id: crmIntegration.id },
+          data: { status: 'ERROR' }
+        })
+        return NextResponse.json({ error: 'Connection test failed' }, { status: 400 })
+      }
+
+      // Perform full sync
+      const syncResult = await crmProvider.fullSync()
+
+      // Update integration with sync results
+      const updatedIntegration = await prisma.cRMIntegration.update({
+        where: { id: crmIntegration.id },
+        data: {
+          status: syncResult.success ? 'CONNECTED' : 'ERROR',
+          lastSync: new Date(),
+          lastSyncResult: syncResult as any,
+          contactsCount: syncResult.contactsCount || 0,
+          dealsCount: syncResult.dealsCount || 0,
+          companiesCount: syncResult.companiesCount || 0
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        message: syncResult.success ? 'CRM sync completed successfully' : 'CRM sync completed with errors',
+        syncResult,
+        integration: {
+          id: updatedIntegration.id,
+          provider: updatedIntegration.provider,
+          status: updatedIntegration.status,
+          lastSync: updatedIntegration.lastSync?.toISOString(),
+          contactsCount: updatedIntegration.contactsCount,
+          dealsCount: updatedIntegration.dealsCount,
+          companiesCount: updatedIntegration.companiesCount
+        }
+      })
+
+    } catch (syncError) {
+      // Update status to error
+      await prisma.cRMIntegration.update({
+        where: { id: crmIntegration.id },
+        data: {
+          status: 'ERROR',
+          lastSyncResult: {
+            success: false,
+            error: syncError instanceof Error ? syncError.message : 'Unknown sync error'
+          }
+        }
+      })
+
+      throw syncError
+    }
+
   } catch (error) {
-    console.error('Error syncing CRM:', error)
+    console.error('CRM sync error:', error)
     return NextResponse.json(
-      { error: 'Failed to sync CRM' },
+      { error: 'Failed to sync CRM data' },
       { status: 500 }
     )
   }

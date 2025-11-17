@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { conversationSchema } from '@/lib/validations'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { ConversationWhereInput, ConversationStatus, Sentiment } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,10 +22,10 @@ export async function GET(request: NextRequest) {
     console.log('🔍 Fetching conversations for organizationId:', organizationId)
 
     // Build where clause
-    const where: any = { organizationId }
-    if (status) where.status = status.toUpperCase()
+    const where: ConversationWhereInput = { organizationId }
+    if (status) where.status = status.toUpperCase() as ConversationStatus
     if (agentId) where.agentId = agentId
-    if (sentiment) where.sentiment = sentiment.toUpperCase()
+    if (sentiment) where.sentiment = sentiment.toUpperCase() as Sentiment
 
     console.log('🔍 Where clause:', JSON.stringify(where))
 

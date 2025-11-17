@@ -23,9 +23,11 @@ import {
 import { toast } from 'sonner'
 import { useOrganizationStore } from '@/store/organization-store'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { TwilioStatus } from './twilio-status'
+import { CRMConnectionDialog } from './crm-connection-dialog'
 
-type CRMProvider = 'HUBSPOT' | 'SALESFORCE' | 'PIPEDRIVE'
-type CRMStatus = 'CONNECTED' | 'DISCONNECTED' | 'ERROR'
+type CRMProvider = 'HUBSPOT' | 'SALESFORCE' | 'PIPEDRIVE' | 'ZOHO'
+type CRMStatus = 'CONNECTED' | 'DISCONNECTED' | 'ERROR' | 'SYNCING'
 
 interface CRMIntegration {
   id: string
@@ -59,6 +61,13 @@ const CRM_PROVIDERS = [
     description: 'Connect your Pipedrive CRM to sync contacts and deals',
     color: 'text-green-500',
   },
+  {
+    id: 'ZOHO' as CRMProvider,
+    name: 'Zoho CRM',
+    icon: Building2,
+    description: 'Connect your Zoho CRM to sync contacts and deals',
+    color: 'text-purple-500',
+  },
 ]
 
 function getStatusBadge(status: CRMStatus) {
@@ -70,9 +79,16 @@ function getStatusBadge(status: CRMStatus) {
           Connected
         </Badge>
       )
+    case 'SYNCING':
+      return (
+        <Badge className="bg-blue-500 hover:bg-blue-600">
+          <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
+          Syncing
+        </Badge>
+      )
     case 'ERROR':
       return (
-        <Badge className="bg-yellow-500 hover:bg-yellow-600">
+        <Badge className="bg-red-500 hover:bg-red-600">
           <AlertCircle className="mr-1 h-3 w-3" />
           Error
         </Badge>
@@ -87,34 +103,22 @@ function getStatusBadge(status: CRMStatus) {
   }
 }
 
-function CRMIntegrationCard({ 
-  provider, 
+function CRMIntegrationCard({
+  provider,
   integration,
   onConnect,
   onDisconnect,
   onSync,
-  isLoading 
-}: { 
+  isLoading
+}: {
   provider: typeof CRM_PROVIDERS[0]
   integration?: CRMIntegration
-  onConnect: (provider: CRMProvider, apiKey: string) => void
+  onConnect: () => void
   onDisconnect: (provider: CRMProvider) => void
   onSync: (provider: CRMProvider) => void
   isLoading: boolean
 }) {
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false)
-  const [apiKey, setApiKey] = useState('')
   const Icon = provider.icon
-
-  const handleConnect = () => {
-    if (!apiKey.trim()) {
-      toast.error('Please enter an API key')
-      return
-    }
-    onConnect(provider.id, apiKey)
-    setApiKey('')
-    setShowApiKeyInput(false)
-  }
 
   return (
     <Card>
@@ -153,44 +157,13 @@ function CRMIntegrationCard({
               </div>
             )}
 
-            {showApiKeyInput && (
-              <div className="space-y-2">
-                <Label htmlFor={`apiKey-${provider.id}`}>API Key</Label>
-                <Input
-                  id={`apiKey-${provider.id}`}
-                  type="password"
-                  placeholder="Enter your API key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-              </div>
-            )}
-
             <div className="flex gap-2">
               {!integration || integration.status === 'DISCONNECTED' ? (
-                <>
-                  {showApiKeyInput ? (
-                    <>
-                      <Button onClick={handleConnect} disabled={isLoading} size="sm">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        <Plug className="mr-2 h-4 w-4" />
-                        Connect
-                      </Button>
-                      <Button
-                        onClick={() => setShowApiKeyInput(false)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        Cancel
-                      </Button>
-                    </>
-                  ) : (
-                    <Button onClick={() => setShowApiKeyInput(true)} size="sm">
-                      <Plug className="mr-2 h-4 w-4" />
-                      Connect {provider.name}
-                    </Button>
-                  )}
-                </>
+                <Button onClick={onConnect} disabled={isLoading} size="sm">
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <Plug className="mr-2 h-4 w-4" />
+                  Connect {provider.name}
+                </Button>
               ) : (
                 <>
                   <Button
@@ -229,6 +202,15 @@ function CRMIntegrationCard({
 export function IntegrationsSettingsTab() {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
   const queryClient = useQueryClient()
+  const [connectionDialog, setConnectionDialog] = useState<{
+    open: boolean
+    provider: CRMProvider | null
+    providerName: string
+  }>({
+    open: false,
+    provider: null,
+    providerName: ''
+  })
 
   // Fetch CRM integrations
   const { data: integrations } = useQuery<CRMIntegration[]>({
@@ -244,148 +226,176 @@ export function IntegrationsSettingsTab() {
 
   // Connect CRM mutation
   const connectMutation = useMutation({
-    mutationFn: async ({ provider, apiKey }: { provider: CRMProvider; apiKey: string }) => {
-      const response = await fetch('/api/crm/connect', {
+    mutationFn: async ({ provider, credentials }: { provider: CRMProvider; credentials: Record<string, string> }) => {
+      const response = await fetch(`/api/crm/connect?organizationId=${currentOrganization?.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organizationId: currentOrganization?.id,
           provider,
-          apiKey,
+          credentials,
         }),
       })
-      if (!response.ok) throw new Error('Failed to connect CRM')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to connect CRM')
+      }
       return response.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crm-integrations'] })
       toast.success('CRM connected successfully!')
     },
-    onError: () => {
-      toast.error('Failed to connect CRM. Please check your API key.')
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to connect CRM. Please check your credentials.')
     },
   })
 
   // Disconnect CRM mutation
   const disconnectMutation = useMutation({
     mutationFn: async (provider: CRMProvider) => {
-      const response = await fetch('/api/crm/disconnect', {
+      const response = await fetch(`/api/crm/disconnect?organizationId=${currentOrganization?.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organizationId: currentOrganization?.id,
           provider,
         }),
       })
-      if (!response.ok) throw new Error('Failed to disconnect CRM')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to disconnect CRM')
+      }
       return response.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crm-integrations'] })
       toast.success('CRM disconnected successfully!')
     },
-    onError: () => {
-      toast.error('Failed to disconnect CRM.')
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect CRM.')
     },
   })
 
   // Sync CRM mutation
   const syncMutation = useMutation({
     mutationFn: async (provider: CRMProvider) => {
-      const response = await fetch('/api/crm/sync', {
+      const response = await fetch(`/api/crm/sync?organizationId=${currentOrganization?.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          organizationId: currentOrganization?.id,
           provider,
         }),
       })
-      if (!response.ok) throw new Error('Failed to sync CRM')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to sync CRM')
+      }
       return response.json()
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['crm-integrations'] })
-      toast.success('CRM sync started! This may take a few minutes.')
+      toast.success(data.message || 'CRM sync completed successfully!')
     },
-    onError: () => {
-      toast.error('Failed to sync CRM.')
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to sync CRM.')
     },
   })
 
-  if (!currentOrganization) {
-    return (
-      <Card>
-        <CardContent className="py-12">
-          <div className="text-center">
-            <p className="text-muted-foreground">Please select an organization first</p>
-          </div>
-        </CardContent>
-      </Card>
-    )
+  const handleConnect = (provider: CRMProvider, providerName: string) => {
+    setConnectionDialog({
+      open: true,
+      provider,
+      providerName
+    })
+  }
+
+  const handleConnectionSubmit = async (credentials: Record<string, string>) => {
+    if (!connectionDialog.provider) return
+
+    try {
+      await connectMutation.mutateAsync({
+        provider: connectionDialog.provider,
+        credentials
+      })
+      setConnectionDialog({ open: false, provider: null, providerName: '' })
+    } catch (error) {
+      // Error is handled by the mutation's onError callback
+    }
   }
 
   return (
     <div className="space-y-6">
+      {/* Phone System Integration - Always visible */}
       <Card>
         <CardHeader>
-          <CardTitle>CRM Integration</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Phone System Integration
+          </CardTitle>
+          <CardDescription>
+            Configure your Twilio phone system integration for making and receiving calls
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TwilioStatus />
+        </CardContent>
+      </Card>
+
+      {/* CRM Integration - Organization dependent */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            CRM Integration
+          </CardTitle>
           <CardDescription>
             Connect your CRM to sync contacts and deals automatically
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {CRM_PROVIDERS.map((provider) => {
-            const integration = integrations?.find((i) => i.provider === provider.id)
-            return (
-              <CRMIntegrationCard
-                key={provider.id}
-                provider={provider}
-                integration={integration}
-                onConnect={(p, apiKey) => connectMutation.mutate({ provider: p, apiKey })}
-                onDisconnect={(p) => disconnectMutation.mutate(p)}
-                onSync={(p) => syncMutation.mutate(p)}
-                isLoading={
-                  connectMutation.isPending ||
-                  disconnectMutation.isPending ||
-                  syncMutation.isPending
-                }
-              />
-            )
-          })}
+          {!currentOrganization ? (
+            <div className="text-center py-8">
+              <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
+                <Building2 className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Organization Required</h3>
+              <p className="text-muted-foreground">
+                Select an organization to manage CRM integrations
+              </p>
+            </div>
+          ) : (
+            CRM_PROVIDERS.map((provider) => {
+              const integration = integrations?.find((i) => i.provider === provider.id)
+              return (
+                <CRMIntegrationCard
+                  key={provider.id}
+                  provider={provider}
+                  integration={integration}
+                  onConnect={() => handleConnect(provider.id, provider.name)}
+                  onDisconnect={(p) => disconnectMutation.mutate(p)}
+                  onSync={(p) => syncMutation.mutate(p)}
+                  isLoading={
+                    connectMutation.isPending ||
+                    disconnectMutation.isPending ||
+                    syncMutation.isPending
+                  }
+                />
+              )
+            })
+          )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Phone System</CardTitle>
-          <CardDescription>
-            Configure your phone system integration for making and receiving calls
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg bg-gray-100 text-red-500">
-              <Phone className="h-6 w-6" />
-            </div>
-            <div className="flex-1 space-y-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold">Twilio</h3>
-                  <Badge className="bg-blue-500 hover:bg-blue-600">Coming Soon</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Phone system integration will be available in the next release. You'll be able to
-                  configure Twilio for making and receiving calls with your AI voice agents.
-                </p>
-              </div>
-              <Button variant="outline" size="sm" disabled>
-                <ExternalLink className="mr-2 h-4 w-4" />
-                View Documentation
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* CRM Connection Dialog */}
+      {connectionDialog.provider && (
+        <CRMConnectionDialog
+          open={connectionDialog.open}
+          onOpenChange={(open) => setConnectionDialog(prev => ({ ...prev, open }))}
+          provider={connectionDialog.provider}
+          providerName={connectionDialog.providerName}
+          onConnect={handleConnectionSubmit}
+          isLoading={connectMutation.isPending}
+        />
+      )}
     </div>
   )
 }

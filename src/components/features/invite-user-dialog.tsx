@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
+import { toErrorWithMessage } from '@/lib/types'
 
 interface InviteUserDialogProps {
   open: boolean
@@ -62,8 +63,9 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
       })
       onOpenChange(false)
       setFormData({ name: '', email: '', role: 'viewer' })
-    } catch (error: any) {
-      setErrors({ submit: error.message || 'Failed to invite user' })
+    } catch (error: unknown) {
+      const errorWithMessage = toErrorWithMessage(error)
+      setErrors({ submit: errorWithMessage.message || 'Failed to invite user' })
     }
   }
 

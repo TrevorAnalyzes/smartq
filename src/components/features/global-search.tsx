@@ -79,7 +79,7 @@ export function GlobalSearch() {
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
-          placeholder="Search agents, conversations, organizations..."
+          placeholder="Search assistants, conversations, organizations..."
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
@@ -87,7 +87,7 @@ export function GlobalSearch() {
           <CommandEmpty>No results found.</CommandEmpty>
 
           {filteredAgents.length > 0 && (
-            <CommandGroup heading="Voice Agents">
+            <CommandGroup heading="Assistants">
               {filteredAgents.slice(0, 5).map((agent) => (
                 <CommandItem
                   key={agent.id}
@@ -143,7 +143,7 @@ export function GlobalSearch() {
             <CommandGroup heading="Quick Actions">
               <CommandItem onSelect={() => handleSelect(() => router.push('/agents'))}>
                 <Bot className="mr-2 h-4 w-4" />
-                <span>View All Agents</span>
+                <span>View All Assistants</span>
               </CommandItem>
               <CommandItem onSelect={() => handleSelect(() => router.push('/conversations'))}>
                 <MessageSquare className="mr-2 h-4 w-4" />

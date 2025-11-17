@@ -1,11 +1,12 @@
-// Voice Agents API Route
-// GET /api/agents - List all agents
-// POST /api/agents - Create a new agent
+// Assistants API Route
+// GET /api/agents - List all assistants
+// POST /api/agents - Create a new assistant
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { voiceAgentSchema } from '@/lib/validations'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { VoiceAgentWhereInput, AccentType, AgentStatus } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,11 +17,11 @@ export async function GET(request: NextRequest) {
     const accentType = searchParams.get('accentType')
 
     // Build where clause
-    const where: any = { organizationId }
-    if (status) where.status = status.toUpperCase()
-    if (accentType) where.accentType = accentType.toUpperCase().replace(/-/g, '_')
+    const where: VoiceAgentWhereInput = { organizationId }
+    if (status) where.status = status.toUpperCase() as AgentStatus
+    if (accentType) where.accentType = accentType.toUpperCase().replace(/-/g, '_') as AccentType
 
-    // Fetch agents with conversation count
+    // Fetch assistants with conversation count
     const agents = await prisma.voiceAgent.findMany({
       where,
       include: {
@@ -59,15 +60,15 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = voiceAgentSchema.parse(body)
 
-    // Create new agent
+    // Create new assistant
     const agent = await prisma.voiceAgent.create({
       data: {
         name: validatedData.name,
-        accentType: validatedData.accentType.toUpperCase().replace(/-/g, '_') as any,
+        accentType: validatedData.accentType.toUpperCase().replace(/-/g, '_') as AccentType,
         phoneNumber: validatedData.phoneNumber,
         description: validatedData.description,
         organizationId,
-        status: 'INACTIVE', // New agents start as inactive
+        status: 'INACTIVE', // New assistants start as inactive
       },
     })
 

@@ -6,6 +6,7 @@ import {
   cancelSubscriptionForOrganization,
 } from '@/lib/stripe'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
+import { OrganizationWithCounts } from '@/lib/types'
 
 const VALID_PLANS = ['FREE', 'PRO', 'ENTERPRISE'] as const
 
@@ -35,7 +36,7 @@ function getPriceIdForPlan(plan: Plan): string | null {
   return null
 }
 
-function transformOrganization(org: any) {
+function transformOrganization(org: OrganizationWithCounts) {
   return {
     id: org.id,
     name: org.name,

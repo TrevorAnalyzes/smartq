@@ -18,12 +18,13 @@ export function useOrganizations() {
       // Update store with organizations
       setOrganizations(data.organizations)
 
-      // If no current organization is set, set the first one (or default)
-      if (!currentOrganization && data.organizations.length > 0) {
-        const defaultOrg =
-          data.organizations.find((org: Organization) => org.id === 'demo-org-id') ||
-          data.organizations[0]
-        setCurrentOrganization(defaultOrg)
+      // If no organizations exist, clear current organization
+      if (data.organizations.length === 0) {
+        setCurrentOrganization(null)
+      }
+      // If no current organization is set, set the first one
+      else if (!currentOrganization && data.organizations.length > 0) {
+        setCurrentOrganization(data.organizations[0])
       }
 
       return data

@@ -11,18 +11,18 @@ export function AgentStats() {
 
   const isLoading = agentsLoading || metricsLoading
 
-  const activeAgents = agents.filter(a => a.status === 'active').length
-  const inactiveAgents = agents.filter(a => a.status === 'inactive').length
-  const maintenanceAgents = agents.filter(a => a.status === 'maintenance').length
+  const activeAgents = agents.filter(a => a.status === 'ACTIVE').length
+  const inactiveAgents = agents.filter(a => a.status === 'INACTIVE').length
+  const maintenanceAgents = agents.filter(a => a.status === 'MAINTENANCE').length
 
   const agentStats = [
     {
-      title: 'Active Agents',
+      title: 'Active Assistants',
       value: activeAgents,
       icon: Play,
       bgColor: 'bg-green-100',
       color: 'text-green-600',
-      change: `${agents.length} total agents`,
+      change: `${agents.length} total assistants`,
     },
     {
       title: 'Inactive',
@@ -41,12 +41,12 @@ export function AgentStats() {
       change: 'Under maintenance',
     },
     {
-      title: 'Total Agents',
+      title: 'Total Assistants',
       value: agents.length,
       icon: Bot,
       bgColor: 'bg-blue-100',
       color: 'text-blue-600',
-      change: 'All voice agents',
+      change: 'All AI assistants',
     },
   ]
 

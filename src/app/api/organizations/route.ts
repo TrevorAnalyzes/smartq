@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { organizationSchema } from '@/lib/validations'
+import { OrganizationWhereInput, toErrorWithMessage } from '@/lib/types'
+import { OrganizationPlan } from '@prisma/client'
 
 // GET /api/organizations - Get all organizations
 export async function GET(request: NextRequest) {
@@ -12,8 +14,8 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0')
 
     // Build where clause
-    const where: any = {}
-    if (plan) where.plan = plan.toUpperCase()
+    const where: OrganizationWhereInput = {}
+    if (plan) where.plan = plan.toUpperCase() as OrganizationPlan
 
     // Fetch organizations with user count
     const organizations = await prisma.organization.findMany({
@@ -91,7 +93,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: validatedData.name,
         domain: validatedData.domain,
-        plan: validatedData.plan.toUpperCase() as any,
+        plan: validatedData.plan.toUpperCase() as OrganizationPlan,
       },
       include: {
         _count: {
@@ -124,14 +126,16 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(transformedOrganization, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating organization:', error)
 
-    if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Invalid request data', details: error.errors }, { status: 400 })
+    const errorWithMessage = toErrorWithMessage(error)
+
+    if (errorWithMessage.name === 'ZodError') {
+      return NextResponse.json({ error: 'Invalid request data', details: error }, { status: 400 })
     }
 
-    const message = typeof error?.message === 'string' ? error.message : 'Failed to create organization'
+    const message = errorWithMessage.message || 'Failed to create organization'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

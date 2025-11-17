@@ -1,10 +1,13 @@
+// CRM Status API Route
+// GET /api/crm/status - Get CRM integration status
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const organizationId = searchParams.get('organizationId')
+    const organizationId = getOrganizationIdFromRequest(request)
 
     if (!organizationId) {
       return NextResponse.json(
@@ -13,27 +16,28 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch CRM integration for the organization
-    const crmIntegration = await prisma.cRMIntegration.findUnique({
+    // Fetch all CRM integrations for the organization
+    const crmIntegrations = await prisma.cRMIntegration.findMany({
       where: { organizationId },
+      orderBy: { createdAt: 'desc' }
     })
 
-    // If no integration exists, return empty array
-    if (!crmIntegration) {
-      return NextResponse.json([])
-    }
+    // Transform to match frontend expectations
+    const integrations = crmIntegrations.map(integration => ({
+      id: integration.id,
+      provider: integration.provider,
+      status: integration.status,
+      lastSync: integration.lastSync?.toISOString(),
+      lastSyncResult: integration.lastSyncResult,
+      contactsCount: integration.contactsCount,
+      dealsCount: integration.dealsCount,
+      companiesCount: integration.companiesCount,
+      createdAt: integration.createdAt.toISOString(),
+      updatedAt: integration.updatedAt.toISOString()
+    }))
 
-    // Return the integration as an array (for consistency with frontend)
-    return NextResponse.json([
-      {
-        id: crmIntegration.id,
-        provider: crmIntegration.provider,
-        status: crmIntegration.status,
-        lastSync: crmIntegration.lastSync?.toISOString(),
-        contactsCount: crmIntegration.contactsCount,
-        dealsCount: crmIntegration.dealsCount,
-      },
-    ])
+    return NextResponse.json(integrations)
+
   } catch (error) {
     console.error('Error fetching CRM status:', error)
     return NextResponse.json(

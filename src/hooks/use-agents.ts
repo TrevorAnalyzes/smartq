@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { VoiceAgent } from '@/lib/types'
 import { useOrganizationStore } from '@/store/organization-store'
 
-// Fetch all agents
+// Fetch all assistants
 async function fetchAgents(
   organizationId: string,
   filters?: {
@@ -22,7 +22,7 @@ async function fetchAgents(
   const response = await fetch(url)
 
   if (!response.ok) {
-    throw new Error('Failed to fetch agents')
+    throw new Error('Failed to fetch assistants')
   }
 
   return response.json()
@@ -81,19 +81,20 @@ async function deleteAgent(id: string, organizationId: string): Promise<void> {
   }
 }
 
-// Hook to fetch all agents
+// Hook to fetch all assistants
 export function useAgents(filters?: { status?: string; accentType?: string }) {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useQuery({
     queryKey: ['agents', organizationId, filters],
-    queryFn: () => fetchAgents(organizationId, filters),
+    queryFn: () => fetchAgents(organizationId!, filters),
     refetchInterval: 30000, // Refetch every 30 seconds
+    enabled: !!organizationId,
   })
 }
 
-// Hook to fetch agents for a specific organization (for organization management)
+// Hook to fetch assistants for a specific organization (for organization management)
 export function useOrganizationAgents(organizationId: string, filters?: { status?: string; accentType?: string }) {
   return useQuery({
     queryKey: ['agents', organizationId, filters],
@@ -102,32 +103,34 @@ export function useOrganizationAgents(organizationId: string, filters?: { status
   })
 }
 
-// Hook to fetch single agent
+// Hook to fetch single assistant
 export function useAgent(id: string) {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useQuery({
     queryKey: ['agents', id, organizationId],
-    queryFn: () => fetchAgent(id, organizationId),
+    queryFn: () => fetchAgent(id, organizationId!),
     enabled: !!id && !!organizationId,
   })
 }
 
-// Hook to create agent
+// Hook to create assistant
 export function useCreateAgent() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useMutation({
-    mutationFn: (data: any) =>
-      createAgent(
+    mutationFn: (data: Partial<VoiceAgent>) => {
+      if (!organizationId) throw new Error('No organization selected')
+      return createAgent(
         { ...data, organizationId: data.organizationId || organizationId },
         organizationId,
-      ),
+      )
+    },
     onSuccess: () => {
-      // Invalidate and refetch agents list
+      // Invalidate and refetch assistants list
       queryClient.invalidateQueries({ queryKey: ['agents'] })
     },
   })
@@ -137,11 +140,13 @@ export function useCreateAgent() {
 export function useUpdateAgent() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<VoiceAgent> }) =>
-      updateAgent(id, data, organizationId),
+    mutationFn: ({ id, data }: { id: string; data: Partial<VoiceAgent> }) => {
+      if (!organizationId) throw new Error('No organization selected')
+      return updateAgent(id, data, organizationId)
+    },
     onSuccess: (_, variables) => {
       // Invalidate specific agent and agents list
       queryClient.invalidateQueries({ queryKey: ['agents', variables.id] })
@@ -154,10 +159,13 @@ export function useUpdateAgent() {
 export function useDeleteAgent() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useMutation({
-    mutationFn: (id: string) => deleteAgent(id, organizationId),
+    mutationFn: (id: string) => {
+      if (!organizationId) throw new Error('No organization selected')
+      return deleteAgent(id, organizationId)
+    },
     onSuccess: () => {
       // Invalidate agents list
       queryClient.invalidateQueries({ queryKey: ['agents'] })

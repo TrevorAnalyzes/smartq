@@ -168,7 +168,7 @@ export function ConversationHistory() {
                 <TableCell>
                   <Badge variant="outline">{conversation.outcome || 'N/A'}</Badge>
                 </TableCell>
-                <TableCell>{getSentimentBadge(conversation.sentiment)}</TableCell>
+                <TableCell>{getSentimentBadge(conversation.sentiment || undefined)}</TableCell>
                 <TableCell>{getStatusBadge(conversation.status)}</TableCell>
                 <TableCell>
                   <DropdownMenu>

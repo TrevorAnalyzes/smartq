@@ -7,9 +7,9 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Voice Agent Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Assistant Management</h1>
           <p className="text-muted-foreground">
-            Configure and manage your AI voice agents with British accents and phone calling
+            Configure and manage your AI assistants with British accents and phone calling
             capabilities
           </p>
         </div>

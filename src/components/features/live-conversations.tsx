@@ -112,7 +112,7 @@ export function LiveConversations() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium">{(conversation as any).agentName || 'Voice Agent'}</p>
+                  <p className="text-sm font-medium">{(conversation as any).agentName || 'AI Assistant'}</p>
                   <p className="text-muted-foreground text-xs">AI Assistant</p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export function LiveConversations() {
             <div className="mb-3 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{conversation.customerName || 'Customer'}</span>
-                {getSentimentBadge(conversation.sentiment)}
+                {getSentimentBadge(conversation.sentiment || undefined)}
               </div>
               <div className="text-muted-foreground flex items-center gap-2 text-xs">
                 <Phone className="h-3 w-3" />

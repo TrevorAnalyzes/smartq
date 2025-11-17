@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
+
 'use strict'
 
 const { PrismaClient } = require('@prisma/client')
@@ -101,7 +104,7 @@ async function main() {
 
   console.log('Organization ready:', org.id)
 
-  // Create a couple of demo agents
+  // Create a couple of demo assistants
   const agent1 = await prisma.voiceAgent.upsert({
     where: { id: 'demo-agent-1' },
     update: {},
@@ -128,7 +131,7 @@ async function main() {
     },
   })
 
-  console.log('Agents ready:', agent1.id, agent2.id)
+  console.log('Assistants ready:', agent1.id, agent2.id)
 
   // Create a few conversations across different statuses to feed metrics/analytics
   const now = new Date()

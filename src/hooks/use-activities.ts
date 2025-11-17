@@ -66,11 +66,11 @@ async function createActivity(data: Partial<Activity>, organizationId: string): 
 
 export function useActivities(organizationId?: string, params?: { limit?: number; offset?: number }) {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const orgId = organizationId || currentOrganization?.id || 'demo-org-id'
+  const orgId = organizationId || currentOrganization?.id
 
   return useQuery({
     queryKey: ['activities', orgId, params],
-    queryFn: () => fetchActivities(orgId, params),
+    queryFn: () => fetchActivities(orgId!, params),
     refetchInterval: 15000, // Refetch every 15 seconds
     enabled: !!orgId,
   })
@@ -79,10 +79,13 @@ export function useActivities(organizationId?: string, params?: { limit?: number
 export function useCreateActivity() {
   const queryClient = useQueryClient()
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = currentOrganization?.id || 'demo-org-id'
+  const organizationId = currentOrganization?.id
 
   return useMutation({
-    mutationFn: (data: Partial<Activity>) => createActivity(data, organizationId),
+    mutationFn: (data: Partial<Activity>) => {
+      if (!organizationId) throw new Error('No organization selected')
+      return createActivity(data, organizationId)
+    },
     onSuccess: () => {
       // Invalidate and refetch activities list
       queryClient.invalidateQueries({ queryKey: ['activities'] })

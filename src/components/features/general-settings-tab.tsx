@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Save, Upload } from 'lucide-react'
+import { Building2, Loader2, Save, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 const ACCENT_OPTIONS = [
@@ -72,8 +72,16 @@ export function GeneralSettingsTab() {
     return (
       <Card>
         <CardContent className="py-12">
-          <div className="text-center">
-            <p className="text-muted-foreground">Please select an organization first</p>
+          <div className="text-center space-y-4">
+            <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">No Organization Selected</h3>
+              <p className="text-muted-foreground">
+                Create or select an organization to manage settings
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

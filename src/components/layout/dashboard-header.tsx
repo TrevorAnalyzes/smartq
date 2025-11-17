@@ -26,7 +26,7 @@ const getPageTitle = (pathname: string, organizationName?: string) => {
 
   const routes: Record<string, string> = {
     '/': 'Overview',
-    '/agents': 'Voice Agent Management',
+    '/agents': 'Assistant Management',
     '/conversations': 'Conversation Logs',
     '/analytics': 'Analytics & Reporting',
     '/organizations': 'Organization Management',

@@ -66,7 +66,7 @@ export function NotificationsPanel() {
   }
 
   // Add agent status notifications
-  const inactiveAgents = agents.filter((agent) => agent.status === 'inactive')
+  const inactiveAgents = agents.filter((agent) => agent.status === 'INACTIVE')
   if (inactiveAgents.length > 0 && notifications.length < 8) {
     inactiveAgents.slice(0, 2).forEach((agent) => {
       notifications.push({

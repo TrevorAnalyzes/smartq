@@ -12,6 +12,7 @@ import {
   PanelLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { NavigationItem } from '@/lib/types'
 import {
   Sidebar,
   SidebarContent,
@@ -26,12 +27,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Badge } from '@/components/ui/badge'
 
-const navigationItems: Array<{
-  title: string
-  url: string
-  icon: any
-  badge: { variant: any; text: string } | null
-}> = [
+const navigationItems: NavigationItem[] = [
   {
     title: 'Overview',
     url: '/',
@@ -39,7 +35,7 @@ const navigationItems: Array<{
     badge: null,
   },
   {
-    title: 'Voice Agents',
+    title: 'Assistants',
     url: '/agents',
     icon: Bot,
     badge: null,

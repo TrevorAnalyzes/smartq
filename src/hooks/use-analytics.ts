@@ -64,11 +64,11 @@ async function fetchAnalytics(
 
 export function useAnalytics(params?: { days?: number; agentId?: string; organizationId?: string }) {
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const organizationId = params?.organizationId || currentOrganization?.id || 'demo-org-id'
+  const organizationId = params?.organizationId || currentOrganization?.id
 
   return useQuery({
     queryKey: ['analytics', organizationId, params],
-    queryFn: () => fetchAnalytics(organizationId, params),
+    queryFn: () => fetchAnalytics(organizationId!, params),
     refetchInterval: 60000, // Refetch every minute
     enabled: !!organizationId,
   })

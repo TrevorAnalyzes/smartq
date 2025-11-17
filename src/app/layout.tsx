@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'SmartQ',
   description:
-    'Helping UK businesses create an online presence to increase revenue with British-accented AI voice agents',
+    'Helping UK businesses create an online presence to increase revenue with British-accented AI assistants',
 }
 
 export default function RootLayout({
