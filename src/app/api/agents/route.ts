@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform data to match frontend expectations
-    const transformedAgents = agents.map((agent) => ({
+    const transformedAgents = agents.map(agent => ({
       id: agent.id,
       name: agent.name,
       status: agent.status.toLowerCase(),
@@ -95,4 +95,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create agent' }, { status: 500 })
   }
 }
-

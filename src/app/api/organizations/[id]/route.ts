@@ -78,9 +78,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (body.emailAlerts !== undefined) updateData.emailAlerts = body.emailAlerts
     if (body.smsAlerts !== undefined) updateData.smsAlerts = body.smsAlerts
     if (body.webhookUrl !== undefined) updateData.webhookUrl = body.webhookUrl
-    if (body.brandingPrimaryColor !== undefined) updateData.brandingPrimaryColor = body.brandingPrimaryColor
+    if (body.brandingPrimaryColor !== undefined)
+      updateData.brandingPrimaryColor = body.brandingPrimaryColor
     if (body.brandingLogo !== undefined) updateData.brandingLogo = body.brandingLogo
-    if (body.brandingCompanyName !== undefined) updateData.brandingCompanyName = body.brandingCompanyName
+    if (body.brandingCompanyName !== undefined)
+      updateData.brandingCompanyName = body.brandingCompanyName
 
     // Update organization
     const organization = await prisma.organization.update({
@@ -124,7 +126,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 // DELETE /api/organizations/[id] - Delete organization
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params
 
@@ -148,4 +153,3 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     return NextResponse.json({ error: 'Failed to delete organization' }, { status: 500 })
   }
 }
-

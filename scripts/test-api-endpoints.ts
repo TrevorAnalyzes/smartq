@@ -106,7 +106,9 @@ async function testAPIEndpoints() {
   console.log(`📊 Test Summary:`)
   console.log(`   ✅ Passed: ${passedTests}`)
   console.log(`   ❌ Failed: ${failedTests}`)
-  console.log(`   📈 Success Rate: ${((passedTests / (passedTests + failedTests)) * 100).toFixed(1)}%`)
+  console.log(
+    `   📈 Success Rate: ${((passedTests / (passedTests + failedTests)) * 100).toFixed(1)}%`
+  )
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
 
   if (failedTests === 0) {
@@ -118,4 +120,3 @@ async function testAPIEndpoints() {
 }
 
 testAPIEndpoints()
-

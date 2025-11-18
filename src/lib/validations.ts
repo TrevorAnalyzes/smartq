@@ -25,7 +25,6 @@ export const callInitiationSchema = conversationSchema.extend({
   agentId: z.string().min(1, 'Assistant ID is required'),
 })
 
-
 export const organizationSchema = z.object({
   name: z.string().min(1, 'Organization name is required').max(100, 'Name too long'),
   domain: z.string().url('Valid domain required'),

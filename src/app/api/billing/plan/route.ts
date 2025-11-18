@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
-import {
-  attachSubscriptionToOrganization,
-  cancelSubscriptionForOrganization,
-} from '@/lib/stripe'
+import { attachSubscriptionToOrganization, cancelSubscriptionForOrganization } from '@/lib/stripe'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
 import { OrganizationWithCounts } from '@/lib/types'
 
@@ -63,10 +60,7 @@ export async function POST(request: NextRequest) {
     const organizationId = getOrganizationIdFromRequest(request)
 
     if (!targetPlan) {
-      return NextResponse.json(
-        { error: 'targetPlan is required' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'targetPlan is required' }, { status: 400 })
     }
 
     const normalizedPlan = String(targetPlan).toUpperCase()
@@ -150,4 +144,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to change plan' }, { status: 500 })
   }
 }
-

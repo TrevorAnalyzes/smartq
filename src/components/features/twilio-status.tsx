@@ -74,7 +74,7 @@ export function TwilioStatus() {
       <Card>
         <CardContent className="py-6">
           <div className="flex items-center justify-center">
-            <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
             Checking Twilio configuration...
           </div>
         </CardContent>
@@ -100,7 +100,7 @@ export function TwilioStatus() {
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={checkTwilioStatus} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
@@ -114,7 +114,7 @@ export function TwilioStatus() {
             </div>
             {getStatusBadge(status.accountSid)}
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {getStatusIcon(status.authToken)}
@@ -122,7 +122,7 @@ export function TwilioStatus() {
             </div>
             {getStatusBadge(status.authToken)}
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {getStatusIcon(status.phoneNumber)}
@@ -130,7 +130,7 @@ export function TwilioStatus() {
             </div>
             {getStatusBadge(status.phoneNumber)}
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {getStatusIcon(status.webhookUrl)}
@@ -138,7 +138,7 @@ export function TwilioStatus() {
             </div>
             {getStatusBadge(status.webhookUrl)}
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {getStatusIcon(status.mediaStreamUrl)}
@@ -147,11 +147,12 @@ export function TwilioStatus() {
             {getStatusBadge(status.mediaStreamUrl)}
           </div>
         </div>
-        
+
         {!status.configured && (
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+          <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3">
             <p className="text-sm text-amber-800">
-              <strong>Setup Required:</strong> Please configure the missing Twilio environment variables in your .env file to enable calling functionality.
+              <strong>Setup Required:</strong> Please configure the missing Twilio environment
+              variables in your .env file to enable calling functionality.
             </p>
           </div>
         )}

@@ -2,15 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  BarChart3,
-  Bot,
-  MessageSquare,
-  Building2,
-  Settings,
-  Home,
-  PanelLeft,
-} from 'lucide-react'
+import { BarChart3, Bot, MessageSquare, Building2, Settings, Home, PanelLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NavigationItem } from '@/lib/types'
 import {
@@ -78,7 +70,9 @@ export function DashboardSidebar() {
                 <PanelLeft className="h-4 w-4" />
               </button>
               {state === 'expanded' && (
-                <span className="text-sidebar-foreground text-lg font-bold tracking-tight">SmartQ</span>
+                <span className="text-sidebar-foreground text-lg font-bold tracking-tight">
+                  SmartQ
+                </span>
               )}
             </div>
           </SidebarMenuItem>

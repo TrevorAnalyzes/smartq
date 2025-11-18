@@ -27,13 +27,14 @@ export default function AnalyticsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics & Reporting</h1>
           <p className="text-muted-foreground">
-            Comprehensive analytics for conversation logs, performance metrics, and business insights
+            Comprehensive analytics for conversation logs, performance metrics, and business
+            insights
           </p>
         </div>
 
         {/* Time Range Selector */}
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Calendar className="text-muted-foreground h-4 w-4" />
           <div className="flex gap-2">
             <Button
               variant={timeRange === 7 ? 'default' : 'outline'}
@@ -70,7 +71,7 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <Skeleton className="h-8 w-24" />
-                <Skeleton className="h-3 w-40 mt-2" />
+                <Skeleton className="mt-2 h-3 w-40" />
               </CardContent>
             </Card>
           ))}
@@ -92,16 +93,14 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64 mt-2" />
+              <Skeleton className="mt-2 h-4 w-64" />
             </CardHeader>
             <CardContent>
               <Skeleton className="h-[300px] w-full" />
             </CardContent>
           </Card>
         ) : (
-          <SentimentDistributionChart
-            data={analyticsData?.sentimentDistribution || []}
-          />
+          <SentimentDistributionChart data={analyticsData?.sentimentDistribution || []} />
         )}
 
         {/* Status Distribution */}
@@ -109,7 +108,7 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64 mt-2" />
+              <Skeleton className="mt-2 h-4 w-64" />
             </CardHeader>
             <CardContent>
               <Skeleton className="h-[300px] w-full" />
@@ -125,7 +124,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-64 mt-2" />
+            <Skeleton className="mt-2 h-4 w-64" />
           </CardHeader>
           <CardContent>
             <Skeleton className="h-[300px] w-full" />
@@ -140,7 +139,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-64 mt-2" />
+            <Skeleton className="mt-2 h-4 w-64" />
           </CardHeader>
           <CardContent>
             <Skeleton className="h-[300px] w-full" />

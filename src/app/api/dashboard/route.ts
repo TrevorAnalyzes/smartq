@@ -57,9 +57,12 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate customer satisfaction (percentage of positive sentiment)
-    const totalWithSentiment = sentimentCounts.reduce((sum, item) => sum + (item._count._all || 0), 0)
+    const totalWithSentiment = sentimentCounts.reduce(
+      (sum, item) => sum + (item._count._all || 0),
+      0
+    )
     const positiveCount =
-      sentimentCounts.find((item) => item.sentiment === 'POSITIVE')?._count._all || 0
+      sentimentCounts.find(item => item.sentiment === 'POSITIVE')?._count._all || 0
     const customerSatisfaction =
       totalWithSentiment > 0 ? (positiveCount / totalWithSentiment) * 100 : 0
 
@@ -77,4 +80,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch dashboard metrics' }, { status: 500 })
   }
 }
-

@@ -8,7 +8,7 @@ export class SmartQApiClient {
   constructor() {
     this.baseUrl = process.env.SMARTQ_API_BASE_URL || 'http://localhost:3000'
     this.apiSecret = process.env.SMARTQ_API_SECRET
-    
+
     if (!this.apiSecret) {
       logger.warn('SMARTQ_API_SECRET not configured - SmartQ integration disabled')
     }
@@ -25,13 +25,13 @@ export class SmartQApiClient {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiSecret}`,
-          'X-Organization-ID': organizationId
+          Authorization: `Bearer ${this.apiSecret}`,
+          'X-Organization-ID': organizationId,
         },
         body: JSON.stringify({
           status: status.toUpperCase(),
-          updatedAt: new Date().toISOString()
-        })
+          updatedAt: new Date().toISOString(),
+        }),
       })
 
       if (!response.ok) {
@@ -42,16 +42,16 @@ export class SmartQApiClient {
       logger.info('Conversation status updated', {
         conversationId,
         status,
-        organizationId
+        organizationId,
       })
-      
+
       return result
     } catch (error) {
       logger.error('Failed to update conversation status', {
         error: error.message,
         conversationId,
         status,
-        organizationId
+        organizationId,
       })
     }
   }
@@ -69,14 +69,14 @@ export class SmartQApiClient {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiSecret}`,
-          'X-Organization-ID': organizationId
+          Authorization: `Bearer ${this.apiSecret}`,
+          'X-Organization-ID': organizationId,
         },
         body: JSON.stringify({
           // Add transcript to conversation notes or create a transcript field
           notes: `${role}: ${content}`,
-          updatedAt: new Date().toISOString()
-        })
+          updatedAt: new Date().toISOString(),
+        }),
       })
 
       if (!response.ok) {
@@ -87,15 +87,14 @@ export class SmartQApiClient {
         conversationId,
         role,
         contentLength: content.length,
-        organizationId
+        organizationId,
       })
-
     } catch (error) {
       logger.error('Failed to add transcript', {
         error: error.message,
         conversationId,
         role,
-        organizationId
+        organizationId,
       })
     }
   }
@@ -107,12 +106,15 @@ export class SmartQApiClient {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/api/conversations/${conversationId}?organizationId=${organizationId}`, {
-        headers: {
-          'Authorization': `Bearer ${this.apiSecret}`,
-          'X-Organization-ID': organizationId
+      const response = await fetch(
+        `${this.baseUrl}/api/conversations/${conversationId}?organizationId=${organizationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiSecret}`,
+            'X-Organization-ID': organizationId,
+          },
         }
-      })
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -123,7 +125,7 @@ export class SmartQApiClient {
       logger.error('Failed to get conversation', {
         error: error.message,
         conversationId,
-        organizationId
+        organizationId,
       })
       return null
     }

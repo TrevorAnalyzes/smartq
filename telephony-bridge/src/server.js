@@ -17,37 +17,39 @@ const app = express()
 const server = createServer(app)
 
 // Middleware
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    credentials: true,
+  })
+)
 app.use(express.json())
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+  res.json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    service: 'smartq-telephony-bridge'
+    service: 'smartq-telephony-bridge',
   })
 })
 
 // WebSocket server for Twilio Media Streams
-const wss = new WebSocketServer({ 
+const wss = new WebSocketServer({
   server,
-  path: '/twilio-stream'
+  path: '/twilio-stream',
 })
 
 wss.on('connection', (ws, req) => {
   logger.info('New WebSocket connection established', {
     url: req.url,
-    headers: req.headers
+    headers: req.headers,
   })
 
   // Create handler for this connection
   const handler = new TwilioMediaStreamHandler(ws, req)
-  
-  ws.on('message', (message) => {
+
+  ws.on('message', message => {
     handler.handleMessage(message)
   })
 
@@ -56,7 +58,7 @@ wss.on('connection', (ws, req) => {
     handler.cleanup()
   })
 
-  ws.on('error', (error) => {
+  ws.on('error', error => {
     logger.error('WebSocket error', { error: error.message })
     handler.cleanup()
   })
@@ -64,17 +66,19 @@ wss.on('connection', (ws, req) => {
 
 const PORT = process.env.PORT || 3001
 
-server.listen(PORT, '0.0.0.0', () => {
-  logger.info(`SmartQ Telephony Bridge listening on port ${PORT}`)
-  logger.info(`Health endpoint: http://localhost:${PORT}/health`)
-  logger.info(`WebSocket endpoint: ws://localhost:${PORT}/twilio-stream`)
-}).on('error', (err) => {
-  logger.error('Server failed to start', { error: err.message })
-  if (err.code === 'EADDRINUSE') {
-    logger.error(`Port ${PORT} is already in use`)
-  }
-  process.exit(1)
-})
+server
+  .listen(PORT, '0.0.0.0', () => {
+    logger.info(`SmartQ Telephony Bridge listening on port ${PORT}`)
+    logger.info(`Health endpoint: http://localhost:${PORT}/health`)
+    logger.info(`WebSocket endpoint: ws://localhost:${PORT}/twilio-stream`)
+  })
+  .on('error', err => {
+    logger.error('Server failed to start', { error: err.message })
+    if (err.code === 'EADDRINUSE') {
+      logger.error(`Port ${PORT} is already in use`)
+    }
+    process.exit(1)
+  })
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
@@ -23,8 +22,7 @@ async function main() {
   }
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error('Unexpected error in debug script:', e)
   process.exit(1)
 })
-

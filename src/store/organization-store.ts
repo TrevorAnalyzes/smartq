@@ -50,17 +50,17 @@ export const useOrganizationStore = create<OrganizationState>()(
     (set, get) => ({
       ...initialState,
 
-      setCurrentOrganization: (organization) => {
+      setCurrentOrganization: organization => {
         set({ currentOrganization: organization, error: null })
       },
 
-      setOrganizations: (organizations) => {
+      setOrganizations: organizations => {
         set({ organizations })
       },
 
-      switchOrganization: (organizationId) => {
+      switchOrganization: organizationId => {
         const { organizations } = get()
-        const organization = organizations.find((org) => org.id === organizationId)
+        const organization = organizations.find(org => org.id === organizationId)
 
         if (organization) {
           set({ currentOrganization: organization, error: null })
@@ -69,11 +69,11 @@ export const useOrganizationStore = create<OrganizationState>()(
         }
       },
 
-      setLoading: (isLoading) => {
+      setLoading: isLoading => {
         set({ isLoading })
       },
 
-      setError: (error) => {
+      setError: error => {
         set({ error })
       },
 
@@ -83,10 +83,9 @@ export const useOrganizationStore = create<OrganizationState>()(
     }),
     {
       name: 'organization-storage', // localStorage key
-      partialize: (state) => ({
+      partialize: state => ({
         currentOrganization: state.currentOrganization,
       }),
     }
   )
 )
-

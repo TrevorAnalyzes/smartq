@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     const totalCount = await prisma.conversation.count({ where })
 
     // Transform data to match frontend expectations
-    const transformedConversations = conversations.map((conv) => ({
+    const transformedConversations = conversations.map(conv => ({
       id: conv.id,
       agentId: conv.agentId,
       agentName: conv.agent.name,
@@ -157,4 +157,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
   }
 }
-

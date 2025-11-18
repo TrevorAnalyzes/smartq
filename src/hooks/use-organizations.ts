@@ -4,9 +4,9 @@ import type { Organization } from '@/store/organization-store'
 
 // Fetch all organizations
 export function useOrganizations() {
-  const setOrganizations = useOrganizationStore((state) => state.setOrganizations)
-  const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization)
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const setOrganizations = useOrganizationStore(state => state.setOrganizations)
+  const setCurrentOrganization = useOrganizationStore(state => state.setCurrentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
 
   return useQuery({
     queryKey: ['organizations'],
@@ -72,8 +72,8 @@ export function useCreateOrganization() {
 // Update organization
 export function useUpdateOrganization(id: string) {
   const queryClient = useQueryClient()
-  const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization)
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const setCurrentOrganization = useOrganizationStore(state => state.setCurrentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
 
   return useMutation({
     mutationFn: async (data: Partial<Organization>) => {
@@ -88,7 +88,7 @@ export function useUpdateOrganization(id: string) {
       }
       return response.json()
     },
-    onSuccess: (updatedOrg) => {
+    onSuccess: updatedOrg => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
       queryClient.invalidateQueries({ queryKey: ['organizations', id] })
 
@@ -103,8 +103,8 @@ export function useUpdateOrganization(id: string) {
 // Change organization plan via billing API
 export function useChangePlan() {
   const queryClient = useQueryClient()
-  const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization)
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const setCurrentOrganization = useOrganizationStore(state => state.setCurrentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
 
   return useMutation({
     mutationFn: async (params: {
@@ -130,7 +130,7 @@ export function useChangePlan() {
 
       return response.json()
     },
-    onSuccess: (updatedOrg) => {
+    onSuccess: updatedOrg => {
       queryClient.invalidateQueries({ queryKey: ['organizations'] })
 
       if (currentOrganization?.id === updatedOrg.id) {
@@ -139,7 +139,6 @@ export function useChangePlan() {
     },
   })
 }
-
 
 // Delete organization
 export function useDeleteOrganization() {
@@ -161,4 +160,3 @@ export function useDeleteOrganization() {
     },
   })
 }
-

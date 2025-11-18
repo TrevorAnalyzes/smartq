@@ -10,8 +10,10 @@ app.get('/health', (req, res) => {
 
 const PORT = 3001
 
-server.listen(PORT, () => {
-  console.log(`Test server listening on port ${PORT}`)
-}).on('error', (err) => {
-  console.error('Server error:', err)
-})
+server
+  .listen(PORT, () => {
+    console.log(`Test server listening on port ${PORT}`)
+  })
+  .on('error', err => {
+    console.error('Server error:', err)
+  })

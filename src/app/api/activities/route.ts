@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform data
-    const transformedActivities = activities.map((activity) => ({
+    const transformedActivities = activities.map(activity => ({
       id: activity.id,
       type: activity.type,
       agentName: activity.agentName,
@@ -98,4 +98,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create activity' }, { status: 500 })
   }
 }
-

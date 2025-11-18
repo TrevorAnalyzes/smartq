@@ -1,14 +1,14 @@
 // HubSpot CRM Provider Implementation
 
 import { BaseCRMProvider } from '../base-provider'
-import { 
-  CRMConfig, 
-  CRMContact, 
-  CRMDeal, 
-  CRMCompany, 
+import {
+  CRMConfig,
+  CRMContact,
+  CRMDeal,
+  CRMCompany,
   CRMApiResponse,
   WebhookEvent,
-  HubSpotConfig 
+  HubSpotConfig,
 } from '../types'
 import { prisma } from '@/lib/prisma'
 
@@ -46,7 +46,10 @@ export class HubSpotProvider extends BaseCRMProvider {
   }
 
   async refreshToken(): Promise<boolean> {
-    if (this.hubspotConfig.authMethod !== 'OAUTH2' || !this.hubspotConfig.credentials.refreshToken) {
+    if (
+      this.hubspotConfig.authMethod !== 'OAUTH2' ||
+      !this.hubspotConfig.credentials.refreshToken
+    ) {
       return false
     }
 
@@ -58,8 +61,8 @@ export class HubSpotProvider extends BaseCRMProvider {
           grant_type: 'refresh_token',
           client_id: this.hubspotConfig.credentials.clientId!,
           client_secret: this.hubspotConfig.credentials.clientSecret!,
-          refresh_token: this.hubspotConfig.credentials.refreshToken!
-        })
+          refresh_token: this.hubspotConfig.credentials.refreshToken!,
+        }),
       })
 
       if (response.ok) {
@@ -77,14 +80,14 @@ export class HubSpotProvider extends BaseCRMProvider {
 
   async getContacts(cursor?: string, limit = 100): Promise<CRMApiResponse<CRMContact[]>> {
     try {
-      const params: any = { 
+      const params: any = {
         limit,
-        properties: 'email,firstname,lastname,phone,company,jobtitle,createdate,lastmodifieddate'
+        properties: 'email,firstname,lastname,phone,company,jobtitle,createdate,lastmodifieddate',
       }
       if (cursor) params.after = cursor
 
       const response = await this.makeRequest('/crm/v3/objects/contacts', 'GET', null, params)
-      
+
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
       }
@@ -98,8 +101,8 @@ export class HubSpotProvider extends BaseCRMProvider {
         pagination: {
           hasMore: !!data.paging?.next,
           nextCursor: data.paging?.next?.after,
-          total: data.total
-        }
+          total: data.total,
+        },
       }
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
@@ -108,12 +111,9 @@ export class HubSpotProvider extends BaseCRMProvider {
 
   async getContact(id: string): Promise<CRMApiResponse<CRMContact>> {
     try {
-      const response = await this.makeRequest(
-        `/crm/v3/objects/contacts/${id}`,
-        'GET',
-        null,
-        { properties: 'email,firstname,lastname,phone,company,jobtitle,createdate,lastmodifieddate' }
-      )
+      const response = await this.makeRequest(`/crm/v3/objects/contacts/${id}`, 'GET', null, {
+        properties: 'email,firstname,lastname,phone,company,jobtitle,createdate,lastmodifieddate',
+      })
 
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
@@ -129,7 +129,9 @@ export class HubSpotProvider extends BaseCRMProvider {
   async createContact(contact: Partial<CRMContact>): Promise<CRMApiResponse<CRMContact>> {
     try {
       const hubspotData = this.mapToHubSpotContact(contact)
-      const response = await this.makeRequest('/crm/v3/objects/contacts', 'POST', { properties: hubspotData })
+      const response = await this.makeRequest('/crm/v3/objects/contacts', 'POST', {
+        properties: hubspotData,
+      })
 
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
@@ -142,10 +144,15 @@ export class HubSpotProvider extends BaseCRMProvider {
     }
   }
 
-  async updateContact(id: string, contact: Partial<CRMContact>): Promise<CRMApiResponse<CRMContact>> {
+  async updateContact(
+    id: string,
+    contact: Partial<CRMContact>
+  ): Promise<CRMApiResponse<CRMContact>> {
     try {
       const hubspotData = this.mapToHubSpotContact(contact)
-      const response = await this.makeRequest(`/crm/v3/objects/contacts/${id}`, 'PATCH', { properties: hubspotData })
+      const response = await this.makeRequest(`/crm/v3/objects/contacts/${id}`, 'PATCH', {
+        properties: hubspotData,
+      })
 
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
@@ -168,14 +175,19 @@ export class HubSpotProvider extends BaseCRMProvider {
   }
 
   // Helper methods
-  private async makeRequest(endpoint: string, method: string, body?: any, params?: any): Promise<Response> {
+  private async makeRequest(
+    endpoint: string,
+    method: string,
+    body?: any,
+    params?: any
+  ): Promise<Response> {
     const url = new URL(this.baseUrl + endpoint)
     if (params) {
       Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     }
 
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     }
 
     if (this.hubspotConfig.authMethod === 'API_KEY') {
@@ -187,7 +199,7 @@ export class HubSpotProvider extends BaseCRMProvider {
     return fetch(url.toString(), {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
     })
   }
 
@@ -204,32 +216,32 @@ export class HubSpotProvider extends BaseCRMProvider {
       jobTitle: props.jobtitle || '',
       createdAt: new Date(props.createdate || hubspotContact.createdAt),
       updatedAt: new Date(props.lastmodifieddate || hubspotContact.updatedAt),
-      customFields: props
+      customFields: props,
     }
   }
 
   private mapToHubSpotContact(contact: Partial<CRMContact>): any {
     const hubspotData: any = {}
-    
+
     if (contact.email) hubspotData.email = contact.email
     if (contact.firstName) hubspotData.firstname = contact.firstName
     if (contact.lastName) hubspotData.lastname = contact.lastName
     if (contact.phone) hubspotData.phone = contact.phone
     if (contact.company) hubspotData.company = contact.company
     if (contact.jobTitle) hubspotData.jobtitle = contact.jobTitle
-    
+
     return hubspotData
   }
 
   // Storage methods (implement database operations)
   protected async storeContact(contact: CRMContact): Promise<void> {
     await prisma.cRMContact.upsert({
-      where: { 
+      where: {
         organizationId_provider_externalId: {
           organizationId: this.organizationId,
           provider: 'HUBSPOT',
-          externalId: contact.id
-        }
+          externalId: contact.id,
+        },
       },
       update: {
         email: contact.email,
@@ -240,7 +252,7 @@ export class HubSpotProvider extends BaseCRMProvider {
         company: contact.company,
         jobTitle: contact.jobTitle,
         customFields: contact.customFields,
-        updatedAt: contact.updatedAt
+        updatedAt: contact.updatedAt,
       },
       create: {
         organizationId: this.organizationId,
@@ -255,26 +267,58 @@ export class HubSpotProvider extends BaseCRMProvider {
         jobTitle: contact.jobTitle,
         customFields: contact.customFields,
         createdAt: contact.createdAt,
-        updatedAt: contact.updatedAt
-      }
+        updatedAt: contact.updatedAt,
+      },
     })
   }
 
   // Placeholder implementations for deals and companies (to be completed)
-  async getDeals(): Promise<CRMApiResponse<CRMDeal[]>> { return { success: true, data: [] } }
-  async getDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async createDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async updateDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async deleteDeal(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  async getCompanies(): Promise<CRMApiResponse<CRMCompany[]>> { return { success: true, data: [] } }
-  async getCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async createCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async updateCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async deleteCompany(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  async setupWebhook(): Promise<CRMApiResponse<{ webhookId: string }>> { throw new Error('Not implemented') }
-  async removeWebhook(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  validateWebhook(): boolean { return false }
-  parseWebhookEvent(): WebhookEvent | null { return null }
-  protected async storeDeal(): Promise<void> { /* TODO: Implement */ }
-  protected async storeCompany(): Promise<void> { /* TODO: Implement */ }
+  async getDeals(): Promise<CRMApiResponse<CRMDeal[]>> {
+    return { success: true, data: [] }
+  }
+  async getDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async createDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async updateDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async deleteDeal(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  async getCompanies(): Promise<CRMApiResponse<CRMCompany[]>> {
+    return { success: true, data: [] }
+  }
+  async getCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async createCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async updateCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async deleteCompany(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  async setupWebhook(): Promise<CRMApiResponse<{ webhookId: string }>> {
+    throw new Error('Not implemented')
+  }
+  async removeWebhook(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  validateWebhook(): boolean {
+    return false
+  }
+  parseWebhookEvent(): WebhookEvent | null {
+    return null
+  }
+  protected async storeDeal(): Promise<void> {
+    /* TODO: Implement */
+  }
+  protected async storeCompany(): Promise<void> {
+    /* TODO: Implement */
+  }
 }

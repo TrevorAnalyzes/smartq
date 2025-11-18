@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!organizationId || !conversationId) {
       return NextResponse.json(
         { error: 'Missing organizationId or conversationId' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (!mediaStreamUrl) {
       return NextResponse.json(
         { error: 'Media stream URL not configured (TWILIO_MEDIA_STREAM_URL)' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -86,4 +86,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to generate TwiML' }, { status: 500 })
   }
 }
-

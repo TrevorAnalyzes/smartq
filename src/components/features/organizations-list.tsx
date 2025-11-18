@@ -22,7 +22,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Building2, MoreHorizontal, Plus, Users, Bot, MessageSquare, Trash2, Settings } from 'lucide-react'
+import {
+  Building2,
+  MoreHorizontal,
+  Plus,
+  Users,
+  Bot,
+  MessageSquare,
+  Trash2,
+  Settings,
+} from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useOrganizationStore } from '@/store/organization-store'
 import { CreateOrganizationDialog } from './create-organization-dialog'
@@ -30,13 +39,17 @@ import { toast } from 'sonner'
 import { AgentsDetailSheet } from './agents-detail-sheet'
 import { TeamMembersDetailSheet } from './team-members-detail-sheet'
 import { ConversationsDetailSheet } from './conversations-detail-sheet'
-import { AgentsTooltip, TeamMembersTooltip, ConversationsTooltip } from './organization-column-tooltips'
+import {
+  AgentsTooltip,
+  TeamMembersTooltip,
+  ConversationsTooltip,
+} from './organization-column-tooltips'
 
 export function OrganizationsList() {
   const router = useRouter()
   const { data, isLoading } = useOrganizations()
   const deleteOrganization = useDeleteOrganization()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   // State for detail sheets
@@ -99,7 +112,7 @@ export function OrganizationsList() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <Skeleton key={i} className="h-16 w-full" />
             ))}
           </div>
@@ -115,9 +128,7 @@ export function OrganizationsList() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>All Organizations</CardTitle>
-              <CardDescription>
-                Manage and switch between your organizations
-              </CardDescription>
+              <CardDescription>Manage and switch between your organizations</CardDescription>
             </div>
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
@@ -128,9 +139,9 @@ export function OrganizationsList() {
         <CardContent>
           {organizations.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No organizations found</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <Building2 className="text-muted-foreground mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-semibold">No organizations found</h3>
+              <p className="text-muted-foreground mb-4 text-sm">
                 Get started by creating your first organization
               </p>
               <Button onClick={() => setCreateDialogOpen(true)}>
@@ -165,7 +176,9 @@ export function OrganizationsList() {
                               isCurrentOrg ? 'bg-primary text-primary-foreground' : 'bg-primary/10'
                             }`}
                           >
-                            <Building2 className={`h-5 w-5 ${isCurrentOrg ? '' : 'text-primary'}`} />
+                            <Building2
+                              className={`h-5 w-5 ${isCurrentOrg ? '' : 'text-primary'}`}
+                            />
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
@@ -176,38 +189,41 @@ export function OrganizationsList() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground">{org.domain}</p>
+                            <p className="text-muted-foreground text-sm">{org.domain}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>{getPlanBadge(org.plan)}</TableCell>
-                      <TableCell onClick={(e) => handleOpenTeamSheet(org, e)}>
+                      <TableCell onClick={e => handleOpenTeamSheet(org, e)}>
                         <TeamMembersTooltip organizationId={org.id} count={org._count?.users || 0}>
-                          <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                            <Users className="h-4 w-4 text-muted-foreground" />
+                          <div className="hover:text-primary flex cursor-pointer items-center gap-2 transition-colors">
+                            <Users className="text-muted-foreground h-4 w-4" />
                             <span className="font-medium">{org._count?.users || 0}</span>
                           </div>
                         </TeamMembersTooltip>
                       </TableCell>
-                      <TableCell onClick={(e) => handleOpenAgentsSheet(org, e)}>
+                      <TableCell onClick={e => handleOpenAgentsSheet(org, e)}>
                         <AgentsTooltip organizationId={org.id} count={org._count?.voiceAgents || 0}>
-                          <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                            <Bot className="h-4 w-4 text-muted-foreground" />
+                          <div className="hover:text-primary flex cursor-pointer items-center gap-2 transition-colors">
+                            <Bot className="text-muted-foreground h-4 w-4" />
                             <span className="font-medium">{org._count?.voiceAgents || 0}</span>
                           </div>
                         </AgentsTooltip>
                       </TableCell>
-                      <TableCell onClick={(e) => handleOpenConversationsSheet(org, e)}>
-                        <ConversationsTooltip organizationId={org.id} count={org._count?.conversations || 0}>
-                          <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                      <TableCell onClick={e => handleOpenConversationsSheet(org, e)}>
+                        <ConversationsTooltip
+                          organizationId={org.id}
+                          count={org._count?.conversations || 0}
+                        >
+                          <div className="hover:text-primary flex cursor-pointer items-center gap-2 transition-colors">
+                            <MessageSquare className="text-muted-foreground h-4 w-4" />
                             <span className="font-medium">{org._count?.conversations || 0}</span>
                           </div>
                         </ConversationsTooltip>
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
                             <Button variant="ghost" size="icon">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
@@ -215,7 +231,9 @@ export function OrganizationsList() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => router.push('/organizations?tab=settings')}>
+                            <DropdownMenuItem
+                              onClick={() => router.push('/organizations?tab=settings')}
+                            >
                               <Settings className="mr-2 h-4 w-4" />
                               Settings
                             </DropdownMenuItem>
@@ -267,4 +285,3 @@ export function OrganizationsList() {
     </>
   )
 }
-

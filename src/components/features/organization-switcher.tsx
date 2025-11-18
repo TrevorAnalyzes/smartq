@@ -21,8 +21,8 @@ import { useState } from 'react'
 export function OrganizationSwitcher() {
   const [open, setOpen] = useState(false)
   const { data, isLoading } = useOrganizations()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const switchOrganization = useOrganizationStore((state) => state.switchOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
+  const switchOrganization = useOrganizationStore(state => state.switchOrganization)
 
   const organizations = data?.organizations || []
 
@@ -88,7 +88,7 @@ export function OrganizationSwitcher() {
                   onSelect={() => handleSelect(org.id)}
                   className="cursor-pointer"
                 >
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <Check
                         className={cn(
@@ -100,7 +100,7 @@ export function OrganizationSwitcher() {
                         <span className="truncate text-sm font-medium">{org.name}</span>
                         <span
                           className={cn(
-                            'text-xs px-1.5 py-0.5 rounded-md w-fit mt-0.5',
+                            'mt-0.5 w-fit rounded-md px-1.5 py-0.5 text-xs',
                             getPlanBadgeColor(org.plan)
                           )}
                         >
@@ -132,4 +132,3 @@ export function OrganizationSwitcher() {
     </Popover>
   )
 }
-

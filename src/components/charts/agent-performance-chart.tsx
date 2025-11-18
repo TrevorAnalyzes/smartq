@@ -1,7 +1,16 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts'
 
 interface AgentPerformanceChartProps {
   data: Array<{
@@ -13,7 +22,7 @@ interface AgentPerformanceChartProps {
 }
 
 export function AgentPerformanceChart({ data }: AgentPerformanceChartProps) {
-  const chartData = data.map((item) => ({
+  const chartData = data.map(item => ({
     name: item.agentName,
     'Avg Duration (min)': Math.round(item.averageDuration / 60),
     'Total Calls': item.totalCalls,
@@ -27,7 +36,7 @@ export function AgentPerformanceChart({ data }: AgentPerformanceChartProps) {
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="text-muted-foreground flex h-[300px] items-center justify-center">
             No agent performance data available
           </div>
         ) : (
@@ -39,7 +48,12 @@ export function AgentPerformanceChart({ data }: AgentPerformanceChartProps) {
               <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" />
               <Tooltip />
               <Legend />
-              <Bar yAxisId="left" dataKey="Avg Duration (min)" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+              <Bar
+                yAxisId="left"
+                dataKey="Avg Duration (min)"
+                fill="#8b5cf6"
+                radius={[8, 8, 0, 0]}
+              />
               <Bar yAxisId="right" dataKey="Total Calls" fill="#3b82f6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -48,4 +62,3 @@ export function AgentPerformanceChart({ data }: AgentPerformanceChartProps) {
     </Card>
   )
 }
-

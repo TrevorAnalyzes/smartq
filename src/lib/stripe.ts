@@ -34,7 +34,7 @@ function getStripeClient(): Stripe | null {
  * Returns the Stripe customer ID, or null if Stripe is not configured in dev.
  */
 export async function ensureStripeCustomerForOrganization(
-  organizationId: string,
+  organizationId: string
 ): Promise<string | null> {
   const org = await prisma.organization.findUnique({ where: { id: organizationId } })
 
@@ -117,8 +117,6 @@ export async function attachSubscriptionToOrganization(params: {
 
   return subscription
 }
-
-
 
 /**
  * Cancel the active Stripe subscription for an organization and clear its ID.

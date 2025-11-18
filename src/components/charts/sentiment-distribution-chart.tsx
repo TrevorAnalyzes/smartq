@@ -18,7 +18,7 @@ const COLORS = {
 }
 
 export function SentimentDistributionChart({ data }: SentimentDistributionChartProps) {
-  const chartData = data.map((item) => ({
+  const chartData = data.map(item => ({
     name: item.sentiment.charAt(0).toUpperCase() + item.sentiment.slice(1),
     value: item.count,
     sentiment: item.sentiment,
@@ -34,7 +34,7 @@ export function SentimentDistributionChart({ data }: SentimentDistributionChartP
       </CardHeader>
       <CardContent>
         {total === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="text-muted-foreground flex h-[300px] items-center justify-center">
             No sentiment data available
           </div>
         ) : (
@@ -66,4 +66,3 @@ export function SentimentDistributionChart({ data }: SentimentDistributionChartP
     </Card>
   )
 }
-

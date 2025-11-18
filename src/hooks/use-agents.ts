@@ -56,7 +56,11 @@ async function createAgent(data: Partial<VoiceAgent>, organizationId: string): P
 }
 
 // Update agent
-async function updateAgent(id: string, data: Partial<VoiceAgent>, organizationId: string): Promise<VoiceAgent> {
+async function updateAgent(
+  id: string,
+  data: Partial<VoiceAgent>,
+  organizationId: string
+): Promise<VoiceAgent> {
   const response = await fetch(`/api/agents/${id}?organizationId=${organizationId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -83,7 +87,7 @@ async function deleteAgent(id: string, organizationId: string): Promise<void> {
 
 // Hook to fetch all assistants
 export function useAgents(filters?: { status?: string; accentType?: string }) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useQuery({
@@ -95,7 +99,10 @@ export function useAgents(filters?: { status?: string; accentType?: string }) {
 }
 
 // Hook to fetch assistants for a specific organization (for organization management)
-export function useOrganizationAgents(organizationId: string, filters?: { status?: string; accentType?: string }) {
+export function useOrganizationAgents(
+  organizationId: string,
+  filters?: { status?: string; accentType?: string }
+) {
   return useQuery({
     queryKey: ['agents', organizationId, filters],
     queryFn: () => fetchAgents(organizationId, filters),
@@ -105,7 +112,7 @@ export function useOrganizationAgents(organizationId: string, filters?: { status
 
 // Hook to fetch single assistant
 export function useAgent(id: string) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useQuery({
@@ -118,7 +125,7 @@ export function useAgent(id: string) {
 // Hook to create assistant
 export function useCreateAgent() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -126,7 +133,7 @@ export function useCreateAgent() {
       if (!organizationId) throw new Error('No organization selected')
       return createAgent(
         { ...data, organizationId: data.organizationId || organizationId },
-        organizationId,
+        organizationId
       )
     },
     onSuccess: () => {
@@ -139,7 +146,7 @@ export function useCreateAgent() {
 // Hook to update agent
 export function useUpdateAgent() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -158,7 +165,7 @@ export function useUpdateAgent() {
 // Hook to delete agent
 export function useDeleteAgent() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -172,4 +179,3 @@ export function useDeleteAgent() {
     },
   })
 }
-

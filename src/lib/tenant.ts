@@ -27,4 +27,3 @@ export function getOrganizationIdFromRequestSafe(req: NextRequest): string | nul
   const orgId = req.nextUrl.searchParams.get('organizationId') || process.env.DEFAULT_ORG_ID
   return orgId || null
 }
-

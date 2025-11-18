@@ -170,4 +170,3 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 })
   }
 }
-

@@ -100,59 +100,63 @@ export function LiveConversations() {
           </div>
         ) : (
           conversations.map(conversation => (
-          <div
-            key={conversation.id}
-            className="bg-card hover:bg-accent/50 rounded-lg border p-4 transition-colors"
-          >
-            <div className="mb-3 flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {(conversation as any).agentName?.slice(0, 2).toUpperCase() || 'AI'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">{(conversation as any).agentName || 'AI Assistant'}</p>
-                  <p className="text-muted-foreground text-xs">AI Assistant</p>
+            <div
+              key={conversation.id}
+              className="bg-card hover:bg-accent/50 rounded-lg border p-4 transition-colors"
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {(conversation as any).agentName?.slice(0, 2).toUpperCase() || 'AI'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {(conversation as any).agentName || 'AI Assistant'}
+                    </p>
+                    <p className="text-muted-foreground text-xs">AI Assistant</p>
+                  </div>
+                </div>
+                {getStatusBadge(conversation.status)}
+              </div>
+
+              <div className="mb-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    {conversation.customerName || 'Customer'}
+                  </span>
+                  {getSentimentBadge(conversation.sentiment || undefined)}
+                </div>
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Phone className="h-3 w-3" />
+                  {conversation.customerPhone}
+                </div>
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Clock className="h-3 w-3" />
+                  {formatDistanceToNow(new Date(conversation.startedAt), { addSuffix: true })}
                 </div>
               </div>
-              {getStatusBadge(conversation.status)}
-            </div>
 
-            <div className="mb-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{conversation.customerName || 'Customer'}</span>
-                {getSentimentBadge(conversation.sentiment || undefined)}
-              </div>
-              <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                <Phone className="h-3 w-3" />
-                {conversation.customerPhone}
-              </div>
-              <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                <Clock className="h-3 w-3" />
-                {formatDistanceToNow(new Date(conversation.startedAt), { addSuffix: true })}
+              {conversation.topic && (
+                <div className="mb-3">
+                  <Badge variant="outline" className="mb-2 text-xs">
+                    {conversation.topic}
+                  </Badge>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="flex-1">
+                  <Eye className="mr-1 h-3 w-3" />
+                  Monitor
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <Volume2 className="h-3 w-3" />
+                </Button>
               </div>
             </div>
-
-            {conversation.topic && (
-              <div className="mb-3">
-                <Badge variant="outline" className="mb-2 text-xs">
-                  {conversation.topic}
-                </Badge>
-              </div>
-            )}
-
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="flex-1">
-                <Eye className="mr-1 h-3 w-3" />
-                Monitor
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Volume2 className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        ))
+          ))
         )}
       </CardContent>
     </Card>

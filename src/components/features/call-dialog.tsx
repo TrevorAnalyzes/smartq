@@ -28,7 +28,7 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
   const [customerPhone, setCustomerPhone] = useState('')
   const [customerName, setCustomerName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   const handleCall = async () => {
@@ -79,7 +79,7 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
       <DialogTrigger asChild>
         {children || (
           <Button variant="outline" size="sm">
-            <Phone className="h-4 w-4 mr-2" />
+            <Phone className="mr-2 h-4 w-4" />
             Test Call
           </Button>
         )}
@@ -88,9 +88,10 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
         <DialogHeader>
           <DialogTitle>Test Call with {agentName}</DialogTitle>
           <DialogDescription>
-            Initiate a real test call using this AI assistant. Enter a valid phone number you have access to for testing.
+            Initiate a real test call using this AI assistant. Enter a valid phone number you have
+            access to for testing.
             <br />
-            <span className="text-sm text-amber-600 mt-1 block">
+            <span className="mt-1 block text-sm text-amber-600">
               ⚠️ This will make an actual phone call using Twilio. Charges may apply.
             </span>
           </DialogDescription>
@@ -104,7 +105,7 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
               id="phone"
               placeholder="+1234567890 or +447700900123"
               value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
+              onChange={e => setCustomerPhone(e.target.value)}
               className="col-span-3"
               type="tel"
             />
@@ -117,12 +118,12 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
               id="name"
               placeholder="Optional"
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              onChange={e => setCustomerName(e.target.value)}
               className="col-span-3"
             />
           </div>
-          <div className="text-xs text-muted-foreground bg-blue-50 p-3 rounded-md">
-            <p className="font-medium mb-1">💡 Testing Tips:</p>
+          <div className="text-muted-foreground rounded-md bg-blue-50 p-3 text-xs">
+            <p className="mb-1 font-medium">💡 Testing Tips:</p>
             <ul className="space-y-1">
               <li>• Use your own phone number to test the call functionality</li>
               <li>• Make sure Twilio credentials are configured in your .env file</li>
@@ -138,12 +139,12 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
           <Button onClick={handleCall} disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Calling...
               </>
             ) : (
               <>
-                <Phone className="h-4 w-4 mr-2" />
+                <Phone className="mr-2 h-4 w-4" />
                 Start Call
               </>
             )}

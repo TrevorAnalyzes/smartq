@@ -22,9 +22,9 @@ export async function POST(request: NextRequest) {
       where: {
         organizationId_provider: {
           organizationId,
-          provider
-        }
-      }
+          provider,
+        },
+      },
     })
 
     if (!crmIntegration) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     // Update status to syncing
     await prisma.cRMIntegration.update({
       where: { id: crmIntegration.id },
-      data: { status: 'SYNCING' }
+      data: { status: 'SYNCING' },
     })
 
     try {
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       if (!connectionTest) {
         await prisma.cRMIntegration.update({
           where: { id: crmIntegration.id },
-          data: { status: 'ERROR' }
+          data: { status: 'ERROR' },
         })
         return NextResponse.json({ error: 'Connection test failed' }, { status: 400 })
       }
@@ -68,13 +68,15 @@ export async function POST(request: NextRequest) {
           lastSyncResult: syncResult as any,
           contactsCount: syncResult.contactsCount || 0,
           dealsCount: syncResult.dealsCount || 0,
-          companiesCount: syncResult.companiesCount || 0
-        }
+          companiesCount: syncResult.companiesCount || 0,
+        },
       })
 
       return NextResponse.json({
         success: true,
-        message: syncResult.success ? 'CRM sync completed successfully' : 'CRM sync completed with errors',
+        message: syncResult.success
+          ? 'CRM sync completed successfully'
+          : 'CRM sync completed with errors',
         syncResult,
         integration: {
           id: updatedIntegration.id,
@@ -83,10 +85,9 @@ export async function POST(request: NextRequest) {
           lastSync: updatedIntegration.lastSync?.toISOString(),
           contactsCount: updatedIntegration.contactsCount,
           dealsCount: updatedIntegration.dealsCount,
-          companiesCount: updatedIntegration.companiesCount
-        }
+          companiesCount: updatedIntegration.companiesCount,
+        },
       })
-
     } catch (syncError) {
       // Update status to error
       await prisma.cRMIntegration.update({
@@ -95,20 +96,15 @@ export async function POST(request: NextRequest) {
           status: 'ERROR',
           lastSyncResult: {
             success: false,
-            error: syncError instanceof Error ? syncError.message : 'Unknown sync error'
-          }
-        }
+            error: syncError instanceof Error ? syncError.message : 'Unknown sync error',
+          },
+        },
       })
 
       throw syncError
     }
-
   } catch (error) {
     console.error('CRM sync error:', error)
-    return NextResponse.json(
-      { error: 'Failed to sync CRM data' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to sync CRM data' }, { status: 500 })
   }
 }
-

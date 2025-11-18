@@ -61,16 +61,16 @@ export async function GET(request: NextRequest) {
     })
 
     // Get agent names for the duration data
-    const agentIds = durationByAgent.map((item) => item.agentId)
+    const agentIds = durationByAgent.map(item => item.agentId)
     const agents = await prisma.voiceAgent.findMany({
       where: { id: { in: agentIds } },
       select: { id: true, name: true },
     })
 
-    const agentMap = new Map(agents.map((agent) => [agent.id, agent.name]))
+    const agentMap = new Map(agents.map(agent => [agent.id, agent.name]))
 
     // Transform duration data
-    const performanceByAgent = durationByAgent.map((item) => ({
+    const performanceByAgent = durationByAgent.map(item => ({
       agentId: item.agentId,
       agentName: agentMap.get(item.agentId) || 'Unknown',
       averageDuration: Math.round(item._avg.duration || 0),
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       count: 0,
     }))
 
-    allConversations.forEach((conv) => {
+    allConversations.forEach(conv => {
       const hour = conv.startedAt.getHours()
       if (hourlyDistribution[hour]) {
         hourlyDistribution[hour].count++
@@ -96,12 +96,9 @@ export async function GET(request: NextRequest) {
     })
 
     // Build daily stats for the selected date range
-    const dailyStatsMap = new Map<
-      string,
-      { totalCalls: number; successfulCalls: number }
-    >()
+    const dailyStatsMap = new Map<string, { totalCalls: number; successfulCalls: number }>()
 
-    allConversations.forEach((conv) => {
+    allConversations.forEach(conv => {
       const dayKey = format(startOfDay(conv.startedAt), 'yyyy-MM-dd')
       const current = dailyStatsMap.get(dayKey) || {
         totalCalls: 0,
@@ -164,11 +161,11 @@ export async function GET(request: NextRequest) {
         totalConversations,
         trend: Math.round(trend * 10) / 10,
       },
-      sentimentDistribution: sentimentDistribution.map((item) => ({
+      sentimentDistribution: sentimentDistribution.map(item => ({
         sentiment: item.sentiment?.toLowerCase() || 'unknown',
         count: item._count,
       })),
-      statusDistribution: statusDistribution.map((item) => ({
+      statusDistribution: statusDistribution.map(item => ({
         status: item.status.toLowerCase(),
         count: item._count,
       })),
@@ -181,4 +178,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch analytics data' }, { status: 500 })
   }
 }
-

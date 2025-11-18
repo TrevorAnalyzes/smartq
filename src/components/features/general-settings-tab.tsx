@@ -19,8 +19,16 @@ import { Building2, Loader2, Save, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 const ACCENT_OPTIONS = [
-  { value: 'BRITISH_RP', label: 'British RP (Received Pronunciation)', description: 'Standard British accent used in formal settings' },
-  { value: 'BRITISH_COCKNEY', label: 'British Cockney', description: 'Traditional East London accent' },
+  {
+    value: 'BRITISH_RP',
+    label: 'British RP (Received Pronunciation)',
+    description: 'Standard British accent used in formal settings',
+  },
+  {
+    value: 'BRITISH_COCKNEY',
+    label: 'British Cockney',
+    description: 'Traditional East London accent',
+  },
   { value: 'BRITISH_SCOTTISH', label: 'British Scottish', description: 'Scottish accent' },
   { value: 'BRITISH_WELSH', label: 'British Welsh', description: 'Welsh accent' },
   { value: 'BRITISH_NORTHERN', label: 'British Northern', description: 'Northern England accent' },
@@ -33,9 +41,9 @@ const PLAN_COLORS = {
 }
 
 export function GeneralSettingsTab() {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const updateOrganization = useUpdateOrganization(currentOrganization?.id || '')
-  
+
   const [formData, setFormData] = useState({
     name: '',
     domain: '',
@@ -58,7 +66,7 @@ export function GeneralSettingsTab() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       await updateOrganization.mutateAsync(formData)
       toast.success('Settings saved successfully!')
@@ -72,9 +80,9 @@ export function GeneralSettingsTab() {
     return (
       <Card>
         <CardContent className="py-12">
-          <div className="text-center space-y-4">
-            <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-muted-foreground" />
+          <div className="space-y-4 text-center">
+            <div className="bg-muted mx-auto flex h-12 w-12 items-center justify-center rounded-full">
+              <Building2 className="text-muted-foreground h-6 w-6" />
             </div>
             <div>
               <h3 className="text-lg font-semibold">No Organization Selected</h3>
@@ -96,9 +104,7 @@ export function GeneralSettingsTab() {
       <Card>
         <CardHeader>
           <CardTitle>Organization Information</CardTitle>
-          <CardDescription>
-            Basic information about your organization
-          </CardDescription>
+          <CardDescription>Basic information about your organization</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -106,7 +112,7 @@ export function GeneralSettingsTab() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
 
@@ -115,19 +121,18 @@ export function GeneralSettingsTab() {
             <Input
               id="domain"
               value={formData.domain}
-              onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+              onChange={e => setFormData({ ...formData, domain: e.target.value })}
             />
           </div>
 
           <div className="space-y-2">
             <Label>Current Plan</Label>
             <div className="flex items-center gap-2">
-              <Badge className={PLAN_COLORS[planKey]}>
-                {planKey}
-              </Badge>
+              <Badge className={PLAN_COLORS[planKey]}>{planKey}</Badge>
               {planKey !== 'ENTERPRISE' && (
-                <span className="text-sm text-muted-foreground">
-                  • Upgrade to {planKey === 'FREE' ? 'PRO or ENTERPRISE' : 'ENTERPRISE'} for more features
+                <span className="text-muted-foreground text-sm">
+                  • Upgrade to {planKey === 'FREE' ? 'PRO or ENTERPRISE' : 'ENTERPRISE'} for more
+                  features
                 </span>
               )}
             </div>
@@ -138,9 +143,7 @@ export function GeneralSettingsTab() {
       <Card>
         <CardHeader>
           <CardTitle>Branding</CardTitle>
-          <CardDescription>
-            Customize the appearance of your organization
-          </CardDescription>
+          <CardDescription>Customize the appearance of your organization</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -149,7 +152,7 @@ export function GeneralSettingsTab() {
               id="brandingCompanyName"
               placeholder="Your Company Name"
               value={formData.brandingCompanyName}
-              onChange={(e) => setFormData({ ...formData, brandingCompanyName: e.target.value })}
+              onChange={e => setFormData({ ...formData, brandingCompanyName: e.target.value })}
             />
           </div>
 
@@ -160,12 +163,12 @@ export function GeneralSettingsTab() {
                 id="brandingPrimaryColor"
                 type="color"
                 value={formData.brandingPrimaryColor}
-                onChange={(e) => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
-                className="w-20 h-10"
+                onChange={e => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
+                className="h-10 w-20"
               />
               <Input
                 value={formData.brandingPrimaryColor}
-                onChange={(e) => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
+                onChange={e => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
                 placeholder="#0066CC"
               />
             </div>
@@ -174,7 +177,7 @@ export function GeneralSettingsTab() {
           <div className="space-y-2">
             <Label htmlFor="logo">Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+              <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
                 <Upload className="h-8 w-8 text-gray-400" />
               </div>
               <div className="flex-1">
@@ -182,7 +185,7 @@ export function GeneralSettingsTab() {
                   <Upload className="mr-2 h-4 w-4" />
                   Upload Logo
                 </Button>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-muted-foreground mt-1 text-sm">
                   Coming Soon - Logo upload will be available in the next release
                 </p>
               </div>
@@ -194,22 +197,20 @@ export function GeneralSettingsTab() {
       <Card>
         <CardHeader>
           <CardTitle>Voice Agent Defaults</CardTitle>
-          <CardDescription>
-            Default settings for new voice agents
-          </CardDescription>
+          <CardDescription>Default settings for new voice agents</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="defaultAccent">Default Accent</Label>
             <Select
               value={formData.defaultAccent}
-              onValueChange={(value) => setFormData({ ...formData, defaultAccent: value })}
+              onValueChange={value => setFormData({ ...formData, defaultAccent: value })}
             >
               <SelectTrigger id="defaultAccent">
                 <SelectValue placeholder="Select default accent" />
               </SelectTrigger>
               <SelectContent>
-                {ACCENT_OPTIONS.map((accent) => (
+                {ACCENT_OPTIONS.map(accent => (
                   <SelectItem key={accent.value} value={accent.value}>
                     {accent.label}
                   </SelectItem>
@@ -217,9 +218,7 @@ export function GeneralSettingsTab() {
               </SelectContent>
             </Select>
             {selectedAccent && (
-              <p className="text-sm text-muted-foreground">
-                {selectedAccent.description}
-              </p>
+              <p className="text-muted-foreground text-sm">{selectedAccent.description}</p>
             )}
           </div>
         </CardContent>
@@ -235,4 +234,3 @@ export function GeneralSettingsTab() {
     </form>
   )
 }
-

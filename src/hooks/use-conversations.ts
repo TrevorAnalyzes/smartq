@@ -56,7 +56,10 @@ async function fetchConversation(id: string, organizationId: string): Promise<Co
 }
 
 // Create new conversation
-async function createConversation(data: Partial<Conversation>, organizationId: string): Promise<Conversation> {
+async function createConversation(
+  data: Partial<Conversation>,
+  organizationId: string
+): Promise<Conversation> {
   const response = await fetch(`/api/conversations?organizationId=${organizationId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -74,7 +77,7 @@ async function createConversation(data: Partial<Conversation>, organizationId: s
 async function updateConversation(
   id: string,
   data: Partial<Conversation>,
-  organizationId: string,
+  organizationId: string
 ): Promise<Conversation> {
   const response = await fetch(`/api/conversations/${id}?organizationId=${organizationId}`, {
     method: 'PATCH',
@@ -108,7 +111,7 @@ export function useConversations(filters?: {
   limit?: number
   offset?: number
 }) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useQuery({
@@ -139,7 +142,7 @@ export function useOrganizationConversations(
 
 // Hook to fetch single conversation
 export function useConversation(id: string) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useQuery({
@@ -152,7 +155,7 @@ export function useConversation(id: string) {
 // Hook to create conversation
 export function useCreateConversation() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
@@ -168,7 +171,7 @@ export function useCreateConversation() {
 // Hook to update conversation
 export function useUpdateConversation() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -188,7 +191,7 @@ export function useUpdateConversation() {
 // Hook to delete conversation
 export function useDeleteConversation() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id || 'demo-org-id'
 
   return useMutation({
@@ -200,4 +203,3 @@ export function useDeleteConversation() {
     },
   })
 }
-

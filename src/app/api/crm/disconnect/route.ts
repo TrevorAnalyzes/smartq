@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
       where: {
         organizationId_provider: {
           organizationId,
-          provider
-        }
-      }
+          provider,
+        },
+      },
     })
 
     if (!crmIntegration) {
@@ -34,37 +34,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete the integration and all associated data
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Delete CRM data
       await tx.cRMContact.deleteMany({
-        where: { organizationId, provider }
+        where: { organizationId, provider },
       })
 
       await tx.cRMDeal.deleteMany({
-        where: { organizationId, provider }
+        where: { organizationId, provider },
       })
 
       await tx.cRMCompany.deleteMany({
-        where: { organizationId, provider }
+        where: { organizationId, provider },
       })
 
       // Delete the integration
       await tx.cRMIntegration.delete({
-        where: { id: crmIntegration.id }
+        where: { id: crmIntegration.id },
       })
     })
 
     return NextResponse.json({
       success: true,
-      message: 'CRM disconnected successfully'
+      message: 'CRM disconnected successfully',
     })
-
   } catch (error) {
     console.error('CRM disconnect error:', error)
-    return NextResponse.json(
-      { error: 'Failed to disconnect CRM integration' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to disconnect CRM integration' }, { status: 500 })
   }
 }
-

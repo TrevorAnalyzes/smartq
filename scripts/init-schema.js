@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-
 'use strict'
 
 const { PrismaClient } = require('@prisma/client')
@@ -298,11 +297,10 @@ async function main() {
 }
 
 main()
-  .catch((error) => {
+  .catch(error => {
     console.error('Failed to initialize schema:', error)
     process.exit(1)
   })
   .finally(async () => {
     await prisma.$disconnect()
   })
-

@@ -1,7 +1,15 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 interface HourlyDistributionChartProps {
   data: Array<{
@@ -11,7 +19,7 @@ interface HourlyDistributionChartProps {
 }
 
 export function HourlyDistributionChart({ data }: HourlyDistributionChartProps) {
-  const chartData = data.map((item) => ({
+  const chartData = data.map(item => ({
     hour: `${item.hour.toString().padStart(2, '0')}:00`,
     calls: item.count,
   }))
@@ -26,7 +34,7 @@ export function HourlyDistributionChart({ data }: HourlyDistributionChartProps) 
       </CardHeader>
       <CardContent>
         {total === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="text-muted-foreground flex h-[300px] items-center justify-center">
             No hourly data available
           </div>
         ) : (
@@ -51,4 +59,3 @@ export function HourlyDistributionChart({ data }: HourlyDistributionChartProps) 
     </Card>
   )
 }
-

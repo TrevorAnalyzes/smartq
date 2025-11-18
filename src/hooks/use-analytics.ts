@@ -62,8 +62,12 @@ async function fetchAnalytics(
   return response.json()
 }
 
-export function useAnalytics(params?: { days?: number; agentId?: string; organizationId?: string }) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+export function useAnalytics(params?: {
+  days?: number
+  agentId?: string
+  organizationId?: string
+}) {
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = params?.organizationId || currentOrganization?.id
 
   return useQuery({
@@ -73,4 +77,3 @@ export function useAnalytics(params?: { days?: number; agentId?: string; organiz
     enabled: !!organizationId,
   })
 }
-

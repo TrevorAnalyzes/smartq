@@ -12,16 +12,16 @@ export class OpenAIRealtimeClient {
     this.onAudioResponse = options.onAudioResponse
     this.onTextResponse = options.onTextResponse
     this.onError = options.onError
-    
+
     this.ws = null
     this.isConnected = false
     this.sessionId = null
-    
+
     // OpenAI Realtime API configuration
     this.apiKey = process.env.OPENAI_API_KEY
     this.model = 'gpt-4o-realtime-preview-2024-10-01'
     this.voice = 'alloy'
-    
+
     if (!this.apiKey) {
       throw new Error('OPENAI_API_KEY environment variable is required')
     }
@@ -30,12 +30,12 @@ export class OpenAIRealtimeClient {
   async connect() {
     try {
       const url = 'wss://api.openai.com/v1/realtime?model=' + this.model
-      
+
       this.ws = new WebSocket(url, {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'OpenAI-Beta': 'realtime=v1'
-        }
+          Authorization: `Bearer ${this.apiKey}`,
+          'OpenAI-Beta': 'realtime=v1',
+        },
       })
 
       this.ws.on('open', () => {
@@ -44,7 +44,7 @@ export class OpenAIRealtimeClient {
         this.initializeSession()
       })
 
-      this.ws.on('message', (data) => {
+      this.ws.on('message', data => {
         this.handleMessage(data)
       })
 
@@ -53,7 +53,7 @@ export class OpenAIRealtimeClient {
         this.isConnected = false
       })
 
-      this.ws.on('error', (error) => {
+      this.ws.on('error', error => {
         logger.error('OpenAI Realtime WebSocket error', { error: error.message })
         this.isConnected = false
         if (this.onError) {
@@ -72,12 +72,11 @@ export class OpenAIRealtimeClient {
           resolve()
         })
 
-        this.ws.on('error', (error) => {
+        this.ws.on('error', error => {
           clearTimeout(timeout)
           reject(error)
         })
       })
-
     } catch (error) {
       logger.error('Failed to connect to OpenAI Realtime', { error: error.message })
       throw error
@@ -97,19 +96,19 @@ export class OpenAIRealtimeClient {
         input_audio_format: 'pcm16',
         output_audio_format: 'pcm16',
         input_audio_transcription: {
-          model: 'whisper-1'
+          model: 'whisper-1',
         },
         turn_detection: {
           type: 'server_vad',
           threshold: 0.5,
           prefix_padding_ms: 300,
-          silence_duration_ms: 200
+          silence_duration_ms: 200,
         },
         tools: [],
         tool_choice: 'auto',
         temperature: 0.8,
-        max_response_output_tokens: 4096
-      }
+        max_response_output_tokens: 4096,
+      },
     }
 
     this.sendMessage(sessionConfig)
@@ -118,42 +117,42 @@ export class OpenAIRealtimeClient {
   handleMessage(data) {
     try {
       const message = JSON.parse(data.toString())
-      
+
       switch (message.type) {
         case 'session.created':
           this.sessionId = message.session.id
           logger.info('OpenAI session created', { sessionId: this.sessionId })
           break
-          
+
         case 'response.audio.delta':
           if (this.onAudioResponse && message.delta) {
             const audioBuffer = Buffer.from(message.delta, 'base64')
             this.onAudioResponse(audioBuffer)
           }
           break
-          
+
         case 'response.text.delta':
           if (this.onTextResponse && message.delta) {
             this.onTextResponse(message.delta)
           }
           break
-          
+
         case 'conversation.item.input_audio_transcription.completed':
           if (message.transcript) {
-            logger.info('User transcript', { 
+            logger.info('User transcript', {
               transcript: message.transcript,
-              conversationId: this.conversationId 
+              conversationId: this.conversationId,
             })
           }
           break
-          
+
         case 'error':
           logger.error('OpenAI Realtime error', { error: message.error })
           if (this.onError) {
             this.onError(new Error(message.error.message))
           }
           break
-          
+
         default:
           logger.debug('OpenAI message', { type: message.type })
       }
@@ -170,7 +169,7 @@ export class OpenAIRealtimeClient {
 
     const message = {
       type: 'input_audio_buffer.append',
-      audio: audioBuffer.toString('base64')
+      audio: audioBuffer.toString('base64'),
     }
 
     this.sendMessage(message)

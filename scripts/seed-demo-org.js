@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-
 'use strict'
 
 const { PrismaClient } = require('@prisma/client')
@@ -12,13 +11,13 @@ async function ensureOrganizationColumns() {
   try {
     // New billing-related columns on Organization
     await prisma.$executeRawUnsafe(
-      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "stripeCustomerId" text',
+      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "stripeCustomerId" text'
     )
     await prisma.$executeRawUnsafe(
-      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "stripeSubscriptionId" text',
+      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "stripeSubscriptionId" text'
     )
     await prisma.$executeRawUnsafe(
-      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "monthlyCallLimit" integer',
+      'ALTER TABLE "Organization" ADD COLUMN IF NOT EXISTS "monthlyCallLimit" integer'
     )
 
     // UsageEvent table (for billing usage & analytics)
@@ -31,16 +30,16 @@ async function ensureOrganizationColumns() {
         '"createdAt" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,' +
         'CONSTRAINT "UsageEvent_organizationId_fkey" FOREIGN KEY ("organizationId") ' +
         'REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE' +
-      ')',
+        ')'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "UsageEvent_organizationId_idx" ON "UsageEvent"("organizationId")',
+      'CREATE INDEX IF NOT EXISTS "UsageEvent_organizationId_idx" ON "UsageEvent"("organizationId")'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "UsageEvent_type_idx" ON "UsageEvent"("type")',
+      'CREATE INDEX IF NOT EXISTS "UsageEvent_type_idx" ON "UsageEvent"("type")'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "UsageEvent_createdAt_idx" ON "UsageEvent"("createdAt")',
+      'CREATE INDEX IF NOT EXISTS "UsageEvent_createdAt_idx" ON "UsageEvent"("createdAt")'
     )
 
     // Activity table (for recent activity feed)
@@ -60,16 +59,16 @@ async function ensureOrganizationColumns() {
         '"createdAt" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,' +
         'CONSTRAINT "Activity_organizationId_fkey" FOREIGN KEY ("organizationId") ' +
         'REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE' +
-      ')',
+        ')'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "Activity_organizationId_idx" ON "Activity"("organizationId")',
+      'CREATE INDEX IF NOT EXISTS "Activity_organizationId_idx" ON "Activity"("organizationId")'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "Activity_type_idx" ON "Activity"("type")',
+      'CREATE INDEX IF NOT EXISTS "Activity_type_idx" ON "Activity"("type")'
     )
     await prisma.$executeRawUnsafe(
-      'CREATE INDEX IF NOT EXISTS "Activity_timestamp_idx" ON "Activity"("timestamp")',
+      'CREATE INDEX IF NOT EXISTS "Activity_timestamp_idx" ON "Activity"("timestamp")'
     )
   } catch (error) {
     console.error('Error ensuring Organization/UsageEvent/Activity schema:', error)
@@ -264,11 +263,10 @@ async function main() {
 }
 
 main()
-  .catch((error) => {
+  .catch(error => {
     console.error('Error while seeding demo data:', error)
     process.exit(1)
   })
   .finally(async () => {
     await prisma.$disconnect()
   })
-

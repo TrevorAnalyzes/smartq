@@ -20,7 +20,7 @@ export interface User {
 
 // Fetch all users (filtered by organization)
 export function useUsers(organizationId?: string) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const orgId = organizationId || currentOrganization?.id
 
   return useQuery({
@@ -40,7 +40,7 @@ export function useUsers(organizationId?: string) {
 
 // Fetch single user
 export function useUser(id: string) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useQuery({
@@ -92,7 +92,7 @@ export function useCreateUser() {
 // Update user
 export function useUpdateUser(id: string) {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -113,7 +113,7 @@ export function useUpdateUser(id: string) {
       }
       return response.json()
     },
-    onSuccess: (updatedUser) => {
+    onSuccess: updatedUser => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       queryClient.invalidateQueries({ queryKey: ['users', id] })
       queryClient.invalidateQueries({ queryKey: ['users', updatedUser.organizationId] })
@@ -124,7 +124,7 @@ export function useUpdateUser(id: string) {
 // Delete user
 export function useDeleteUser() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -148,4 +148,3 @@ export function useDeleteUser() {
     },
   })
 }
-

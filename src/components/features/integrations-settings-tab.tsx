@@ -15,7 +15,7 @@ import {
   Loader2,
   RefreshCw,
   Settings,
-  Plug
+  Plug,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrganizationStore } from '@/store/organization-store'
@@ -106,9 +106,9 @@ function CRMIntegrationCard({
   onConnect,
   onDisconnect,
   onSync,
-  isLoading
+  isLoading,
 }: {
-  provider: typeof CRM_PROVIDERS[0]
+  provider: (typeof CRM_PROVIDERS)[0]
   integration?: CRMIntegration
   onConnect: () => void
   onDisconnect: (provider: CRMProvider) => void
@@ -121,16 +121,16 @@ function CRMIntegrationCard({
     <Card>
       <CardContent className="pt-6">
         <div className="flex items-start gap-4">
-          <div className={`p-3 rounded-lg bg-gray-100 ${provider.color}`}>
+          <div className={`rounded-lg bg-gray-100 p-3 ${provider.color}`}>
             <Icon className="h-6 w-6" />
           </div>
           <div className="flex-1 space-y-3">
             <div>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="mb-1 flex items-center gap-2">
                 <h3 className="font-semibold">{provider.name}</h3>
                 {integration && getStatusBadge(integration.status)}
               </div>
-              <p className="text-sm text-muted-foreground">{provider.description}</p>
+              <p className="text-muted-foreground text-sm">{provider.description}</p>
             </div>
 
             {integration?.status === 'CONNECTED' && (
@@ -138,8 +138,8 @@ function CRMIntegrationCard({
                 <div>
                   <p className="text-muted-foreground">Last Sync</p>
                   <p className="font-medium">
-                    {integration.lastSync 
-                      ? new Date(integration.lastSync).toLocaleString() 
+                    {integration.lastSync
+                      ? new Date(integration.lastSync).toLocaleString()
                       : 'Never'}
                   </p>
                 </div>
@@ -197,7 +197,7 @@ function CRMIntegrationCard({
 }
 
 export function IntegrationsSettingsTab() {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const queryClient = useQueryClient()
   const [connectionDialog, setConnectionDialog] = useState<{
     open: boolean
@@ -206,7 +206,7 @@ export function IntegrationsSettingsTab() {
   }>({
     open: false,
     provider: null,
-    providerName: ''
+    providerName: '',
   })
 
   // Fetch CRM integrations
@@ -223,7 +223,13 @@ export function IntegrationsSettingsTab() {
 
   // Connect CRM mutation
   const connectMutation = useMutation({
-    mutationFn: async ({ provider, credentials }: { provider: CRMProvider; credentials: Record<string, string> }) => {
+    mutationFn: async ({
+      provider,
+      credentials,
+    }: {
+      provider: CRMProvider
+      credentials: Record<string, string>
+    }) => {
       const response = await fetch(`/api/crm/connect?organizationId=${currentOrganization?.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -250,13 +256,16 @@ export function IntegrationsSettingsTab() {
   // Disconnect CRM mutation
   const disconnectMutation = useMutation({
     mutationFn: async (provider: CRMProvider) => {
-      const response = await fetch(`/api/crm/disconnect?organizationId=${currentOrganization?.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider,
-        }),
-      })
+      const response = await fetch(
+        `/api/crm/disconnect?organizationId=${currentOrganization?.id}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider,
+          }),
+        }
+      )
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error || 'Failed to disconnect CRM')
@@ -288,7 +297,7 @@ export function IntegrationsSettingsTab() {
       }
       return response.json()
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['crm-integrations'] })
       toast.success(data.message || 'CRM sync completed successfully!')
     },
@@ -301,7 +310,7 @@ export function IntegrationsSettingsTab() {
     setConnectionDialog({
       open: true,
       provider,
-      providerName
+      providerName,
     })
   }
 
@@ -311,7 +320,7 @@ export function IntegrationsSettingsTab() {
     try {
       await connectMutation.mutateAsync({
         provider: connectionDialog.provider,
-        credentials
+        credentials,
       })
       setConnectionDialog({ open: false, provider: null, providerName: '' })
     } catch {
@@ -350,26 +359,26 @@ export function IntegrationsSettingsTab() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!currentOrganization ? (
-            <div className="text-center py-8">
-              <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Building2 className="w-6 h-6 text-muted-foreground" />
+            <div className="py-8 text-center">
+              <div className="bg-muted mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                <Building2 className="text-muted-foreground h-6 w-6" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Organization Required</h3>
+              <h3 className="mb-2 text-lg font-semibold">Organization Required</h3>
               <p className="text-muted-foreground">
                 Select an organization to manage CRM integrations
               </p>
             </div>
           ) : (
-            CRM_PROVIDERS.map((provider) => {
-              const integration = integrations?.find((i) => i.provider === provider.id)
+            CRM_PROVIDERS.map(provider => {
+              const integration = integrations?.find(i => i.provider === provider.id)
               return (
                 <CRMIntegrationCard
                   key={provider.id}
                   provider={provider}
                   integration={integration}
                   onConnect={() => handleConnect(provider.id, provider.name)}
-                  onDisconnect={(p) => disconnectMutation.mutate(p)}
-                  onSync={(p) => syncMutation.mutate(p)}
+                  onDisconnect={p => disconnectMutation.mutate(p)}
+                  onSync={p => syncMutation.mutate(p)}
                   isLoading={
                     connectMutation.isPending ||
                     disconnectMutation.isPending ||
@@ -386,7 +395,7 @@ export function IntegrationsSettingsTab() {
       {connectionDialog.provider && (
         <CRMConnectionDialog
           open={connectionDialog.open}
-          onOpenChange={(open) => setConnectionDialog(prev => ({ ...prev, open }))}
+          onOpenChange={open => setConnectionDialog(prev => ({ ...prev, open }))}
           provider={connectionDialog.provider}
           providerName={connectionDialog.providerName}
           onConnect={handleConnectionSubmit}
@@ -396,4 +405,3 @@ export function IntegrationsSettingsTab() {
     </div>
   )
 }
-

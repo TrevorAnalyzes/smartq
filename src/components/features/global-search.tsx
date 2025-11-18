@@ -34,7 +34,7 @@ export function GlobalSearch() {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen((open) => !open)
+        setOpen(open => !open)
       }
     }
 
@@ -42,12 +42,12 @@ export function GlobalSearch() {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
-  const filteredAgents = agents.filter((agent) =>
+  const filteredAgents = agents.filter(agent =>
     agent.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const filteredConversations = conversations.filter(
-    (conv) =>
+    conv =>
       conv.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.topic?.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -64,15 +64,15 @@ export function GlobalSearch() {
   return (
     <>
       <div className="relative hidden md:block">
-        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/70" />
+        <Search className="text-sidebar-foreground/70 absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           placeholder=""
           aria-label="Open global search"
-          className="w-64 pl-10 cursor-pointer bg-transparent text-sidebar-foreground border-sidebar-foreground/40 placeholder:text-transparent"
+          className="text-sidebar-foreground border-sidebar-foreground/40 w-64 cursor-pointer bg-transparent pl-10 placeholder:text-transparent"
           onClick={() => setOpen(true)}
           readOnly
         />
-        <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border border-sidebar-border bg-sidebar/80 px-1.5 font-mono text-[10px] font-medium text-sidebar-foreground/80 sm:flex">
+        <kbd className="border-sidebar-border bg-sidebar/80 text-sidebar-foreground/80 pointer-events-none absolute top-1/2 right-3 hidden h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium select-none sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </div>
@@ -88,7 +88,7 @@ export function GlobalSearch() {
 
           {filteredAgents.length > 0 && (
             <CommandGroup heading="Assistants">
-              {filteredAgents.slice(0, 5).map((agent) => (
+              {filteredAgents.slice(0, 5).map(agent => (
                 <CommandItem
                   key={agent.id}
                   onSelect={() => handleSelect(() => router.push('/agents'))}
@@ -105,7 +105,7 @@ export function GlobalSearch() {
 
           {filteredConversations.length > 0 && (
             <CommandGroup heading="Conversations">
-              {filteredConversations.slice(0, 5).map((conv) => (
+              {filteredConversations.slice(0, 5).map(conv => (
                 <CommandItem
                   key={conv.id}
                   onSelect={() => handleSelect(() => router.push('/conversations'))}
@@ -156,4 +156,3 @@ export function GlobalSearch() {
     </>
   )
 }
-
