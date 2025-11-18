@@ -31,11 +31,11 @@ export function AnalyticsSummary({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Conversations</CardTitle>
-          <Phone className="h-4 w-4 text-muted-foreground" />
+          <Phone className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalConversations.toLocaleString()}</div>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="mt-1 flex items-center gap-2">
             {trend > 0 ? (
               <>
                 <TrendingUp className="h-4 w-4 text-green-500" />
@@ -47,9 +47,9 @@ export function AnalyticsSummary({
                 <span className="text-xs text-red-500">{trend.toFixed(1)}%</span>
               </>
             ) : (
-              <span className="text-xs text-muted-foreground">No change</span>
+              <span className="text-muted-foreground text-xs">No change</span>
             )}
-            <span className="text-xs text-muted-foreground">vs previous period</span>
+            <span className="text-muted-foreground text-xs">vs previous period</span>
           </div>
         </CardContent>
       </Card>
@@ -59,11 +59,11 @@ export function AnalyticsSummary({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Call Duration</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatDuration(averageDuration)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Average across all calls</p>
+            <p className="text-muted-foreground mt-1 text-xs">Average across all calls</p>
           </CardContent>
         </Card>
       )}
@@ -73,11 +73,11 @@ export function AnalyticsSummary({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{successRate.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground mt-1">Completed successfully</p>
+            <p className="text-muted-foreground mt-1 text-xs">Completed successfully</p>
           </CardContent>
         </Card>
       )}
@@ -87,17 +87,17 @@ export function AnalyticsSummary({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Customer Satisfaction</CardTitle>
-            <ThumbsUp className="h-4 w-4 text-muted-foreground" />
+            <ThumbsUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{satisfactionRate.toFixed(1)}%</div>
             <div className="mt-1">
               {satisfactionRate >= 80 ? (
-                <Badge className="bg-green-100 text-green-800 border-green-200">Excellent</Badge>
+                <Badge className="border-green-200 bg-green-100 text-green-800">Excellent</Badge>
               ) : satisfactionRate >= 60 ? (
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200">Good</Badge>
+                <Badge className="border-blue-200 bg-blue-100 text-blue-800">Good</Badge>
               ) : (
-                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800">
                   Needs Improvement
                 </Badge>
               )}
@@ -108,4 +108,3 @@ export function AnalyticsSummary({
     </div>
   )
 }
-

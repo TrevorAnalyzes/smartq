@@ -1,14 +1,14 @@
 // Zoho CRM Provider Implementation
 
 import { BaseCRMProvider } from '../base-provider'
-import { 
-  CRMConfig, 
-  CRMContact, 
-  CRMDeal, 
-  CRMCompany, 
+import {
+  CRMConfig,
+  CRMContact,
+  CRMDeal,
+  CRMCompany,
   CRMApiResponse,
   WebhookEvent,
-  ZohoConfig 
+  ZohoConfig,
 } from '../types'
 import { prisma } from '@/lib/prisma'
 
@@ -58,8 +58,8 @@ export class ZohoProvider extends BaseCRMProvider {
           grant_type: 'refresh_token',
           client_id: this.zohoConfig.credentials.clientId,
           client_secret: this.zohoConfig.credentials.clientSecret,
-          refresh_token: this.zohoConfig.credentials.refreshToken
-        })
+          refresh_token: this.zohoConfig.credentials.refreshToken,
+        }),
       })
 
       if (response.ok) {
@@ -80,7 +80,7 @@ export class ZohoProvider extends BaseCRMProvider {
       if (cursor) params.page_token = cursor
 
       const response = await this.makeRequest('/Contacts', params)
-      
+
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
       }
@@ -94,8 +94,8 @@ export class ZohoProvider extends BaseCRMProvider {
         pagination: {
           hasMore: data.info?.more_records || false,
           nextCursor: data.info?.next_page_token,
-          total: data.info?.count
-        }
+          total: data.info?.count,
+        },
       }
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
@@ -111,7 +111,7 @@ export class ZohoProvider extends BaseCRMProvider {
       }
 
       const data = await response.json()
-      
+
       if (!data.data || data.data.length === 0) {
         return { success: false, error: 'Contact not found' }
       }
@@ -132,7 +132,7 @@ export class ZohoProvider extends BaseCRMProvider {
       }
 
       const data = await response.json()
-      
+
       if (!data.data || data.data.length === 0 || data.data[0].status !== 'success') {
         return { success: false, error: data.data?.[0]?.message || 'Failed to create contact' }
       }
@@ -144,7 +144,10 @@ export class ZohoProvider extends BaseCRMProvider {
     }
   }
 
-  async updateContact(id: string, contact: Partial<CRMContact>): Promise<CRMApiResponse<CRMContact>> {
+  async updateContact(
+    id: string,
+    contact: Partial<CRMContact>
+  ): Promise<CRMApiResponse<CRMContact>> {
     try {
       const zohoData = this.mapToZohoContact(contact)
       zohoData.id = id
@@ -155,7 +158,7 @@ export class ZohoProvider extends BaseCRMProvider {
       }
 
       const data = await response.json()
-      
+
       if (!data.data || data.data.length === 0 || data.data[0].status !== 'success') {
         return { success: false, error: data.data?.[0]?.message || 'Failed to update contact' }
       }
@@ -170,17 +173,17 @@ export class ZohoProvider extends BaseCRMProvider {
   async deleteContact(id: string): Promise<CRMApiResponse<void>> {
     try {
       const response = await this.makeRequest(`/Contacts/${id}`, {}, 'DELETE')
-      
+
       if (!response.ok) {
         return { success: false, error: `HTTP ${response.status}` }
       }
 
       const data = await response.json()
       const success = data.data?.[0]?.status === 'success'
-      
-      return { 
-        success, 
-        error: success ? undefined : (data.data?.[0]?.message || 'Failed to delete contact')
+
+      return {
+        success,
+        error: success ? undefined : data.data?.[0]?.message || 'Failed to delete contact',
       }
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
@@ -188,9 +191,14 @@ export class ZohoProvider extends BaseCRMProvider {
   }
 
   // Helper methods
-  private async makeRequest(endpoint: string, params?: any, method = 'GET', body?: any): Promise<Response> {
+  private async makeRequest(
+    endpoint: string,
+    params?: any,
+    method = 'GET',
+    body?: any
+  ): Promise<Response> {
     const url = new URL(this.baseUrl + endpoint)
-    
+
     if (params && method === 'GET') {
       Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     }
@@ -198,10 +206,10 @@ export class ZohoProvider extends BaseCRMProvider {
     const options: RequestInit = {
       method,
       headers: {
-        'Authorization': `Zoho-oauthtoken ${this.zohoConfig.credentials.accessToken}`,
+        Authorization: `Zoho-oauthtoken ${this.zohoConfig.credentials.accessToken}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+        Accept: 'application/json',
+      },
     }
 
     if (body && method !== 'GET') {
@@ -217,37 +225,39 @@ export class ZohoProvider extends BaseCRMProvider {
       email: zohoContact.Email || '',
       firstName: zohoContact.First_Name || '',
       lastName: zohoContact.Last_Name || '',
-      fullName: zohoContact.Full_Name || `${zohoContact.First_Name || ''} ${zohoContact.Last_Name || ''}`.trim(),
+      fullName:
+        zohoContact.Full_Name ||
+        `${zohoContact.First_Name || ''} ${zohoContact.Last_Name || ''}`.trim(),
       phone: zohoContact.Phone || zohoContact.Mobile || '',
       company: zohoContact.Account_Name?.name || '',
       jobTitle: zohoContact.Title || '',
       createdAt: new Date(zohoContact.Created_Time),
       updatedAt: new Date(zohoContact.Modified_Time),
-      customFields: zohoContact
+      customFields: zohoContact,
     }
   }
 
   private mapToZohoContact(contact: Partial<CRMContact>): any {
     const zohoData: any = {}
-    
+
     if (contact.email) zohoData.Email = contact.email
     if (contact.firstName) zohoData.First_Name = contact.firstName
     if (contact.lastName) zohoData.Last_Name = contact.lastName
     if (contact.phone) zohoData.Phone = contact.phone
     if (contact.jobTitle) zohoData.Title = contact.jobTitle
-    
+
     return zohoData
   }
 
   // Storage method
   protected async storeContact(contact: CRMContact): Promise<void> {
     await prisma.cRMContact.upsert({
-      where: { 
+      where: {
         organizationId_provider_externalId: {
           organizationId: this.organizationId,
           provider: 'ZOHO',
-          externalId: contact.id
-        }
+          externalId: contact.id,
+        },
       },
       update: {
         email: contact.email,
@@ -258,7 +268,7 @@ export class ZohoProvider extends BaseCRMProvider {
         company: contact.company,
         jobTitle: contact.jobTitle,
         customFields: contact.customFields,
-        updatedAt: contact.updatedAt
+        updatedAt: contact.updatedAt,
       },
       create: {
         organizationId: this.organizationId,
@@ -273,26 +283,58 @@ export class ZohoProvider extends BaseCRMProvider {
         jobTitle: contact.jobTitle,
         customFields: contact.customFields,
         createdAt: contact.createdAt,
-        updatedAt: contact.updatedAt
-      }
+        updatedAt: contact.updatedAt,
+      },
     })
   }
 
   // Placeholder implementations
-  async getDeals(): Promise<CRMApiResponse<CRMDeal[]>> { return { success: true, data: [] } }
-  async getDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async createDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async updateDeal(): Promise<CRMApiResponse<CRMDeal>> { throw new Error('Not implemented') }
-  async deleteDeal(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  async getCompanies(): Promise<CRMApiResponse<CRMCompany[]>> { return { success: true, data: [] } }
-  async getCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async createCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async updateCompany(): Promise<CRMApiResponse<CRMCompany>> { throw new Error('Not implemented') }
-  async deleteCompany(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  async setupWebhook(): Promise<CRMApiResponse<{ webhookId: string }>> { throw new Error('Not implemented') }
-  async removeWebhook(): Promise<CRMApiResponse<void>> { throw new Error('Not implemented') }
-  validateWebhook(): boolean { return false }
-  parseWebhookEvent(): WebhookEvent | null { return null }
-  protected async storeDeal(): Promise<void> { /* TODO: Implement */ }
-  protected async storeCompany(): Promise<void> { /* TODO: Implement */ }
+  async getDeals(): Promise<CRMApiResponse<CRMDeal[]>> {
+    return { success: true, data: [] }
+  }
+  async getDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async createDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async updateDeal(): Promise<CRMApiResponse<CRMDeal>> {
+    throw new Error('Not implemented')
+  }
+  async deleteDeal(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  async getCompanies(): Promise<CRMApiResponse<CRMCompany[]>> {
+    return { success: true, data: [] }
+  }
+  async getCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async createCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async updateCompany(): Promise<CRMApiResponse<CRMCompany>> {
+    throw new Error('Not implemented')
+  }
+  async deleteCompany(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  async setupWebhook(): Promise<CRMApiResponse<{ webhookId: string }>> {
+    throw new Error('Not implemented')
+  }
+  async removeWebhook(): Promise<CRMApiResponse<void>> {
+    throw new Error('Not implemented')
+  }
+  validateWebhook(): boolean {
+    return false
+  }
+  parseWebhookEvent(): WebhookEvent | null {
+    return null
+  }
+  protected async storeDeal(): Promise<void> {
+    /* TODO: Implement */
+  }
+  protected async storeCompany(): Promise<void> {
+    /* TODO: Implement */
+  }
 }

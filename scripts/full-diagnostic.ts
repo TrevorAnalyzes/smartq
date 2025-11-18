@@ -55,26 +55,32 @@ async function runDiagnostics() {
 
 async function checkEnvironmentVariables() {
   const requiredVars = {
-    'Database': ['DATABASE_URL', 'DIRECT_URL'],
+    Database: ['DATABASE_URL', 'DIRECT_URL'],
     'Next.js': ['NEXT_PUBLIC_APP_URL', 'NODE_ENV'],
-    'Twilio': ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_PHONE_NUMBER', 'TWILIO_WEBHOOK_BASE_URL', 'TWILIO_MEDIA_STREAM_URL'],
-    'OpenAI': ['OPENAI_API_KEY']
+    Twilio: [
+      'TWILIO_ACCOUNT_SID',
+      'TWILIO_AUTH_TOKEN',
+      'TWILIO_PHONE_NUMBER',
+      'TWILIO_WEBHOOK_BASE_URL',
+      'TWILIO_MEDIA_STREAM_URL',
+    ],
+    OpenAI: ['OPENAI_API_KEY'],
   }
 
-  for (const [category, vars] of Object.entries(requiredVars)) {
+  for (const vars of Object.values(requiredVars)) {
     for (const varName of vars) {
       const value = process.env[varName]
       if (value && value !== 'your_openai_api_key_here') {
         logResult({
           category: 'Environment',
           status: 'pass',
-          message: `${varName} is set`
+          message: `${varName} is set`,
         })
       } else {
         logResult({
           category: 'Environment',
           status: 'fail',
-          message: `${varName} is missing or placeholder`
+          message: `${varName} is missing or placeholder`,
         })
       }
     }
@@ -92,7 +98,7 @@ async function checkDatabase() {
       logResult({
         category: 'Database',
         status: 'pass',
-        message: 'Database connection successful'
+        message: 'Database connection successful',
       })
 
       // Check tables
@@ -105,15 +111,14 @@ async function checkDatabase() {
         category: 'Database',
         status: 'pass',
         message: 'Database schema verified',
-        details: { organizations, agents, conversations, users }
+        details: { organizations, agents, conversations, users },
       })
-
     } catch (error: any) {
       logResult({
         category: 'Database',
         status: 'fail',
         message: 'Database connection failed',
-        details: error.message
+        details: error.message,
       })
     } finally {
       await prisma.$disconnect()
@@ -123,7 +128,7 @@ async function checkDatabase() {
       category: 'Database',
       status: 'fail',
       message: 'Prisma client error',
-      details: error.message
+      details: error.message,
     })
   }
 }
@@ -137,7 +142,7 @@ async function checkBackendAPIs() {
     { name: 'Conversations API', url: '/api/conversations?organizationId=org-techcorp-uk' },
     { name: 'Users API', url: '/api/users' },
     { name: 'Activities API', url: '/api/activities' },
-    { name: 'Twilio Status', url: '/api/twilio/status' }
+    { name: 'Twilio Status', url: '/api/twilio/status' },
   ]
 
   for (const endpoint of endpoints) {
@@ -149,14 +154,14 @@ async function checkBackendAPIs() {
         logResult({
           category: 'API',
           status: 'pass',
-          message: `${endpoint.name} - Status ${response.status}`
+          message: `${endpoint.name} - Status ${response.status}`,
         })
       } else {
         logResult({
           category: 'API',
           status: 'warning',
           message: `${endpoint.name} - Status ${response.status}`,
-          details: data.error || data
+          details: data.error || data,
         })
       }
     } catch (error: any) {
@@ -164,7 +169,7 @@ async function checkBackendAPIs() {
         category: 'API',
         status: 'fail',
         message: `${endpoint.name} - Connection failed`,
-        details: error.message
+        details: error.message,
       })
     }
   }
@@ -175,30 +180,27 @@ async function checkExternalServices() {
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
     try {
       const twilio = await import('twilio')
-      const client = twilio.default(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN
-      )
+      const client = twilio.default(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
 
       const account = await client.api.accounts(process.env.TWILIO_ACCOUNT_SID).fetch()
       logResult({
         category: 'External Services',
         status: 'pass',
-        message: `Twilio - Account verified (${account.status})`
+        message: `Twilio - Account verified (${account.status})`,
       })
     } catch (error: any) {
       logResult({
         category: 'External Services',
         status: 'fail',
         message: 'Twilio - Authentication failed',
-        details: error.message
+        details: error.message,
       })
     }
   } else {
     logResult({
       category: 'External Services',
       status: 'warning',
-      message: 'Twilio - Credentials not configured'
+      message: 'Twilio - Credentials not configured',
     })
   }
 
@@ -207,13 +209,13 @@ async function checkExternalServices() {
     logResult({
       category: 'External Services',
       status: 'warning',
-      message: 'OpenAI - API key set (not validated)'
+      message: 'OpenAI - API key set (not validated)',
     })
   } else {
     logResult({
       category: 'External Services',
       status: 'fail',
-      message: 'OpenAI - API key missing or placeholder'
+      message: 'OpenAI - API key missing or placeholder',
     })
   }
 }
@@ -232,17 +234,21 @@ function printSummary() {
 
   if (failed > 0) {
     console.log('🔴 CRITICAL ISSUES:\n')
-    results.filter(r => r.status === 'fail').forEach(r => {
-      console.log(`   • ${r.message}`)
-    })
+    results
+      .filter(r => r.status === 'fail')
+      .forEach(r => {
+        console.log(`   • ${r.message}`)
+      })
     console.log('')
   }
 
   if (warnings > 0) {
     console.log('⚠️  WARNINGS:\n')
-    results.filter(r => r.status === 'warning').forEach(r => {
-      console.log(`   • ${r.message}`)
-    })
+    results
+      .filter(r => r.status === 'warning')
+      .forEach(r => {
+        console.log(`   • ${r.message}`)
+      })
     console.log('')
   }
 
@@ -250,4 +256,3 @@ function printSummary() {
 }
 
 runDiagnostics().catch(console.error)
-

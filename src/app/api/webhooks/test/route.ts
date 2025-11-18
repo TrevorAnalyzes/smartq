@@ -6,10 +6,7 @@ export async function POST(request: NextRequest) {
     const { webhookUrl, organizationId } = body
 
     if (!webhookUrl) {
-      return NextResponse.json(
-        { error: 'Webhook URL is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Webhook URL is required' }, { status: 400 })
     }
 
     // Create a test payload
@@ -36,7 +33,7 @@ export async function POST(request: NextRequest) {
 
       if (!response.ok) {
         return NextResponse.json(
-          { 
+          {
             error: 'Webhook endpoint returned an error',
             status: response.status,
             statusText: response.statusText,
@@ -59,10 +56,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error testing webhook:', error)
-    return NextResponse.json(
-      { error: 'Failed to test webhook' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to test webhook' }, { status: 500 })
   }
 }
-

@@ -37,10 +37,7 @@ async function testTwilioCall() {
   console.log('2️⃣ Twilio Client Initialization:')
   try {
     const twilio = await import('twilio')
-    const client = twilio.default(
-      process.env.TWILIO_ACCOUNT_SID!,
-      process.env.TWILIO_AUTH_TOKEN!
-    )
+    const client = twilio.default(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!)
     console.log('   ✅ Twilio client initialized successfully\n')
 
     // 3. Verify Twilio Account
@@ -59,18 +56,20 @@ async function testTwilioCall() {
     console.log('4️⃣ Verifying Twilio Phone Number:')
     try {
       const phoneNumbers = await client.incomingPhoneNumbers.list({ limit: 20 })
-      const myNumber = phoneNumbers.find(
-        (num) => num.phoneNumber === process.env.TWILIO_PHONE_NUMBER
-      )
+      const myNumber = phoneNumbers.find(num => num.phoneNumber === process.env.TWILIO_PHONE_NUMBER)
 
       if (myNumber) {
         console.log(`   ✅ Phone Number: ${myNumber.phoneNumber}`)
         console.log(`   ✅ Friendly Name: ${myNumber.friendlyName}`)
-        console.log(`   ✅ Capabilities: Voice=${myNumber.capabilities.voice}, SMS=${myNumber.capabilities.sms}\n`)
+        console.log(
+          `   ✅ Capabilities: Voice=${myNumber.capabilities.voice}, SMS=${myNumber.capabilities.sms}\n`
+        )
       } else {
-        console.log(`   ⚠️  Phone number ${process.env.TWILIO_PHONE_NUMBER} not found in your account`)
+        console.log(
+          `   ⚠️  Phone number ${process.env.TWILIO_PHONE_NUMBER} not found in your account`
+        )
         console.log(`   Available numbers:`)
-        phoneNumbers.forEach((num) => {
+        phoneNumbers.forEach(num => {
           console.log(`      - ${num.phoneNumber} (${num.friendlyName})`)
         })
         console.log('')
@@ -82,12 +81,12 @@ async function testTwilioCall() {
     // 5. Test Call API Endpoint
     console.log('5️⃣ Testing Call API Endpoint:')
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    
+
     // First, get an agent ID
     try {
       const agentsResponse = await fetch(`${baseUrl}/api/agents?organizationId=org-techcorp-uk`)
       const agentsData = await agentsResponse.json()
-      
+
       if (agentsData.agents && agentsData.agents.length > 0) {
         const testAgent = agentsData.agents[0]
         console.log(`   ✅ Found test agent: ${testAgent.name} (${testAgent.id})\n`)
@@ -95,7 +94,7 @@ async function testTwilioCall() {
         // Now test the call endpoint
         console.log('6️⃣ Simulating Test Call:')
         console.log('   📞 Attempting to initiate call...')
-        
+
         const testPhoneNumber = '+447700900123' // UK test number
         console.log(`   📱 Test phone number: ${testPhoneNumber}`)
         console.log(`   🤖 Agent: ${testAgent.name}`)
@@ -132,7 +131,6 @@ async function testTwilioCall() {
     } catch (error: any) {
       console.log(`   ❌ API test failed: ${error.message}\n`)
     }
-
   } catch (error: any) {
     console.log(`   ❌ Failed to initialize Twilio client: ${error.message}\n`)
   }
@@ -141,4 +139,3 @@ async function testTwilioCall() {
 }
 
 testTwilioCall().catch(console.error)
-

@@ -37,7 +37,7 @@ const getPageTitle = (pathname: string, organizationName?: string) => {
 
 export function DashboardHeader() {
   const pathname = usePathname()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const pageTitle = getPageTitle(pathname, currentOrganization?.name)
 
   // Check if we're on an organization-specific page
@@ -57,7 +57,7 @@ export function DashboardHeader() {
   }
 
   return (
-    <header className="bg-sidebar text-sidebar-foreground sticky top-0 z-50 w-full border-b border-sidebar-border">
+    <header className="bg-sidebar text-sidebar-foreground border-sidebar-border sticky top-0 z-50 w-full border-b">
       <div className="flex h-14 items-center gap-4 px-6">
         {/* Page Title */}
         <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center gap-2 px-3 text-sidebar-foreground hover:bg-sidebar-accent/60"
+                className="text-sidebar-foreground hover:bg-sidebar-accent/60 flex items-center gap-2 px-3"
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder-avatar.jpg" alt="User" />

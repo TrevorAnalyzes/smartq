@@ -16,7 +16,7 @@ async function fetchDashboardMetrics(organizationId: string): Promise<DashboardM
 }
 
 export function useDashboardMetrics(orgId?: string) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = orgId || currentOrganization?.id || 'demo-org-id'
 
   return useQuery({
@@ -26,4 +26,3 @@ export function useDashboardMetrics(orgId?: string) {
     enabled: !!organizationId,
   })
 }
-

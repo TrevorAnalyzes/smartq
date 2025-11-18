@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     if (!webhookBaseUrl || !fromNumber) {
       return NextResponse.json(
         { error: 'Twilio webhook base URL or phone number not configured' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         conversationId: conversation.id,
         callSid: call.sid,
       },
-      { status: 201 },
+      { status: 201 }
     )
   } catch (error) {
     console.error('Calls POST Error:', error)
@@ -80,4 +80,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to initiate call' }, { status: 500 })
   }
 }
-

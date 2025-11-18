@@ -19,14 +19,14 @@ async function main() {
 
   console.log('✅ Database cleared successfully!')
   console.log('\n📊 Summary:')
-  console.log('   All organizations, users, agents, conversations, and activities have been removed.')
+  console.log(
+    '   All organizations, users, agents, conversations, and activities have been removed.'
+  )
   console.log('   The database is now ready for real data.')
   console.log('\n🎉 You can now start using the system with real data!')
   console.log('   Run: npm run dev')
   console.log('   Open: http://localhost:3000')
   console.log('\n💡 Create your first organization and agents through the UI.')
-
-
 }
 
 main()
@@ -37,4 +37,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
-

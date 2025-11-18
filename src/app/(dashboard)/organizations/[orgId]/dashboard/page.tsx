@@ -15,9 +15,9 @@ export default function OrganizationDashboardPage() {
   const params = useParams()
   const orgId = params.orgId as string
 
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
-  const switchOrganization = useOrganizationStore((state) => state.switchOrganization)
-  
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
+  const switchOrganization = useOrganizationStore(state => state.switchOrganization)
+
   const { data: orgData, isLoading, error } = useOrganization(orgId)
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function OrganizationDashboardPage() {
       <div className="space-y-6">
         <Skeleton className="h-32 w-full" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-32 w-full" />
           ))}
         </div>
@@ -63,41 +63,41 @@ export default function OrganizationDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Team Members</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{organization._count?.users || 0}</div>
-            <p className="text-xs text-muted-foreground">Active users in organization</p>
+            <p className="text-muted-foreground text-xs">Active users in organization</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Voice Agents</CardTitle>
-            <Bot className="h-4 w-4 text-muted-foreground" />
+            <Bot className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{organization._count?.voiceAgents || 0}</div>
-            <p className="text-xs text-muted-foreground">Deployed AI agents</p>
+            <p className="text-muted-foreground text-xs">Deployed AI agents</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Conversations</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <MessageSquare className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{organization._count?.conversations || 0}</div>
-            <p className="text-xs text-muted-foreground">Total conversations</p>
+            <p className="text-muted-foreground text-xs">Total conversations</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">94.2%</div>
-            <p className="text-xs text-muted-foreground">Overall performance</p>
+            <p className="text-muted-foreground text-xs">Overall performance</p>
           </CardContent>
         </Card>
       </div>
@@ -111,4 +111,3 @@ export default function OrganizationDashboardPage() {
     </div>
   )
 }
-

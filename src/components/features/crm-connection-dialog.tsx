@@ -1,11 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
 import { CRMProvider } from '@/lib/crm/types'
 
@@ -24,7 +36,7 @@ export function CRMConnectionDialog({
   provider,
   providerName,
   onConnect,
-  isLoading
+  isLoading,
 }: CRMConnectionDialogProps) {
   const [credentials, setCredentials] = useState<Record<string, string>>({})
 
@@ -49,10 +61,10 @@ export function CRMConnectionDialog({
                 type="password"
                 placeholder="Enter your HubSpot API key"
                 value={credentials.apiKey || ''}
-                onChange={(e) => updateCredential('apiKey', e.target.value)}
+                onChange={e => updateCredential('apiKey', e.target.value)}
                 required
               />
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Get your API key from HubSpot Settings → Integrations → API key
               </p>
             </div>
@@ -69,7 +81,7 @@ export function CRMConnectionDialog({
                 type="password"
                 placeholder="Enter your Pipedrive API token"
                 value={credentials.apiToken || ''}
-                onChange={(e) => updateCredential('apiToken', e.target.value)}
+                onChange={e => updateCredential('apiToken', e.target.value)}
                 required
               />
             </div>
@@ -79,10 +91,10 @@ export function CRMConnectionDialog({
                 id="companyDomain"
                 placeholder="your-company"
                 value={credentials.companyDomain || ''}
-                onChange={(e) => updateCredential('companyDomain', e.target.value)}
+                onChange={e => updateCredential('companyDomain', e.target.value)}
                 required
               />
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Your Pipedrive domain (e.g., "your-company" from your-company.pipedrive.com)
               </p>
             </div>
@@ -92,9 +104,10 @@ export function CRMConnectionDialog({
       case 'SALESFORCE':
         return (
           <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="rounded-lg bg-blue-50 p-4">
               <p className="text-sm text-blue-800">
-                Salesforce uses OAuth2 authentication. You'll be redirected to Salesforce to authorize the connection.
+                Salesforce uses OAuth2 authentication. You'll be redirected to Salesforce to
+                authorize the connection.
               </p>
             </div>
             <div>
@@ -103,7 +116,7 @@ export function CRMConnectionDialog({
                 id="clientId"
                 placeholder="Enter your Salesforce Client ID"
                 value={credentials.clientId || ''}
-                onChange={(e) => updateCredential('clientId', e.target.value)}
+                onChange={e => updateCredential('clientId', e.target.value)}
                 required
               />
             </div>
@@ -114,7 +127,7 @@ export function CRMConnectionDialog({
                 type="password"
                 placeholder="Enter your Salesforce Client Secret"
                 value={credentials.clientSecret || ''}
-                onChange={(e) => updateCredential('clientSecret', e.target.value)}
+                onChange={e => updateCredential('clientSecret', e.target.value)}
                 required
               />
             </div>
@@ -124,9 +137,10 @@ export function CRMConnectionDialog({
       case 'ZOHO':
         return (
           <div className="space-y-4">
-            <div className="p-4 bg-purple-50 rounded-lg">
+            <div className="rounded-lg bg-purple-50 p-4">
               <p className="text-sm text-purple-800">
-                Zoho CRM uses OAuth2 authentication. You'll be redirected to Zoho to authorize the connection.
+                Zoho CRM uses OAuth2 authentication. You'll be redirected to Zoho to authorize the
+                connection.
               </p>
             </div>
             <div>
@@ -135,7 +149,7 @@ export function CRMConnectionDialog({
                 id="clientId"
                 placeholder="Enter your Zoho Client ID"
                 value={credentials.clientId || ''}
-                onChange={(e) => updateCredential('clientId', e.target.value)}
+                onChange={e => updateCredential('clientId', e.target.value)}
                 required
               />
             </div>
@@ -146,13 +160,16 @@ export function CRMConnectionDialog({
                 type="password"
                 placeholder="Enter your Zoho Client Secret"
                 value={credentials.clientSecret || ''}
-                onChange={(e) => updateCredential('clientSecret', e.target.value)}
+                onChange={e => updateCredential('clientSecret', e.target.value)}
                 required
               />
             </div>
             <div>
               <Label htmlFor="region">Region</Label>
-              <Select value={credentials.region || 'com'} onValueChange={(value) => updateCredential('region', value)}>
+              <Select
+                value={credentials.region || 'com'}
+                onValueChange={value => updateCredential('region', value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select your Zoho region" />
                 </SelectTrigger>

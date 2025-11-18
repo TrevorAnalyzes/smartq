@@ -24,4 +24,3 @@ export function hasFeature(plan: Plan, feature: FeatureKey): boolean {
 
   return false
 }
-

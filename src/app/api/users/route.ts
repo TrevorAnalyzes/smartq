@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     const totalCount = await prisma.user.count({ where })
 
     // Transform data to match frontend format
-    const transformedUsers = users.map((user) => ({
+    const transformedUsers = users.map(user => ({
       id: user.id,
       email: user.email,
       name: user.name,
@@ -149,4 +149,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
   }
 }
-

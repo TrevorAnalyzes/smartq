@@ -1,7 +1,16 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts'
 
 interface StatusDistributionChartProps {
   data: Array<{
@@ -21,7 +30,7 @@ const COLORS = {
 }
 
 export function StatusDistributionChart({ data }: StatusDistributionChartProps) {
-  const chartData = data.map((item) => ({
+  const chartData = data.map(item => ({
     name: item.status.charAt(0).toUpperCase() + item.status.slice(1),
     count: item.count,
     status: item.status,
@@ -37,7 +46,7 @@ export function StatusDistributionChart({ data }: StatusDistributionChartProps) 
       </CardHeader>
       <CardContent>
         {total === 0 ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="text-muted-foreground flex h-[300px] items-center justify-center">
             No status data available
           </div>
         ) : (
@@ -62,4 +71,3 @@ export function StatusDistributionChart({ data }: StatusDistributionChartProps) 
     </Card>
   )
 }
-

@@ -116,89 +116,96 @@ export function AgentsList() {
                   </TableCell>
                 </TableRow>
               ) : (
-              filteredAgents.map(agent => (
-                <TableRow key={agent.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>{agent.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{agent.name}</p>
-                        <p className="text-muted-foreground text-sm">{agent.description || 'AI Assistant'}</p>
+                filteredAgents.map(agent => (
+                  <TableRow key={agent.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>{agent.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{agent.name}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {agent.description || 'AI Assistant'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getStatusBadge(agent.status)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-brand-secondary border-brand-secondary">
-                      {agent.accentType?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'British RP'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Phone className="h-3 w-3" />
-                      {agent.phoneNumber || 'Not set'}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="text-muted-foreground h-3 w-3" />
-                      {(agent as VoiceAgentWithCount)._count?.conversations || 0}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {formatDistanceToNow(new Date(agent.updatedAt), { addSuffix: true })}
-                  </TableCell>
-                  <TableCell>
-                    <CallDialog agentId={agent.id} agentName={agent.name}>
-                      <Button variant="outline" size="sm">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Test Call
-                      </Button>
-                    </CallDialog>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
+                    </TableCell>
+                    <TableCell>{getStatusBadge(agent.status)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="text-brand-secondary border-brand-secondary"
+                      >
+                        {agent.accentType
+                          ?.replace(/-/g, ' ')
+                          .replace(/\b\w/g, l => l.toUpperCase()) || 'British RP'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Phone className="h-3 w-3" />
+                        {agent.phoneNumber || 'Not set'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="text-muted-foreground h-3 w-3" />
+                        {(agent as VoiceAgentWithCount)._count?.conversations || 0}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {formatDistanceToNow(new Date(agent.updatedAt), { addSuffix: true })}
+                    </TableCell>
+                    <TableCell>
+                      <CallDialog agentId={agent.id} agentName={agent.name}>
+                        <Button variant="outline" size="sm">
+                          <Phone className="mr-2 h-4 w-4" />
+                          Test Call
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <CallDialog agentId={agent.id} agentName={agent.name}>
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <Phone className="mr-2 h-4 w-4" />
-                            Test Call
+                      </CallDialog>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <CallDialog agentId={agent.id} agentName={agent.name}>
+                            <DropdownMenuItem onSelect={e => e.preventDefault()}>
+                              <Phone className="mr-2 h-4 w-4" />
+                              Test Call
+                            </DropdownMenuItem>
+                          </CallDialog>
+                          <DropdownMenuItem>
+                            <Play className="mr-2 h-4 w-4" />
+                            Start Agent
                           </DropdownMenuItem>
-                        </CallDialog>
-                        <DropdownMenuItem>
-                          <Play className="mr-2 h-4 w-4" />
-                          Start Agent
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pause className="mr-2 h-4 w-4" />
-                          Pause Agent
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Settings className="mr-2 h-4 w-4" />
-                          Configure
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Agent
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                          <DropdownMenuItem>
+                            <Pause className="mr-2 h-4 w-4" />
+                            Pause Agent
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Settings className="mr-2 h-4 w-4" />
+                            Configure
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Agent
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>

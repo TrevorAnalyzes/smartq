@@ -91,9 +91,9 @@ export interface CRMIntegration {
 }
 
 // Webhook Event Types
-export type WebhookEventType = 
+export type WebhookEventType =
   | 'contact.created'
-  | 'contact.updated' 
+  | 'contact.updated'
   | 'contact.deleted'
   | 'deal.created'
   | 'deal.updated'

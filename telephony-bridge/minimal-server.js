@@ -6,25 +6,25 @@ const app = express()
 const server = createServer(app)
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   console.log('Health check requested')
-  res.json({ 
-    status: 'healthy', 
+  res.json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    service: 'smartq-telephony-bridge'
+    service: 'smartq-telephony-bridge',
   })
 })
 
 // WebSocket server
-const wss = new WebSocketServer({ 
+const wss = new WebSocketServer({
   server,
-  path: '/twilio-stream'
+  path: '/twilio-stream',
 })
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', (ws, _req) => {
   console.log('WebSocket connection established')
-  
-  ws.on('message', (message) => {
+
+  ws.on('message', message => {
     console.log('Received message:', message.toString().substring(0, 100))
   })
 

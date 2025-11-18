@@ -10,16 +10,13 @@ export async function GET(request: NextRequest) {
     const organizationId = getOrganizationIdFromRequest(request)
 
     if (!organizationId) {
-      return NextResponse.json(
-        { error: 'Organization ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Organization ID is required' }, { status: 400 })
     }
 
     // Fetch all CRM integrations for the organization
     const crmIntegrations = await prisma.cRMIntegration.findMany({
       where: { organizationId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     })
 
     // Transform to match frontend expectations
@@ -33,17 +30,12 @@ export async function GET(request: NextRequest) {
       dealsCount: integration.dealsCount,
       companiesCount: integration.companiesCount,
       createdAt: integration.createdAt.toISOString(),
-      updatedAt: integration.updatedAt.toISOString()
+      updatedAt: integration.updatedAt.toISOString(),
     }))
 
     return NextResponse.json(integrations)
-
   } catch (error) {
     console.error('Error fetching CRM status:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch CRM status' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch CRM status' }, { status: 500 })
   }
 }
-

@@ -3,12 +3,7 @@
 import { useOrganizationAgents } from '@/hooks/use-agents'
 import { useUsers } from '@/hooks/use-users'
 import { useOrganizationConversations } from '@/hooks/use-conversations'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Bot, Users, MessageSquare } from 'lucide-react'
@@ -38,13 +33,13 @@ export function AgentsTooltip({ organizationId, count, children }: AgentsTooltip
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side="top" className="w-80 p-3">
           <div className="space-y-2.5">
-            <div className="flex items-center gap-2 font-semibold text-sm">
+            <div className="flex items-center gap-2 text-sm font-semibold">
               <Bot className="h-4 w-4" />
               <span>Voice Agents ({count})</span>
             </div>
             {isLoading ? (
               <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
+                {[1, 2, 3].map(i => (
                   <Skeleton key={i} className="h-6 w-full bg-white/10" />
                 ))}
               </div>
@@ -53,25 +48,23 @@ export function AgentsTooltip({ organizationId, count, children }: AgentsTooltip
                 {previewAgents.map((agent: any) => (
                   <div
                     key={agent.id}
-                    className="flex items-center justify-between text-sm py-1.5 px-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 text-sm transition-colors hover:bg-white/10"
                   >
-                    <span className="truncate flex-1 font-medium">{agent.name}</span>
+                    <span className="flex-1 truncate font-medium">{agent.name}</span>
                     <Badge
                       variant="outline"
-                      className={`text-xs ml-2 ${getStatusBadge(agent.status)}`}
+                      className={`ml-2 text-xs ${getStatusBadge(agent.status)}`}
                     >
                       {agent.status}
                     </Badge>
                   </div>
                 ))}
                 {count > 5 && (
-                  <p className="text-xs text-white/60 pt-1 px-2">
-                    +{count - 5} more agents
-                  </p>
+                  <p className="px-2 pt-1 text-xs text-white/60">+{count - 5} more agents</p>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-white/60 py-2">No agents yet</p>
+              <p className="py-2 text-sm text-white/60">No agents yet</p>
             )}
           </div>
         </TooltipContent>
@@ -107,13 +100,13 @@ export function TeamMembersTooltip({ organizationId, count, children }: TeamMemb
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side="top" className="w-80 p-3">
           <div className="space-y-2.5">
-            <div className="flex items-center gap-2 font-semibold text-sm">
+            <div className="flex items-center gap-2 text-sm font-semibold">
               <Users className="h-4 w-4" />
               <span>Team Members ({count})</span>
             </div>
             {isLoading ? (
               <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
+                {[1, 2, 3].map(i => (
                   <Skeleton key={i} className="h-6 w-full bg-white/10" />
                 ))}
               </div>
@@ -122,25 +115,23 @@ export function TeamMembersTooltip({ organizationId, count, children }: TeamMemb
                 {previewUsers.map((user: any) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between text-sm py-1.5 px-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 text-sm transition-colors hover:bg-white/10"
                   >
-                    <span className="truncate flex-1 font-medium">{user.name}</span>
+                    <span className="flex-1 truncate font-medium">{user.name}</span>
                     <Badge
                       variant="outline"
-                      className={`text-xs ml-2 capitalize ${getRoleBadge(user.role)}`}
+                      className={`ml-2 text-xs capitalize ${getRoleBadge(user.role)}`}
                     >
                       {user.role}
                     </Badge>
                   </div>
                 ))}
                 {count > 5 && (
-                  <p className="text-xs text-white/60 pt-1 px-2">
-                    +{count - 5} more members
-                  </p>
+                  <p className="px-2 pt-1 text-xs text-white/60">+{count - 5} more members</p>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-white/60 py-2">No team members yet</p>
+              <p className="py-2 text-sm text-white/60">No team members yet</p>
             )}
           </div>
         </TooltipContent>
@@ -155,7 +146,11 @@ interface ConversationsTooltipProps {
   children: React.ReactNode
 }
 
-export function ConversationsTooltip({ organizationId, count, children }: ConversationsTooltipProps) {
+export function ConversationsTooltip({
+  organizationId,
+  count,
+  children,
+}: ConversationsTooltipProps) {
   const { data, isLoading } = useOrganizationConversations(organizationId, { limit: 5 })
   const conversations = data?.conversations || []
 
@@ -177,13 +172,13 @@ export function ConversationsTooltip({ organizationId, count, children }: Conver
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side="top" className="w-80 p-3">
           <div className="space-y-2.5">
-            <div className="flex items-center gap-2 font-semibold text-sm">
+            <div className="flex items-center gap-2 text-sm font-semibold">
               <MessageSquare className="h-4 w-4" />
               <span>Recent Conversations ({count})</span>
             </div>
             {isLoading ? (
               <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
+                {[1, 2, 3].map(i => (
                   <Skeleton key={i} className="h-6 w-full bg-white/10" />
                 ))}
               </div>
@@ -192,27 +187,26 @@ export function ConversationsTooltip({ organizationId, count, children }: Conver
                 {conversations.map((conv: any) => (
                   <div
                     key={conv.id}
-                    className="flex items-center justify-between text-sm py-1.5 px-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 text-sm transition-colors hover:bg-white/10"
                   >
-                    <span className="truncate flex-1 font-medium">
-                      {conv.customerName || 'Unknown'} <span className="text-white/60">•</span> {conv.agentName}
+                    <span className="flex-1 truncate font-medium">
+                      {conv.customerName || 'Unknown'} <span className="text-white/60">•</span>{' '}
+                      {conv.agentName}
                     </span>
                     <Badge
                       variant="outline"
-                      className={`text-xs ml-2 capitalize ${getStatusBadge(conv.status)}`}
+                      className={`ml-2 text-xs capitalize ${getStatusBadge(conv.status)}`}
                     >
                       {conv.status}
                     </Badge>
                   </div>
                 ))}
                 {count > 5 && (
-                  <p className="text-xs text-white/60 pt-1 px-2">
-                    +{count - 5} more conversations
-                  </p>
+                  <p className="px-2 pt-1 text-xs text-white/60">+{count - 5} more conversations</p>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-white/60 py-2">No conversations yet</p>
+              <p className="py-2 text-sm text-white/60">No conversations yet</p>
             )}
           </div>
         </TooltipContent>
@@ -220,4 +214,3 @@ export function ConversationsTooltip({ organizationId, count, children }: Conver
     </TooltipProvider>
   )
 }
-

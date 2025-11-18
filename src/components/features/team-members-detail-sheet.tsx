@@ -48,7 +48,7 @@ export function TeamMembersDetailSheet({
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map((n) => n[0])
+      .map(n => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
@@ -62,18 +62,16 @@ export function TeamMembersDetailSheet({
             <Users className="h-5 w-5" />
             Team Members
           </SheetTitle>
-          <SheetDescription>
-            All team members for {organizationName}
-          </SheetDescription>
+          <SheetDescription>All team members for {organizationName}</SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+        <ScrollArea className="mt-6 h-[calc(100vh-120px)]">
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3].map(i => (
                 <div key={i} className="flex items-center gap-3">
                   <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2 flex-1">
+                  <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-32" />
                     <Skeleton className="h-3 w-48" />
                   </div>
@@ -96,31 +94,29 @@ export function TeamMembersDetailSheet({
                       <div className="flex items-start justify-between">
                         <div>
                           <h4 className="font-semibold">{user.name}</h4>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="mt-1 flex items-center gap-2">
                             {getRoleBadge(user.role)}
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-1.5 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                           <Mail className="h-3.5 w-3.5" />
                           <span>{user.email}</span>
                         </div>
                         {user.permissions && user.permissions.length > 0 && (
-                          <div className="flex items-center gap-2 text-muted-foreground">
+                          <div className="text-muted-foreground flex items-center gap-2">
                             <Shield className="h-3.5 w-3.5" />
                             <span>{user.permissions.length} permissions</span>
                           </div>
                         )}
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="text-muted-foreground flex items-center gap-2">
                           <Clock className="h-3.5 w-3.5" />
-                          <span>
-                            Joined {new Date(user.createdAt).toLocaleDateString()}
-                          </span>
+                          <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                         </div>
                         {user.lastLoginAt && (
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-muted-foreground text-xs">
                             Last login: {new Date(user.lastLoginAt).toLocaleString()}
                           </div>
                         )}
@@ -132,9 +128,9 @@ export function TeamMembersDetailSheet({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Users className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No team members</h3>
-              <p className="text-sm text-muted-foreground">
+              <Users className="text-muted-foreground mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-semibold">No team members</h3>
+              <p className="text-muted-foreground text-sm">
                 This organization doesn't have any team members yet.
               </p>
             </div>
@@ -144,4 +140,3 @@ export function TeamMembersDetailSheet({
     </Sheet>
   )
 }
-

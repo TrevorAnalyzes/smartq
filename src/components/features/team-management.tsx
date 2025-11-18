@@ -28,7 +28,7 @@ import { InviteUserDialog } from './invite-user-dialog'
 import { formatDistanceToNow } from 'date-fns'
 
 export function TeamManagement() {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const { data, isLoading } = useUsers(currentOrganization?.id)
   const deleteUser = useDeleteUser()
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
@@ -82,7 +82,7 @@ export function TeamManagement() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <Skeleton key={i} className="h-16 w-full" />
             ))}
           </div>
@@ -98,9 +98,7 @@ export function TeamManagement() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Team Members</CardTitle>
-              <CardDescription>
-                Manage team members for {currentOrganization.name}
-              </CardDescription>
+              <CardDescription>Manage team members for {currentOrganization.name}</CardDescription>
             </div>
             <Button onClick={() => setInviteDialogOpen(true)}>
               <UserPlus className="mr-2 h-4 w-4" />
@@ -111,9 +109,9 @@ export function TeamManagement() {
         <CardContent>
           {users.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <UserPlus className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No team members yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <UserPlus className="text-muted-foreground mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-semibold">No team members yet</h3>
+              <p className="text-muted-foreground mb-4 text-sm">
                 Invite your first team member to get started
               </p>
               <Button onClick={() => setInviteDialogOpen(true)}>
@@ -137,8 +135,8 @@ export function TeamManagement() {
                   <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                          <span className="text-sm font-medium text-primary">
+                        <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                          <span className="text-primary text-sm font-medium">
                             {user.name
                               .split(' ')
                               .map((n: string) => n[0])
@@ -148,7 +146,7 @@ export function TeamManagement() {
                         </div>
                         <div>
                           <p className="font-medium">{user.name}</p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <p className="text-muted-foreground flex items-center gap-1 text-sm">
                             <Mail className="h-3 w-3" />
                             {user.email}
                           </p>
@@ -158,14 +156,14 @@ export function TeamManagement() {
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Shield className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
+                        <Shield className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground text-sm">
                           {user.permissions.length} permissions
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground text-sm">
                         {user.lastLoginAt
                           ? formatDistanceToNow(new Date(user.lastLoginAt), { addSuffix: true })
                           : 'Never'}
@@ -210,4 +208,3 @@ export function TeamManagement() {
     </>
   )
 }
-

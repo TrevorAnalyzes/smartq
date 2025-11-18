@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const totalCount = await prisma.organization.count({ where })
 
     // Transform data to match frontend format
-    const transformedOrganizations = organizations.map((org) => ({
+    const transformedOrganizations = organizations.map(org => ({
       id: org.id,
       name: org.name,
       domain: org.domain,
@@ -139,4 +139,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
-

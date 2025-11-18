@@ -12,7 +12,7 @@ export class SmartQApiClient {
     logger.info('SmartQ client stub - updateConversationStatus called', {
       conversationId,
       organizationId,
-      status
+      status,
     })
     return Promise.resolve({ success: true })
   }
@@ -22,7 +22,7 @@ export class SmartQApiClient {
       conversationId,
       organizationId,
       role,
-      contentLength: content.length
+      contentLength: content.length,
     })
     return Promise.resolve({ success: true })
   }
@@ -30,7 +30,7 @@ export class SmartQApiClient {
   async getConversation(conversationId, organizationId) {
     logger.info('SmartQ client stub - getConversation called', {
       conversationId,
-      organizationId
+      organizationId,
     })
     return Promise.resolve({ id: conversationId, status: 'active' })
   }

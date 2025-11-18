@@ -95,7 +95,7 @@ export function CreateAgentDialog() {
   })
 
   const createAgent = useCreateAgent()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -248,18 +248,27 @@ export function CreateAgentDialog() {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={createAgent.isPending}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={createAgent.isPending}
+            >
               Cancel
             </Button>
-            <Button type="submit" className="bg-brand-primary hover:bg-brand-primary/90" disabled={createAgent.isPending}>
+            <Button
+              type="submit"
+              className="bg-brand-primary hover:bg-brand-primary/90"
+              disabled={createAgent.isPending}
+            >
               {createAgent.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating...
                 </>
               ) : (
                 <>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="mr-2 h-4 w-4" />
                   Create Assistant
                 </>
               )}

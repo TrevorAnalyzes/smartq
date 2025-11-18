@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-
 'use strict'
 
 const { PrismaClient } = require('@prisma/client')
@@ -15,9 +14,7 @@ async function main() {
 
   console.log('Organizations found:', orgs)
 
-  const idsToDelete = orgs
-    .filter((org) => org.id !== DEMO_ORG_ID)
-    .map((org) => org.id)
+  const idsToDelete = orgs.filter(org => org.id !== DEMO_ORG_ID).map(org => org.id)
 
   if (!idsToDelete.length) {
     console.log('No other organizations to delete. Nothing to do.')
@@ -61,11 +58,10 @@ async function main() {
 }
 
 main()
-  .catch((err) => {
+  .catch(err => {
     console.error('Error cleaning up organizations:', err)
     process.exit(1)
   })
   .finally(async () => {
     await prisma.$disconnect()
   })
-

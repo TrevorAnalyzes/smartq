@@ -26,7 +26,7 @@ export async function GET() {
   } catch (error) {
     console.error('Twilio Status Check Error:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to check Twilio status',
         configured: false,
         accountSid: false,
@@ -34,7 +34,7 @@ export async function GET() {
         phoneNumber: false,
         webhookUrl: false,
         mediaStreamUrl: false,
-      }, 
+      },
       { status: 500 }
     )
   }

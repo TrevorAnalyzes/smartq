@@ -10,7 +10,7 @@ export class OpenAIRealtimeClient {
     this.onAudioResponse = options.onAudioResponse
     this.onTextResponse = options.onTextResponse
     this.onError = options.onError
-    
+
     logger.info('OpenAI client stub initialized')
   }
 
@@ -21,8 +21,8 @@ export class OpenAIRealtimeClient {
   }
 
   async sendAudio(audioBuffer) {
-    logger.debug('OpenAI client stub - sendAudio called', { 
-      bufferLength: audioBuffer.length 
+    logger.debug('OpenAI client stub - sendAudio called', {
+      bufferLength: audioBuffer.length,
     })
     // Simulate processing
   }

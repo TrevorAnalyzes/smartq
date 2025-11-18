@@ -95,7 +95,8 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
           <DialogDescription>
-            Send an invitation to join your organization. They'll receive an email with instructions.
+            Send an invitation to join your organization. They'll receive an email with
+            instructions.
           </DialogDescription>
         </DialogHeader>
 
@@ -106,10 +107,10 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
               id="name"
               placeholder="John Smith"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               className={errors.name ? 'border-destructive' : ''}
             />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+            {errors.name && <p className="text-destructive text-sm">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
@@ -119,15 +120,18 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
               type="email"
               placeholder="john@example.com"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
               className={errors.email ? 'border-destructive' : ''}
             />
-            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+            {errors.email && <p className="text-destructive text-sm">{errors.email}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+            <Select
+              value={formData.role}
+              onValueChange={value => setFormData({ ...formData, role: value })}
+            >
               <SelectTrigger id="role">
                 <SelectValue />
               </SelectTrigger>
@@ -135,25 +139,29 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
                 <SelectItem value="admin">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">Admin</span>
-                    <span className="text-xs text-muted-foreground">Full access to all features</span>
+                    <span className="text-muted-foreground text-xs">
+                      Full access to all features
+                    </span>
                   </div>
                 </SelectItem>
                 <SelectItem value="manager">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">Manager</span>
-                    <span className="text-xs text-muted-foreground">Manage agents and view analytics</span>
+                    <span className="text-muted-foreground text-xs">
+                      Manage agents and view analytics
+                    </span>
                   </div>
                 </SelectItem>
                 <SelectItem value="agent">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">Agent</span>
-                    <span className="text-xs text-muted-foreground">View analytics only</span>
+                    <span className="text-muted-foreground text-xs">View analytics only</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="viewer">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">Viewer</span>
-                    <span className="text-xs text-muted-foreground">Read-only access</span>
+                    <span className="text-muted-foreground text-xs">Read-only access</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -161,8 +169,8 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
           </div>
 
           {errors.submit && (
-            <div className="rounded-md bg-destructive/10 p-3">
-              <p className="text-sm text-destructive">{errors.submit}</p>
+            <div className="bg-destructive/10 rounded-md p-3">
+              <p className="text-destructive text-sm">{errors.submit}</p>
             </div>
           )}
 
@@ -180,4 +188,3 @@ export function InviteUserDialog({ open, onOpenChange, organizationId }: InviteU
     </Dialog>
   )
 }
-

@@ -17,7 +17,9 @@ function getStripeForWebhooks(): Stripe | null {
   return new Stripe(secretKey)
 }
 
-function resolvePlanFromPriceId(priceId: string | null | undefined): 'FREE' | 'PRO' | 'ENTERPRISE' | null {
+function resolvePlanFromPriceId(
+  priceId: string | null | undefined
+): 'FREE' | 'PRO' | 'ENTERPRISE' | null {
   if (!priceId) return null
   if (priceId === process.env.STRIPE_PRICE_PRO) return 'PRO'
   if (priceId === process.env.STRIPE_PRICE_ENTERPRISE) return 'ENTERPRISE'
@@ -115,4 +117,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Webhook handler error' }, { status: 500 })
   }
 }
-

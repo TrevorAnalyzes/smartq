@@ -4,7 +4,15 @@ import { VariantProps } from 'class-variance-authority'
 import { badgeVariants } from '@/components/ui/badge'
 
 // Re-export Prisma enums for use in API routes
-export { AccentType, UserRole, OrganizationPlan, ConversationStatus, Sentiment, AgentStatus, CRMProvider } from '@prisma/client'
+export {
+  AccentType,
+  UserRole,
+  OrganizationPlan,
+  ConversationStatus,
+  Sentiment,
+  AgentStatus,
+  CRMProvider,
+} from '@prisma/client'
 
 // Base types from Prisma
 export type Organization = Prisma.OrganizationGetPayload<object>

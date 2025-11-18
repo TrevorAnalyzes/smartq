@@ -75,52 +75,52 @@ enum CRMStatus {
 // ============================================
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  domain    String   @unique
-  plan      OrganizationPlan @default(FREE)
+  id                   String           @id @default(cuid())
+  name                 String
+  domain               String           @unique
+  plan                 OrganizationPlan @default(FREE)
   stripeCustomerId     String?
   stripeSubscriptionId String?
   monthlyCallLimit     Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 
   // Settings (JSON)
-  defaultAccent           AccentType @default(BRITISH_RP)
-  crmProvider             CRMProvider?
-  crmApiKey               String?
-  emailAlerts             Boolean @default(true)
-  smsAlerts               Boolean @default(false)
-  webhookUrl              String?
-  brandingPrimaryColor    String @default("#0066CC")
-  brandingLogo            String?
-  brandingCompanyName     String?
+  defaultAccent        AccentType   @default(BRITISH_RP)
+  crmProvider          CRMProvider?
+  crmApiKey            String?
+  emailAlerts          Boolean      @default(true)
+  smsAlerts            Boolean      @default(false)
+  webhookUrl           String?
+  brandingPrimaryColor String       @default("#0066CC")
+  brandingLogo         String?
+  brandingCompanyName  String?
 
   // Relations
-  users          User[]
-  voiceAgents    VoiceAgent[]
-  conversations  Conversation[]
+  users           User[]
+  voiceAgents     VoiceAgent[]
+  conversations   Conversation[]
   crmIntegrations CRMIntegration[]
-  crmContacts    CRMContact[]
-  crmDeals       CRMDeal[]
-  crmCompanies   CRMCompany[]
-  usageEvents    UsageEvent[]
-  activities     Activity[]
+  crmContacts     CRMContact[]
+  crmDeals        CRMDeal[]
+  crmCompanies    CRMCompany[]
+  usageEvents     UsageEvent[]
+  activities      Activity[]
 
   @@index([domain])
   @@index([plan])
 }
 
 model User {
-  id             String   @id @default(cuid())
-  email          String   @unique
+  id             String    @id @default(cuid())
+  email          String    @unique
   name           String
-  role           UserRole @default(VIEWER)
+  role           UserRole  @default(VIEWER)
   organizationId String
   permissions    String[] // Array of permission strings
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
   lastLoginAt    DateTime?
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime  @updatedAt
 
   // Relations
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -157,7 +157,7 @@ model Conversation {
   customerPhone  String
   customerName   String?
   status         ConversationStatus @default(RINGING)
-  duration       Int?               // Duration in seconds
+  duration       Int? // Duration in seconds
   transcript     String?            @db.Text
   sentiment      Sentiment?
   outcome        String?
@@ -180,19 +180,19 @@ model Conversation {
 }
 
 model CRMIntegration {
-  id               String    @id @default(cuid())
-  organizationId   String
-  provider         CRMProvider
-  status           CRMStatus @default(DISCONNECTED)
-  config           Json      // Stores CRMConfig including credentials
-  webhookSecret    String?
-  lastSync         DateTime?
-  lastSyncResult   Json?     // Stores SyncResult
-  contactsCount    Int       @default(0)
-  dealsCount       Int       @default(0)
-  companiesCount   Int       @default(0)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id             String      @id @default(cuid())
+  organizationId String
+  provider       CRMProvider
+  status         CRMStatus   @default(DISCONNECTED)
+  config         Json // Stores CRMConfig including credentials
+  webhookSecret  String?
+  lastSync       DateTime?
+  lastSyncResult Json? // Stores SyncResult
+  contactsCount  Int         @default(0)
+  dealsCount     Int         @default(0)
+  companiesCount Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relations
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -207,10 +207,10 @@ model CRMIntegration {
 }
 
 model CRMContact {
-  id             String   @id @default(cuid())
+  id             String      @id @default(cuid())
   organizationId String
   provider       CRMProvider
-  externalId     String   // ID from the CRM system
+  externalId     String // ID from the CRM system
   email          String
   firstName      String?
   lastName       String?
@@ -221,8 +221,8 @@ model CRMContact {
   tags           String[]
   customFields   Json?
   lastActivityAt DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relations
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -236,13 +236,13 @@ model CRMContact {
 }
 
 model CRMDeal {
-  id                String   @id @default(cuid())
+  id                String      @id @default(cuid())
   organizationId    String
   provider          CRMProvider
-  externalId        String   // ID from the CRM system
+  externalId        String // ID from the CRM system
   title             String
   value             Float
-  currency          String   @default("GBP")
+  currency          String      @default("GBP")
   stage             String
   probability       Float?
   contactId         String?
@@ -250,8 +250,8 @@ model CRMDeal {
   ownerId           String?
   expectedCloseDate DateTime?
   customFields      Json?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   // Relations
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -265,10 +265,10 @@ model CRMDeal {
 }
 
 model CRMCompany {
-  id             String   @id @default(cuid())
+  id             String      @id @default(cuid())
   organizationId String
   provider       CRMProvider
-  externalId     String   // ID from the CRM system
+  externalId     String // ID from the CRM system
   name           String
   domain         String?
   industry       String?
@@ -276,8 +276,8 @@ model CRMCompany {
   phone          String?
   address        String?
   customFields   Json?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relations
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -293,8 +293,8 @@ model CRMCompany {
 model UsageEvent {
   id             String   @id @default(cuid())
   organizationId String
-  type           String   // e.g. call_started, call_completed
-  units          Int      // e.g. 1 per call, or seconds
+  type           String // e.g. call_started, call_completed
+  units          Int // e.g. 1 per call, or seconds
   createdAt      DateTime @default(now())
 
   // Relations
@@ -306,18 +306,18 @@ model UsageEvent {
 }
 
 model Activity {
-  id             String   @id @default(cuid())
+  id             String     @id @default(cuid())
   organizationId String
-  type           String   // call_completed, call_started, call_failed, etc.
+  type           String // call_completed, call_started, call_failed, etc.
   agentName      String?
   customerName   String?
   customerPhone  String?
   duration       String?
   outcome        String?
-  status         String?  // success, active, failed
+  status         String? // success, active, failed
   sentiment      Sentiment?
-  timestamp      DateTime @default(now())
-  createdAt      DateTime @default(now())
+  timestamp      DateTime   @default(now())
+  createdAt      DateTime   @default(now())
 
   // Relations
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

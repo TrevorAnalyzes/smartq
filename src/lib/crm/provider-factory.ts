@@ -12,16 +12,16 @@ export class CRMProviderFactory {
     switch (config.provider) {
       case 'HUBSPOT':
         return new HubSpotProvider(config, organizationId)
-      
+
       case 'PIPEDRIVE':
         return new PipedriveProvider(config, organizationId)
-      
+
       case 'SALESFORCE':
         return new SalesforceProvider(config, organizationId)
-      
+
       case 'ZOHO':
         return new ZohoProvider(config, organizationId)
-      
+
       default:
         throw new Error(`Unsupported CRM provider: ${config.provider}`)
     }
@@ -41,7 +41,7 @@ export class CRMProviderFactory {
         features: ['contacts', 'deals', 'companies', 'real-time-sync'],
         setupUrl: 'https://developers.hubspot.com/docs/api/overview',
         icon: 'hubspot',
-        color: '#ff7a59'
+        color: '#ff7a59',
       },
       PIPEDRIVE: {
         name: 'Pipedrive',
@@ -51,7 +51,7 @@ export class CRMProviderFactory {
         features: ['contacts', 'deals', 'organizations', 'real-time-sync'],
         setupUrl: 'https://developers.pipedrive.com/docs/api/v1',
         icon: 'pipedrive',
-        color: '#1a73e8'
+        color: '#1a73e8',
       },
       SALESFORCE: {
         name: 'Salesforce',
@@ -61,7 +61,7 @@ export class CRMProviderFactory {
         features: ['contacts', 'opportunities', 'accounts', 'real-time-sync'],
         setupUrl: 'https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/',
         icon: 'salesforce',
-        color: '#00a1e0'
+        color: '#00a1e0',
       },
       ZOHO: {
         name: 'Zoho CRM',
@@ -71,8 +71,8 @@ export class CRMProviderFactory {
         features: ['contacts', 'deals', 'accounts', 'real-time-sync'],
         setupUrl: 'https://www.zoho.com/crm/developer/docs/api/v2/',
         icon: 'zoho',
-        color: '#e74c3c'
-      }
+        color: '#e74c3c',
+      },
     }
 
     return providerInfo[provider]
@@ -99,7 +99,10 @@ export class CRMProviderFactory {
         if (config.authMethod === 'API_KEY' && !config.credentials.apiKey) {
           errors.push('HubSpot API key is required')
         }
-        if (config.authMethod === 'OAUTH2' && (!config.credentials.clientId || !config.credentials.clientSecret)) {
+        if (
+          config.authMethod === 'OAUTH2' &&
+          (!config.credentials.clientId || !config.credentials.clientSecret)
+        ) {
           errors.push('HubSpot OAuth2 client ID and secret are required')
         }
         break
@@ -128,7 +131,7 @@ export class CRMProviderFactory {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     }
   }
 }

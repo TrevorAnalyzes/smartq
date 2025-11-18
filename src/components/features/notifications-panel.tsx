@@ -38,7 +38,7 @@ export function NotificationsPanel() {
 
   // Add activity-based notifications
   if (activitiesData?.activities) {
-    activitiesData.activities.slice(0, 5).forEach((activity) => {
+    activitiesData.activities.slice(0, 5).forEach(activity => {
       if (activity.status === 'completed') {
         notifications.push({
           id: activity.id,
@@ -66,9 +66,9 @@ export function NotificationsPanel() {
   }
 
   // Add agent status notifications
-  const inactiveAgents = agents.filter((agent) => agent.status === 'INACTIVE')
+  const inactiveAgents = agents.filter(agent => agent.status === 'INACTIVE')
   if (inactiveAgents.length > 0 && notifications.length < 8) {
-    inactiveAgents.slice(0, 2).forEach((agent) => {
+    inactiveAgents.slice(0, 2).forEach(agent => {
       notifications.push({
         id: `agent-${agent.id}`,
         type: 'agent_status',
@@ -83,7 +83,7 @@ export function NotificationsPanel() {
   }
 
   // Add system alert if there are many failed calls
-  const failedCalls = activitiesData?.activities.filter((a) => a.status === 'failed') || []
+  const failedCalls = activitiesData?.activities.filter(a => a.status === 'failed') || []
   if (failedCalls.length >= 3 && notifications.length < 10) {
     notifications.push({
       id: 'system-alert-failed-calls',
@@ -100,7 +100,7 @@ export function NotificationsPanel() {
   // Sort by timestamp (newest first)
   notifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const unreadCount = notifications.filter(n => !n.read).length
 
   const handleNotificationClick = (notification: Notification) => {
     // Navigate based on notification type
@@ -149,19 +149,19 @@ export function NotificationsPanel() {
             </div>
           ) : (
             <div className="space-y-1 p-2">
-              {notifications.map((notification) => (
+              {notifications.map(notification => (
                 <button
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
                   className="hover:bg-accent w-full rounded-lg p-3 text-left transition-colors"
                 >
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 mt-0.5">{notification.icon}</div>
+                    <div className="mt-0.5 flex-shrink-0">{notification.icon}</div>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-start justify-between gap-2">
                         <p className="text-sm font-medium">{notification.title}</p>
                         {!notification.read && (
-                          <div className="bg-brand-accent h-2 w-2 rounded-full flex-shrink-0 mt-1.5" />
+                          <div className="bg-brand-accent mt-1.5 h-2 w-2 flex-shrink-0 rounded-full" />
                         )}
                       </div>
                       <p className="text-muted-foreground mb-1 text-xs">{notification.message}</p>
@@ -179,4 +179,3 @@ export function NotificationsPanel() {
     </DropdownMenu>
   )
 }
-

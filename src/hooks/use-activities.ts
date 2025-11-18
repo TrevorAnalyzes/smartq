@@ -64,8 +64,11 @@ async function createActivity(data: Partial<Activity>, organizationId: string): 
   return response.json()
 }
 
-export function useActivities(organizationId?: string, params?: { limit?: number; offset?: number }) {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+export function useActivities(
+  organizationId?: string,
+  params?: { limit?: number; offset?: number }
+) {
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const orgId = organizationId || currentOrganization?.id
 
   return useQuery({
@@ -78,7 +81,7 @@ export function useActivities(organizationId?: string, params?: { limit?: number
 
 export function useCreateActivity() {
   const queryClient = useQueryClient()
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const organizationId = currentOrganization?.id
 
   return useMutation({
@@ -92,4 +95,3 @@ export function useCreateActivity() {
     },
   })
 }
-

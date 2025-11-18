@@ -22,16 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Search,
-  MoreHorizontal,
-  Play,
-  Download,
-  Eye,
-  Phone,
-  Clock,
-  Filter,
-} from 'lucide-react'
+import { Search, MoreHorizontal, Play, Download, Eye, Phone, Clock, Filter } from 'lucide-react'
 import { formatDistanceToNow, format } from 'date-fns'
 import { useConversations } from '@/hooks/use-conversations'
 
@@ -125,81 +116,87 @@ export function ConversationHistory() {
                   </TableCell>
                 </TableRow>
               ) : (
-              filteredConversations.map(conversation => (
-                <TableRow key={conversation.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{conversation.customerName || 'Unknown'}</p>
-                    <div className="text-muted-foreground flex items-center gap-1 text-xs">
-                      <Phone className="h-3 w-3" />
-                      {conversation.customerPhone}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback>
-                        {((conversation as any).agentName || 'AI').slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{(conversation as any).agentName || 'Voice Agent'}</p>
-                      <p className="text-muted-foreground text-xs">AI Assistant</p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1 text-sm">
-                    <div>
-                      <p>{format(new Date(conversation.startedAt), 'MMM dd, HH:mm')}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatDistanceToNow(new Date(conversation.startedAt), { addSuffix: true })}
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Clock className="text-muted-foreground h-3 w-3" />
-                    {conversation.duration ? `${Math.floor(conversation.duration / 60)}m ${conversation.duration % 60}s` : 'N/A'}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{conversation.outcome || 'N/A'}</Badge>
-                </TableCell>
-                <TableCell>{getSentimentBadge(conversation.sentiment || undefined)}</TableCell>
-                <TableCell>{getStatusBadge(conversation.status)}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Play className="mr-2 h-4 w-4" />
-                        Play Recording
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Transcript
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                filteredConversations.map(conversation => (
+                  <TableRow key={conversation.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{conversation.customerName || 'Unknown'}</p>
+                        <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                          <Phone className="h-3 w-3" />
+                          {conversation.customerPhone}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarFallback>
+                            {((conversation as any).agentName || 'AI').slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {(conversation as any).agentName || 'Voice Agent'}
+                          </p>
+                          <p className="text-muted-foreground text-xs">AI Assistant</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm">
+                        <div>
+                          <p>{format(new Date(conversation.startedAt), 'MMM dd, HH:mm')}</p>
+                          <p className="text-muted-foreground text-xs">
+                            {formatDistanceToNow(new Date(conversation.startedAt), {
+                              addSuffix: true,
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Clock className="text-muted-foreground h-3 w-3" />
+                        {conversation.duration
+                          ? `${Math.floor(conversation.duration / 60)}m ${conversation.duration % 60}s`
+                          : 'N/A'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{conversation.outcome || 'N/A'}</Badge>
+                    </TableCell>
+                    <TableCell>{getSentimentBadge(conversation.sentiment || undefined)}</TableCell>
+                    <TableCell>{getStatusBadge(conversation.status)}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Play className="mr-2 h-4 w-4" />
+                            Play Recording
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Transcript
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>

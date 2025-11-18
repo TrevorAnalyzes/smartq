@@ -7,7 +7,9 @@ import { useConversations } from '@/hooks/use-conversations'
 import { useDashboardMetrics } from '@/hooks/use-dashboard-metrics'
 
 export function ConversationStats() {
-  const { data: conversationsData, isLoading: conversationsLoading } = useConversations({ limit: 100 })
+  const { data: conversationsData, isLoading: conversationsLoading } = useConversations({
+    limit: 100,
+  })
   const { data: metrics, isLoading: metricsLoading } = useDashboardMetrics()
 
   const isLoading = conversationsLoading || metricsLoading

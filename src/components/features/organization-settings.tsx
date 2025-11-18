@@ -13,9 +13,9 @@ import { Loader2, Save } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 export function OrganizationSettings() {
-  const currentOrganization = useOrganizationStore((state) => state.currentOrganization)
+  const currentOrganization = useOrganizationStore(state => state.currentOrganization)
   const updateOrganization = useUpdateOrganization(currentOrganization?.id || '')
-  
+
   const [formData, setFormData] = useState({
     name: '',
     domain: '',
@@ -42,7 +42,7 @@ export function OrganizationSettings() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       await updateOrganization.mutateAsync(formData)
       alert('Settings saved successfully!')
@@ -69,9 +69,7 @@ export function OrganizationSettings() {
       <Card>
         <CardHeader>
           <CardTitle>General Settings</CardTitle>
-          <CardDescription>
-            Basic information about your organization
-          </CardDescription>
+          <CardDescription>Basic information about your organization</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -79,7 +77,7 @@ export function OrganizationSettings() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
 
@@ -88,7 +86,7 @@ export function OrganizationSettings() {
             <Input
               id="domain"
               value={formData.domain}
-              onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+              onChange={e => setFormData({ ...formData, domain: e.target.value })}
             />
           </div>
         </CardContent>
@@ -97,9 +95,7 @@ export function OrganizationSettings() {
       <Card>
         <CardHeader>
           <CardTitle>Branding</CardTitle>
-          <CardDescription>
-            Customize the appearance of your organization
-          </CardDescription>
+          <CardDescription>Customize the appearance of your organization</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -108,7 +104,7 @@ export function OrganizationSettings() {
               id="brandingCompanyName"
               placeholder="Your Company Name"
               value={formData.brandingCompanyName}
-              onChange={(e) => setFormData({ ...formData, brandingCompanyName: e.target.value })}
+              onChange={e => setFormData({ ...formData, brandingCompanyName: e.target.value })}
             />
           </div>
 
@@ -119,12 +115,12 @@ export function OrganizationSettings() {
                 id="brandingPrimaryColor"
                 type="color"
                 value={formData.brandingPrimaryColor}
-                onChange={(e) => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
-                className="w-20 h-10"
+                onChange={e => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
+                className="h-10 w-20"
               />
               <Input
                 value={formData.brandingPrimaryColor}
-                onChange={(e) => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
+                onChange={e => setFormData({ ...formData, brandingPrimaryColor: e.target.value })}
                 placeholder="#0066CC"
               />
             </div>
@@ -135,22 +131,20 @@ export function OrganizationSettings() {
       <Card>
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
-          <CardDescription>
-            Configure how you receive notifications
-          </CardDescription>
+          <CardDescription>Configure how you receive notifications</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="emailAlerts">Email Alerts</Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Receive email notifications for important events
               </p>
             </div>
             <Switch
               id="emailAlerts"
               checked={formData.emailAlerts}
-              onCheckedChange={(checked) => setFormData({ ...formData, emailAlerts: checked })}
+              onCheckedChange={checked => setFormData({ ...formData, emailAlerts: checked })}
             />
           </div>
 
@@ -159,14 +153,14 @@ export function OrganizationSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="smsAlerts">SMS Alerts</Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Receive SMS notifications for critical events
               </p>
             </div>
             <Switch
               id="smsAlerts"
               checked={formData.smsAlerts}
-              onCheckedChange={(checked) => setFormData({ ...formData, smsAlerts: checked })}
+              onCheckedChange={checked => setFormData({ ...formData, smsAlerts: checked })}
             />
           </div>
 
@@ -178,9 +172,9 @@ export function OrganizationSettings() {
               id="webhookUrl"
               placeholder="https://your-app.com/webhook"
               value={formData.webhookUrl}
-              onChange={(e) => setFormData({ ...formData, webhookUrl: e.target.value })}
+              onChange={e => setFormData({ ...formData, webhookUrl: e.target.value })}
             />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Receive real-time notifications via webhook
             </p>
           </div>
@@ -197,4 +191,3 @@ export function OrganizationSettings() {
     </form>
   )
 }
-

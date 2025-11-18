@@ -1,13 +1,13 @@
 // Base CRM Provider Abstract Class
 
-import { 
-  CRMConfig, 
-  CRMContact, 
-  CRMDeal, 
-  CRMCompany, 
-  SyncResult, 
+import {
+  CRMConfig,
+  CRMContact,
+  CRMDeal,
+  CRMCompany,
+  SyncResult,
   CRMApiResponse,
-  WebhookEvent 
+  WebhookEvent,
 } from './types'
 
 export abstract class BaseCRMProvider {
@@ -28,7 +28,10 @@ export abstract class BaseCRMProvider {
   abstract getContacts(cursor?: string, limit?: number): Promise<CRMApiResponse<CRMContact[]>>
   abstract getContact(id: string): Promise<CRMApiResponse<CRMContact>>
   abstract createContact(contact: Partial<CRMContact>): Promise<CRMApiResponse<CRMContact>>
-  abstract updateContact(id: string, contact: Partial<CRMContact>): Promise<CRMApiResponse<CRMContact>>
+  abstract updateContact(
+    id: string,
+    contact: Partial<CRMContact>
+  ): Promise<CRMApiResponse<CRMContact>>
   abstract deleteContact(id: string): Promise<CRMApiResponse<void>>
 
   // Deal operations
@@ -42,7 +45,10 @@ export abstract class BaseCRMProvider {
   abstract getCompanies(cursor?: string, limit?: number): Promise<CRMApiResponse<CRMCompany[]>>
   abstract getCompany(id: string): Promise<CRMApiResponse<CRMCompany>>
   abstract createCompany(company: Partial<CRMCompany>): Promise<CRMApiResponse<CRMCompany>>
-  abstract updateCompany(id: string, company: Partial<CRMCompany>): Promise<CRMApiResponse<CRMCompany>>
+  abstract updateCompany(
+    id: string,
+    company: Partial<CRMCompany>
+  ): Promise<CRMApiResponse<CRMCompany>>
   abstract deleteCompany(id: string): Promise<CRMApiResponse<void>>
 
   // Webhook operations
@@ -59,7 +65,7 @@ export abstract class BaseCRMProvider {
       dealsCount: 0,
       companiesCount: 0,
       errors: [],
-      lastSyncAt: new Date()
+      lastSyncAt: new Date(),
     }
 
     try {
@@ -87,7 +93,6 @@ export abstract class BaseCRMProvider {
 
       result.success = result.errors.length === 0
       return result
-
     } catch (error) {
       result.errors.push(`Sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
       return result
@@ -122,7 +127,6 @@ export abstract class BaseCRMProvider {
         cursor = response.pagination?.nextCursor
         hasMore = response.pagination?.hasMore || false
       } while (cursor && hasMore)
-
     } catch (error) {
       errors.push(`Contact sync error: ${error}`)
     }
@@ -157,7 +161,6 @@ export abstract class BaseCRMProvider {
         cursor = response.pagination?.nextCursor
         hasMore = response.pagination?.hasMore || false
       } while (cursor && hasMore)
-
     } catch (error) {
       errors.push(`Deal sync error: ${error}`)
     }
@@ -192,7 +195,6 @@ export abstract class BaseCRMProvider {
         cursor = response.pagination?.nextCursor
         hasMore = response.pagination?.hasMore || false
       } while (cursor && hasMore)
-
     } catch (error) {
       errors.push(`Company sync error: ${error}`)
     }

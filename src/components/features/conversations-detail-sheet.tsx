@@ -76,15 +76,13 @@ export function ConversationsDetailSheet({
             <MessageSquare className="h-5 w-5" />
             Conversations
           </SheetTitle>
-          <SheetDescription>
-            All conversations for {organizationName}
-          </SheetDescription>
+          <SheetDescription>All conversations for {organizationName}</SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+        <ScrollArea className="mt-6 h-[calc(100vh-120px)]">
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3, 4].map(i => (
                 <div key={i} className="space-y-2">
                   <Skeleton className="h-6 w-48" />
                   <Skeleton className="h-4 w-full" />
@@ -97,20 +95,20 @@ export function ConversationsDetailSheet({
               {conversations.map((conv: any) => (
                 <div
                   key={conv.id}
-                  className="rounded-lg border bg-card p-4 hover:bg-accent/50 transition-colors"
+                  className="bg-card hover:bg-accent/50 rounded-lg border p-4 transition-colors"
                 >
                   <div className="space-y-3">
                     {/* Header: Customer name and badges */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <h4 className="font-semibold text-base truncate">
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <h4 className="truncate text-base font-semibold">
                           {conv.customerName || 'Unknown Customer'}
                         </h4>
                         {conv.topic && (
-                          <p className="text-sm text-muted-foreground truncate">{conv.topic}</p>
+                          <p className="text-muted-foreground truncate text-sm">{conv.topic}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <div className="flex flex-shrink-0 items-center gap-1.5">
                         {getStatusBadge(conv.status)}
                         {conv.sentiment && getSentimentBadge(conv.sentiment)}
                       </div>
@@ -118,36 +116,40 @@ export function ConversationsDetailSheet({
 
                     {/* Metadata grid */}
                     <div className="grid grid-cols-2 gap-2.5 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2">
                         <Phone className="h-3.5 w-3.5 flex-shrink-0" />
                         <span className="truncate">{conv.customerPhone || 'No number'}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-foreground font-medium">
-                        <Bot className="h-3.5 w-3.5 flex-shrink-0 text-brand-primary" />
+                      <div className="text-foreground flex items-center gap-2 font-medium">
+                        <Bot className="text-brand-primary h-3.5 w-3.5 flex-shrink-0" />
                         <span className="truncate">{conv.agentName}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2">
                         <Clock className="h-3.5 w-3.5 flex-shrink-0" />
                         <span>{formatDuration(conv.duration)}</span>
                       </div>
                       {conv.outcome && (
                         <div className="flex items-center gap-2">
                           <TrendingUp className="h-3.5 w-3.5 flex-shrink-0 text-green-600" />
-                          <span className="capitalize font-medium text-green-700">{conv.outcome}</span>
+                          <span className="font-medium text-green-700 capitalize">
+                            {conv.outcome}
+                          </span>
                         </div>
                       )}
                     </div>
 
                     {/* Timestamp */}
-                    <div className="text-xs text-muted-foreground pt-1 border-t">
-                      Started {new Date(conv.startedAt).toLocaleString('en-GB', {
+                    <div className="text-muted-foreground border-t pt-1 text-xs">
+                      Started{' '}
+                      {new Date(conv.startedAt).toLocaleString('en-GB', {
                         dateStyle: 'short',
-                        timeStyle: 'short'
+                        timeStyle: 'short',
                       })}
-                      {conv.endedAt && ` • Ended ${new Date(conv.endedAt).toLocaleString('en-GB', {
-                        dateStyle: 'short',
-                        timeStyle: 'short'
-                      })}`}
+                      {conv.endedAt &&
+                        ` • Ended ${new Date(conv.endedAt).toLocaleString('en-GB', {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        })}`}
                     </div>
                   </div>
                 </div>
@@ -155,9 +157,9 @@ export function ConversationsDetailSheet({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No conversations</h3>
-              <p className="text-sm text-muted-foreground">
+              <MessageSquare className="text-muted-foreground mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-semibold">No conversations</h3>
+              <p className="text-muted-foreground text-sm">
                 This organization hasn't had any conversations yet.
               </p>
             </div>
@@ -167,4 +169,3 @@ export function ConversationsDetailSheet({
     </Sheet>
   )
 }
-

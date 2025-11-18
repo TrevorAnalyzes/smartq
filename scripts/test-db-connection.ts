@@ -31,8 +31,8 @@ async function testDatabaseConnection() {
         },
       },
     })
-    
-    orgs.forEach((org) => {
+
+    orgs.forEach(org => {
       console.log(`   📊 ${org.name} (${org.plan}):`)
       console.log(`      - Users: ${org._count.users}`)
       console.log(`      - Voice Agents: ${org._count.voiceAgents}`)
@@ -54,7 +54,7 @@ async function testDatabaseConnection() {
       },
     })
     console.log(`   ✅ Found ${techCorpConvs.length} conversations (showing first 5)`)
-    techCorpConvs.forEach((conv) => {
+    techCorpConvs.forEach(conv => {
       console.log(`      - ${conv.customerName}: ${conv.status} (${conv.sentiment || 'N/A'})`)
     })
     console.log('')
@@ -73,7 +73,7 @@ async function testDatabaseConnection() {
       },
     })
     console.log(`   ✅ Found ${healthPlusConvs.length} conversations (showing first 5)`)
-    healthPlusConvs.forEach((conv) => {
+    healthPlusConvs.forEach(conv => {
       console.log(`      - ${conv.customerName}: ${conv.status} (${conv.sentiment || 'N/A'})`)
     })
     console.log('')
@@ -98,4 +98,3 @@ async function testDatabaseConnection() {
 }
 
 testDatabaseConnection()
-

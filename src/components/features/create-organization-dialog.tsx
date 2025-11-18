@@ -87,10 +87,10 @@ export function CreateOrganizationDialog({ open, onOpenChange }: CreateOrganizat
               id="name"
               placeholder="Acme Corporation"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
               className={errors.name ? 'border-destructive' : ''}
             />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+            {errors.name && <p className="text-destructive text-sm">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
@@ -99,15 +99,18 @@ export function CreateOrganizationDialog({ open, onOpenChange }: CreateOrganizat
               id="domain"
               placeholder="https://acme.com"
               value={formData.domain}
-              onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+              onChange={e => setFormData({ ...formData, domain: e.target.value })}
               className={errors.domain ? 'border-destructive' : ''}
             />
-            {errors.domain && <p className="text-sm text-destructive">{errors.domain}</p>}
+            {errors.domain && <p className="text-destructive text-sm">{errors.domain}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="plan">Plan</Label>
-            <Select value={formData.plan} onValueChange={(value) => setFormData({ ...formData, plan: value })}>
+            <Select
+              value={formData.plan}
+              onValueChange={value => setFormData({ ...formData, plan: value })}
+            >
               <SelectTrigger id="plan">
                 <SelectValue />
               </SelectTrigger>
@@ -120,8 +123,8 @@ export function CreateOrganizationDialog({ open, onOpenChange }: CreateOrganizat
           </div>
 
           {errors.submit && (
-            <div className="rounded-md bg-destructive/10 p-3">
-              <p className="text-sm text-destructive">{errors.submit}</p>
+            <div className="bg-destructive/10 rounded-md p-3">
+              <p className="text-destructive text-sm">{errors.submit}</p>
             </div>
           )}
 
@@ -139,4 +142,3 @@ export function CreateOrganizationDialog({ open, onOpenChange }: CreateOrganizat
     </Dialog>
   )
 }
-

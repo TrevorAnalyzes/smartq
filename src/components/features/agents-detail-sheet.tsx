@@ -50,15 +50,13 @@ export function AgentsDetailSheet({
             <Bot className="h-5 w-5" />
             Voice Agents
           </SheetTitle>
-          <SheetDescription>
-            All voice agents for {organizationName}
-          </SheetDescription>
+          <SheetDescription>All voice agents for {organizationName}</SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+        <ScrollArea className="mt-6 h-[calc(100vh-120px)]">
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3].map(i => (
                 <div key={i} className="space-y-2">
                   <Skeleton className="h-6 w-48" />
                   <Skeleton className="h-4 w-full" />
@@ -74,24 +72,22 @@ export function AgentsDetailSheet({
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <h4 className="font-semibold flex items-center gap-2">
+                        <h4 className="flex items-center gap-2 font-semibold">
                           {agent.name}
                           {getStatusBadge(agent.status)}
                         </h4>
                         {agent.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {agent.description}
-                          </p>
+                          <p className="text-muted-foreground text-sm">{agent.description}</p>
                         )}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2">
                         <Phone className="h-4 w-4" />
                         <span>{agent.phoneNumber || 'No number'}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2">
                         <Activity className="h-4 w-4" />
                         <span>{agent.totalCalls || 0} calls</span>
                       </div>
@@ -101,7 +97,7 @@ export function AgentsDetailSheet({
                       <Badge variant="outline" className="text-xs">
                         {agent.accentType?.replace(/-/g, ' ').toUpperCase() || 'Default'}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         Created {new Date(agent.createdAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -111,9 +107,9 @@ export function AgentsDetailSheet({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Bot className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No voice agents</h3>
-              <p className="text-sm text-muted-foreground">
+              <Bot className="text-muted-foreground mb-4 h-12 w-12" />
+              <h3 className="mb-2 text-lg font-semibold">No voice agents</h3>
+              <p className="text-muted-foreground text-sm">
                 This organization hasn't created any voice agents yet.
               </p>
             </div>
@@ -123,4 +119,3 @@ export function AgentsDetailSheet({
     </Sheet>
   )
 }
-

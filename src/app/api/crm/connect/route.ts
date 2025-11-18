@@ -28,16 +28,19 @@ export async function POST(request: NextRequest) {
       authMethod: getAuthMethodForProvider(provider),
       credentials,
       webhookUrl,
-      customFields
+      customFields,
     }
 
     // Validate config
     const validation = CRMProviderFactory.validateConfig(config)
     if (!validation.valid) {
-      return NextResponse.json({
-        error: 'Invalid configuration',
-        details: validation.errors
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Invalid configuration',
+          details: validation.errors,
+        },
+        { status: 400 }
+      )
     }
 
     // Create provider instance and test connection
@@ -58,20 +61,20 @@ export async function POST(request: NextRequest) {
       where: {
         organizationId_provider: {
           organizationId,
-          provider: provider as CRMProvider
-        }
+          provider: provider as CRMProvider,
+        },
       },
       update: {
         status: 'CONNECTED',
         config: config as any,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       create: {
         organizationId,
         provider: provider as CRMProvider,
         status: 'CONNECTED',
-        config: config as any
-      }
+        config: config as any,
+      },
     })
 
     return NextResponse.json({
@@ -81,16 +84,12 @@ export async function POST(request: NextRequest) {
         provider: integration.provider,
         status: integration.status,
         createdAt: integration.createdAt,
-        updatedAt: integration.updatedAt
-      }
+        updatedAt: integration.updatedAt,
+      },
     })
-
   } catch (error) {
     console.error('CRM connect error:', error)
-    return NextResponse.json(
-      { error: 'Failed to connect CRM integration' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to connect CRM integration' }, { status: 500 })
   }
 }
 
@@ -108,4 +107,3 @@ function getAuthMethodForProvider(provider: string): 'API_KEY' | 'OAUTH2' | 'BAS
       return 'API_KEY'
   }
 }
-

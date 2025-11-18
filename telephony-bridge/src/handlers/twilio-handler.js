@@ -1,4 +1,3 @@
-import { WebSocket } from 'ws'
 import { logger } from '../utils/logger.js'
 import { OpenAIRealtimeClient } from '../clients/openai-client-stub.js'
 import { SmartQApiClient } from '../clients/smartq-client-stub.js'
@@ -15,21 +14,21 @@ export class TwilioMediaStreamHandler {
     this.callSid = null
     this.conversationId = null
     this.organizationId = null
-    
+
     // Parse query parameters from WebSocket URL
     this.parseConnectionParams()
-    
+
     // Initialize clients
     this.openaiClient = null
     this.smartqClient = new SmartQApiClient()
-    
+
     // Audio buffers
     this.audioBuffer = []
     this.isConnected = false
-    
+
     logger.info('TwilioMediaStreamHandler initialized', {
       conversationId: this.conversationId,
-      organizationId: this.organizationId
+      organizationId: this.organizationId,
     })
   }
 
@@ -37,11 +36,11 @@ export class TwilioMediaStreamHandler {
     const url = new URL(this.req.url, 'http://localhost')
     this.conversationId = url.searchParams.get('conversationId')
     this.organizationId = url.searchParams.get('organizationId')
-    
+
     if (!this.conversationId || !this.organizationId) {
       logger.warn('Missing required connection parameters', {
         conversationId: this.conversationId,
-        organizationId: this.organizationId
+        organizationId: this.organizationId,
       })
     }
   }
@@ -49,7 +48,7 @@ export class TwilioMediaStreamHandler {
   async handleMessage(message) {
     try {
       const data = JSON.parse(message.toString())
-      
+
       switch (data.event) {
         case 'connected':
           await this.handleConnected(data)
@@ -67,9 +66,9 @@ export class TwilioMediaStreamHandler {
           logger.debug('Unknown Twilio event', { event: data.event })
       }
     } catch (error) {
-      logger.error('Error handling Twilio message', { 
+      logger.error('Error handling Twilio message', {
         error: error.message,
-        message: message.toString().substring(0, 200)
+        message: message.toString().substring(0, 200),
       })
     }
   }
@@ -82,16 +81,16 @@ export class TwilioMediaStreamHandler {
   async handleStart(data) {
     this.streamSid = data.streamSid
     this.callSid = data.start?.callSid
-    
+
     logger.info('Twilio Media Stream started', {
       streamSid: this.streamSid,
       callSid: this.callSid,
-      conversationId: this.conversationId
+      conversationId: this.conversationId,
     })
 
     // Initialize OpenAI Realtime connection
     await this.initializeOpenAI()
-    
+
     // Update conversation status in SmartQ
     if (this.conversationId) {
       await this.smartqClient.updateConversationStatus(
@@ -110,15 +109,15 @@ export class TwilioMediaStreamHandler {
 
     // Convert Twilio audio (base64 μ-law) to OpenAI format
     const audioData = this.convertTwilioAudio(data.media.payload)
-    
+
     // Send to OpenAI Realtime
     await this.openaiClient.sendAudio(audioData)
   }
 
-  async handleStop(data) {
+  async handleStop(_data) {
     logger.info('Twilio Media Stream stopped', {
       streamSid: this.streamSid,
-      callSid: this.callSid
+      callSid: this.callSid,
     })
 
     // Update conversation status
@@ -138,9 +137,9 @@ export class TwilioMediaStreamHandler {
       this.openaiClient = new OpenAIRealtimeClient({
         conversationId: this.conversationId,
         organizationId: this.organizationId,
-        onAudioResponse: (audioData) => this.sendAudioToTwilio(audioData),
-        onTextResponse: (text) => this.handleTextResponse(text),
-        onError: (error) => this.handleOpenAIError(error)
+        onAudioResponse: audioData => this.sendAudioToTwilio(audioData),
+        onTextResponse: text => this.handleTextResponse(text),
+        onError: error => this.handleOpenAIError(error),
       })
 
       await this.openaiClient.connect()
@@ -164,13 +163,13 @@ export class TwilioMediaStreamHandler {
 
     // Convert OpenAI audio response to Twilio format
     const base64Audio = audioData.toString('base64')
-    
+
     const message = {
       event: 'media',
       streamSid: this.streamSid,
       media: {
-        payload: base64Audio
-      }
+        payload: base64Audio,
+      },
     }
 
     this.ws.send(JSON.stringify(message))
@@ -193,7 +192,7 @@ export class TwilioMediaStreamHandler {
   handleOpenAIError(error) {
     logger.error('OpenAI Realtime error', {
       error: error.message,
-      conversationId: this.conversationId
+      conversationId: this.conversationId,
     })
   }
 
