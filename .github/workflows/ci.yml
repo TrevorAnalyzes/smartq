@@ -93,9 +93,17 @@ jobs:
 
       - name: Validate Prisma schema
         run: npx prisma validate
+        env:
+          # Mock environment variables for validation
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+          DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
 
       - name: Check for schema drift
         run: npx prisma format --check
+        env:
+          # Mock environment variables for validation
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+          DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
 
   # Job 4: Security Audit
   security-audit:
