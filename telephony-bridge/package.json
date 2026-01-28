@@ -1,7 +1,7 @@
 {
   "name": "smartq-telephony-bridge",
   "version": "1.0.0",
-  "description": "WebSocket bridge service for Twilio Media Streams and OpenAI Realtime",
+  "description": "WebSocket bridge service for Telnyx Media Streams and OpenAI Realtime",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
@@ -19,7 +19,7 @@
     "@types/node": "^20.8.0"
   },
   "keywords": [
-    "twilio",
+    "telnyx",
     "openai",
     "websocket",
     "telephony",

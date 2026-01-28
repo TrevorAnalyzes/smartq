@@ -57,12 +57,12 @@ async function checkEnvironmentVariables() {
   const requiredVars = {
     Database: ['DATABASE_URL', 'DIRECT_URL'],
     'Next.js': ['NEXT_PUBLIC_APP_URL', 'NODE_ENV'],
-    Twilio: [
-      'TWILIO_ACCOUNT_SID',
-      'TWILIO_AUTH_TOKEN',
-      'TWILIO_PHONE_NUMBER',
-      'TWILIO_WEBHOOK_BASE_URL',
-      'TWILIO_MEDIA_STREAM_URL',
+    Telnyx: [
+      'TELNYX_API_KEY',
+      'TELNYX_CONNECTION_ID',
+      'TELNYX_FROM_NUMBER',
+      'TELNYX_WEBHOOK_BASE_URL',
+      'TELNYX_MEDIA_STREAM_URL',
     ],
     OpenAI: ['OPENAI_API_KEY'],
   }
@@ -142,7 +142,7 @@ async function checkBackendAPIs() {
     { name: 'Conversations API', url: '/api/conversations?organizationId=org-techcorp-uk' },
     { name: 'Users API', url: '/api/users' },
     { name: 'Activities API', url: '/api/activities' },
-    { name: 'Twilio Status', url: '/api/twilio/status' },
+    { name: 'Telnyx Status', url: '/api/telnyx/status' },
   ]
 
   for (const endpoint of endpoints) {
@@ -176,31 +176,18 @@ async function checkBackendAPIs() {
 }
 
 async function checkExternalServices() {
-  // Check Twilio
-  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-    try {
-      const twilio = await import('twilio')
-      const client = twilio.default(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-
-      const account = await client.api.accounts(process.env.TWILIO_ACCOUNT_SID).fetch()
-      logResult({
-        category: 'External Services',
-        status: 'pass',
-        message: `Twilio - Account verified (${account.status})`,
-      })
-    } catch (error: any) {
-      logResult({
-        category: 'External Services',
-        status: 'fail',
-        message: 'Twilio - Authentication failed',
-        details: error.message,
-      })
-    }
+  // Check Telnyx
+  if (process.env.TELNYX_API_KEY) {
+    logResult({
+      category: 'External Services',
+      status: 'warning',
+      message: 'Telnyx - API key set (not validated)',
+    })
   } else {
     logResult({
       category: 'External Services',
       status: 'warning',
-      message: 'Twilio - Credentials not configured',
+      message: 'Telnyx - API key not configured',
     })
   }
 

@@ -30,6 +30,10 @@ jobs:
 
       - name: Run TypeScript type check
         run: npm run type-check
+        env:
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+          DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
       - name: Check code formatting
         run: npm run format:check
@@ -55,6 +59,10 @@ jobs:
 
       - name: Setup Prisma
         run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+          DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
       - name: Build Next.js application
         run: npm run build
@@ -97,6 +105,7 @@ jobs:
           # Mock environment variables for validation
           DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
           DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
       - name: Check for schema drift
         run: npx prisma format --check
@@ -104,6 +113,7 @@ jobs:
           # Mock environment variables for validation
           DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
           DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
   # Job 4: Security Audit
   security-audit:

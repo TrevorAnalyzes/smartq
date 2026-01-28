@@ -3,7 +3,7 @@ import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { TwilioMediaStreamHandler } from './handlers/twilio-handler.js'
+import { TelnyxMediaStreamHandler } from './handlers/telnyx-handler.js'
 import { logger } from './utils/logger.js'
 
 // Load environment variables
@@ -34,10 +34,10 @@ app.get('/health', (req, res) => {
   })
 })
 
-// WebSocket server for Twilio Media Streams
+// WebSocket server for Telnyx Media Streams
 const wss = new WebSocketServer({
   server,
-  path: '/twilio-stream',
+  path: '/telnyx-stream',
 })
 
 wss.on('connection', (ws, req) => {
@@ -47,7 +47,7 @@ wss.on('connection', (ws, req) => {
   })
 
   // Create handler for this connection
-  const handler = new TwilioMediaStreamHandler(ws, req)
+  const handler = new TelnyxMediaStreamHandler(ws, req)
 
   ws.on('message', message => {
     handler.handleMessage(message)
@@ -70,7 +70,7 @@ server
   .listen(PORT, '0.0.0.0', () => {
     logger.info(`SmartQ Telephony Bridge listening on port ${PORT}`)
     logger.info(`Health endpoint: http://localhost:${PORT}/health`)
-    logger.info(`WebSocket endpoint: ws://localhost:${PORT}/twilio-stream`)
+    logger.info(`WebSocket endpoint: ws://localhost:${PORT}/telnyx-stream`)
   })
   .on('error', err => {
     logger.error('Server failed to start', { error: err.message })

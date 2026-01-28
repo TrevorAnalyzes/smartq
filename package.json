@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "pretype-check": "prisma generate",
     "type-check": "tsc --noEmit",
     "prepare": "husky",
     "db:seed": "tsx prisma/seed.ts",
@@ -49,7 +50,6 @@
     "sonner": "^2.0.7",
     "stripe": "^19.3.1",
     "tailwind-merge": "^3.3.1",
-    "twilio": "^5.10.5",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },

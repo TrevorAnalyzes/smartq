@@ -20,7 +20,7 @@ import {
 import { toast } from 'sonner'
 import { useOrganizationStore } from '@/store/organization-store'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { TwilioStatus } from './twilio-status'
+import { TelnyxStatus } from './telnyx-status'
 import { CRMConnectionDialog } from './crm-connection-dialog'
 
 type CRMProvider = 'HUBSPOT' | 'SALESFORCE' | 'PIPEDRIVE' | 'ZOHO'
@@ -338,11 +338,11 @@ export function IntegrationsSettingsTab() {
             Phone System Integration
           </CardTitle>
           <CardDescription>
-            Configure your Twilio phone system integration for making and receiving calls
+            Configure your Telnyx phone system integration for making and receiving calls
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <TwilioStatus />
+          <TelnyxStatus />
         </CardContent>
       </Card>
 

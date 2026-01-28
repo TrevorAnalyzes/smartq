@@ -30,6 +30,10 @@ jobs:
 
       - name: Run type checking
         run: npm run type-check
+        env:
+          DATABASE_URL: postgresql://mock:mock@localhost:5432/mock
+          DIRECT_URL: postgresql://mock:mock@localhost:5432/mock
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
       - name: Check for console.logs
         run: |
@@ -51,6 +55,7 @@ jobs:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
           NEXT_PUBLIC_APP_NAME: SmartQ
           NODE_ENV: production
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
 
       - name: PR Check Summary
         run: |

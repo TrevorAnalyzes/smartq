@@ -1,19 +1,24 @@
 // Calls API Route
-// POST /api/calls - Initiate an outbound call via Twilio and create a conversation
+// POST /api/calls - Initiate an outbound call via Telnyx and create a conversation
 
 import { NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
 import { getOrganizationIdFromRequest } from '@/lib/tenant'
 import { callInitiationSchema } from '@/lib/validations'
-import { twilioClient } from '@/lib/twilio'
+import { createTelnyxCall, encodeTelnyxClientState } from '@/lib/telnyx'
 
 export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
-    if (!twilioClient) {
-      return NextResponse.json({ error: 'Twilio is not configured' }, { status: 500 })
+    const apiKey = process.env.TELNYX_API_KEY
+    const connectionId = process.env.TELNYX_CONNECTION_ID
+    const fromNumber = process.env.TELNYX_FROM_NUMBER
+    const webhookBaseUrl = process.env.TELNYX_WEBHOOK_BASE_URL
+
+    if (!apiKey || !connectionId || !fromNumber || !webhookBaseUrl) {
+      return NextResponse.json({ error: 'Telnyx is not configured' }, { status: 500 })
     }
 
     const organizationId = getOrganizationIdFromRequest(request)
@@ -44,29 +49,24 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    const webhookBaseUrl = process.env.TWILIO_WEBHOOK_BASE_URL
-    const fromNumber = process.env.TWILIO_PHONE_NUMBER
+    const webhookEventUrl = `${webhookBaseUrl}/api/telnyx/events?conversationId=${conversation.id}&organizationId=${organizationId}`
+    const clientState = encodeTelnyxClientState({
+      conversationId: conversation.id,
+      organizationId,
+    })
 
-    if (!webhookBaseUrl || !fromNumber) {
-      return NextResponse.json(
-        { error: 'Twilio webhook base URL or phone number not configured' },
-        { status: 500 }
-      )
-    }
-
-    // TwiML webhook that will control the call and start the media stream
-    const twimlUrl = `${webhookBaseUrl}/api/twilio/voice?conversationId=${conversation.id}&organizationId=${organizationId}`
-
-    const call = await twilioClient.calls.create({
+    const call = await createTelnyxCall({
       from: fromNumber,
       to: validated.customerPhone,
-      url: twimlUrl,
+      connectionId,
+      webhookEventUrl,
+      clientState,
     })
 
     return NextResponse.json(
       {
         conversationId: conversation.id,
-        callSid: call.sid,
+        callControlId: call.data?.call_control_id,
       },
       { status: 201 }
     )

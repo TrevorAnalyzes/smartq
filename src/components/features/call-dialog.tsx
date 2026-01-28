@@ -92,7 +92,7 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
             access to for testing.
             <br />
             <span className="mt-1 block text-sm text-amber-600">
-              ⚠️ This will make an actual phone call using Twilio. Charges may apply.
+              ⚠️ This will make an actual phone call using Telnyx. Charges may apply.
             </span>
           </DialogDescription>
         </DialogHeader>
@@ -126,8 +126,8 @@ export function CallDialog({ agentId, agentName, children }: CallDialogProps) {
             <p className="mb-1 font-medium">💡 Testing Tips:</p>
             <ul className="space-y-1">
               <li>• Use your own phone number to test the call functionality</li>
-              <li>• Make sure Twilio credentials are configured in your .env file</li>
-              <li>• The call will appear as coming from your Twilio phone number</li>
+              <li>• Make sure Telnyx credentials are configured in your .env file</li>
+              <li>• The call will appear as coming from your Telnyx phone number</li>
               <li>• Check the browser console and server logs for debugging</li>
             </ul>
           </div>

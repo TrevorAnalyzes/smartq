@@ -18,7 +18,7 @@ app.get('/health', (_req, res) => {
 // WebSocket server
 const wss = new WebSocketServer({
   server,
-  path: '/twilio-stream',
+  path: '/telnyx-stream',
 })
 
 wss.on('connection', (ws, _req) => {
@@ -38,5 +38,5 @@ const PORT = 3002
 server.listen(PORT, () => {
   console.log(`Minimal server listening on port ${PORT}`)
   console.log(`Health: http://localhost:${PORT}/health`)
-  console.log(`WebSocket: ws://localhost:${PORT}/twilio-stream`)
+  console.log(`WebSocket: ws://localhost:${PORT}/telnyx-stream`)
 })
