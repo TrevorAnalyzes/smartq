@@ -1,29 +1,77 @@
 import { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { prisma } from '@/lib/prisma'
 
 /**
- * Derives the current organizationId from the request.
+ * Derives the current organizationId from the authenticated user.
+ * Uses Supabase auth to get the current user, then fetches their organization.
  *
- * For now, we expect it in the query string as `?organizationId=...`.
- * In the future, you can change this to use auth or subdomains without
- * touching every API route.
- *
- * @throws Error if organizationId is not found
+ * @throws Error if organizationId is not found or user is not authenticated
  */
-export function getOrganizationIdFromRequest(req: NextRequest): string {
-  const orgId = req.nextUrl.searchParams.get('organizationId') || process.env.DEFAULT_ORG_ID
+export async function getOrganizationIdFromRequest(_req: NextRequest): Promise<string> {
+  try {
+    const cookieStore = await cookies()
 
-  if (!orgId) {
-    throw new Error('Organization ID is required')
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options)
+              })
+            } catch {
+              // Ignore errors in Server Components
+            }
+          },
+        },
+      }
+    )
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      throw new Error('Unauthorized: User not authenticated')
+    }
+
+    // Check if organizationId is in user metadata
+    if (user.user_metadata?.organizationId) {
+      return user.user_metadata.organizationId
+    }
+
+    // Otherwise, fetch from database
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email! },
+      select: { organizationId: true },
+    })
+
+    if (!dbUser?.organizationId) {
+      throw new Error('Organization not found for user')
+    }
+
+    return dbUser.organizationId
+  } catch (error) {
+    console.error('Error getting organization ID:', error)
+    throw error
   }
-
-  return orgId
 }
 
 /**
  * Safely gets organizationId from request, returns null if not found.
  * Use this when organizationId is optional.
  */
-export function getOrganizationIdFromRequestSafe(req: NextRequest): string | null {
-  const orgId = req.nextUrl.searchParams.get('organizationId') || process.env.DEFAULT_ORG_ID
-  return orgId || null
+export async function getOrganizationIdFromRequestSafe(req: NextRequest): Promise<string | null> {
+  try {
+    return await getOrganizationIdFromRequest(req)
+  } catch {
+    return null
+  }
 }
