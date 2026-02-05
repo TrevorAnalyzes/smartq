@@ -4,18 +4,54 @@ import { userSchema } from '@/lib/validations'
 import { UserWhereInput, toErrorWithMessage } from '@/lib/types'
 import { UserRole } from '@prisma/client'
 
-// GET /api/users - Get all users (filtered by organization)
+// GET /api/users - Get all users (filtered by organization or email)
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
     const organizationId = searchParams.get('organizationId')
+    const email = searchParams.get('email')
     const role = searchParams.get('role')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
+    // If email is provided, search by email (for login)
+    if (email) {
+      const user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              domain: true,
+            },
+          },
+        },
+      })
+
+      if (!user) {
+        return NextResponse.json({ users: [] })
+      }
+
+      const transformedUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role.toLowerCase(),
+        organizationId: user.organizationId,
+        permissions: user.permissions,
+        createdAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
+        updatedAt: user.updatedAt,
+        organization: user.organization,
+      }
+
+      return NextResponse.json({ users: [transformedUser] })
+    }
+
     if (!organizationId) {
-      return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
+      return NextResponse.json({ error: 'organizationId or email is required' }, { status: 400 })
     }
 
     // Build where clause
@@ -140,12 +176,12 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Error creating user:', error)
 
-    const errorWithMessage = toErrorWithMessage(error)
-
-    if (errorWithMessage.name === 'ZodError') {
+    // Check if it's a Zod validation error
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid request data', details: error }, { status: 400 })
     }
 
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
+    const errorWithMessage = toErrorWithMessage(error)
+    return NextResponse.json({ error: errorWithMessage.message || 'Failed to create user' }, { status: 500 })
   }
 }

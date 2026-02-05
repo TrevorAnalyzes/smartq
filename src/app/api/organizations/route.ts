@@ -129,12 +129,12 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Error creating organization:', error)
 
-    const errorWithMessage = toErrorWithMessage(error)
-
-    if (errorWithMessage.name === 'ZodError') {
+    // Check if it's a Zod validation error
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid request data', details: error }, { status: 400 })
     }
 
+    const errorWithMessage = toErrorWithMessage(error)
     const message = errorWithMessage.message || 'Failed to create organization'
     return NextResponse.json({ error: message }, { status: 500 })
   }
