@@ -75,9 +75,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('=== ORGANIZATION API DEBUG ===')
+    console.log('Organization POST received body:', body)
+    console.log('Body type:', typeof body)
+    console.log('Body keys:', Object.keys(body))
+    console.log('Plan value:', body.plan)
+    console.log('Plan type:', typeof body.plan)
 
     // Validate request body
     const validatedData = organizationSchema.parse(body)
+    console.log('Organization validation passed:', validatedData)
 
     // Check if domain already exists
     const existingOrg = await prisma.organization.findUnique({
@@ -131,6 +138,7 @@ export async function POST(request: NextRequest) {
 
     // Check if it's a Zod validation error
     if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+      console.error('Zod validation error details:', JSON.stringify(error, null, 2))
       return NextResponse.json({ error: 'Invalid request data', details: error }, { status: 400 })
     }
 
