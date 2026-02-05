@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   try {
     let organizationId: string
     try {
-      organizationId = getOrganizationIdFromRequest(request)
+      organizationId = await getOrganizationIdFromRequest(request)
     } catch {
       return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
     }

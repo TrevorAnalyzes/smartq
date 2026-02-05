@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
     const daysParam = parseInt(searchParams.get('days') || '7') // Default to last 7 days
     const days = Number.isNaN(daysParam) || daysParam < 1 ? 7 : daysParam
     const agentId = searchParams.get('agentId')

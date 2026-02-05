@@ -19,7 +19,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     let organizationId: string
     try {
-      organizationId = getOrganizationIdFromRequest(request)
+      organizationId = await getOrganizationIdFromRequest(request)
     } catch {
       return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
     }
@@ -64,7 +64,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     let organizationId: string
     try {
-      organizationId = getOrganizationIdFromRequest(request)
+      organizationId = await getOrganizationIdFromRequest(request)
     } catch {
       return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
     }
@@ -123,7 +123,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     let organizationId: string
     try {
-      organizationId = getOrganizationIdFromRequest(request)
+      organizationId = await getOrganizationIdFromRequest(request)
     } catch {
       return NextResponse.json({ error: 'organizationId is required' }, { status: 400 })
     }

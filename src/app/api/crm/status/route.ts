@@ -7,7 +7,7 @@ import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
 
     if (!organizationId) {
       return NextResponse.json({ error: 'Organization ID is required' }, { status: 400 })

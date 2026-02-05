@@ -7,7 +7,7 @@ import { getOrganizationIdFromRequest } from '@/lib/tenant'
 
 export async function GET(request: NextRequest) {
   try {
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
 
     // Get active agents count
     const activeAgents = await prisma.voiceAgent.count({

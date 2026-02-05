@@ -38,6 +38,7 @@ export default function SignupPage() {
       const supabase = createClient()
 
       // 1. Create Supabase Auth user
+      console.log('Step 1: Creating Supabase auth user...')
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -48,10 +49,21 @@ export default function SignupPage() {
         },
       })
 
-      if (authError) throw authError
+      if (authError) {
+        console.error('Supabase auth error:', authError)
+        throw authError
+      }
       if (!authData.user) throw new Error('Failed to create user')
+      console.log('Step 1: Supabase auth user created successfully')
 
       // 2. Create organization in Prisma database
+      console.log('Step 2: Creating organization...')
+      console.log('Organization payload:', {
+        name: formData.organizationName,
+        domain: formData.organizationDomain,
+        plan: selectedPlan,
+      })
+
       const orgResponse = await fetch('/api/organizations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

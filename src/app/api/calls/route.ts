@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Telnyx is not configured' }, { status: 500 })
     }
 
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
     const body = await request.json()
 
     const validated = callInitiationSchema.parse(body)

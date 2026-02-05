@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get query parameters for filtering
     const searchParams = request.nextUrl.searchParams
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
     const status = searchParams.get('status')
     const agentId = searchParams.get('agentId')
     const sentiment = searchParams.get('sentiment')
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
 
     // Validate request body
     const validatedData = conversationSchema.parse(body)

@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { targetPlan } = body ?? {}
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
 
     if (!targetPlan) {
       return NextResponse.json({ error: 'targetPlan is required' }, { status: 400 })

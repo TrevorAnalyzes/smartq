@@ -9,7 +9,7 @@ import { CRMConfig } from '@/lib/crm/types'
 
 export async function POST(request: NextRequest) {
   try {
-    const organizationId = getOrganizationIdFromRequest(request)
+    const organizationId = await getOrganizationIdFromRequest(request)
     const body = await request.json()
     const { provider } = body
 
