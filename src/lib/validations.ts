@@ -28,10 +28,7 @@ export const callInitiationSchema = conversationSchema.extend({
 export const organizationSchema = z.object({
   name: z.string().min(1, 'Organization name is required').max(100, 'Name too long'),
   domain: z.string().min(1, 'Domain is required').max(100, 'Domain too long'),
-  plan: z.string().refine(
-    (val) => ['free', 'pro', 'enterprise', 'FREE', 'PRO', 'ENTERPRISE'].includes(val),
-    { message: 'Plan must be free, pro, or enterprise' }
-  ),
+  plan: z.string().min(1, 'Plan is required'),
 })
 
 export const userSchema = z.object({
