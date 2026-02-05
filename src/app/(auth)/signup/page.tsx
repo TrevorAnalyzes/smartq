@@ -30,6 +30,10 @@ export default function SignupPage() {
     setLoading(true)
     setError(null)
 
+    console.log('=== SIGNUP DEBUG ===')
+    console.log('Selected Plan:', selectedPlan)
+    console.log('Form Data:', formData)
+
     try {
       const supabase = createClient()
 
@@ -58,13 +62,22 @@ export default function SignupPage() {
         }),
       })
 
+      console.log('Organization response status:', orgResponse.status)
+      console.log('Organization response ok:', orgResponse.ok)
+
       if (!orgResponse.ok) {
         const errorData = await orgResponse.json()
         console.error('Organization creation failed:', errorData)
+        console.error('Request body was:', {
+          name: formData.organizationName,
+          domain: formData.organizationDomain,
+          plan: selectedPlan,
+        })
         throw new Error(errorData.error || errorData.details || 'Failed to create organization')
       }
 
       const organization = await orgResponse.json()
+      console.log('Organization created successfully:', organization)
 
       // 3. Create user record in Prisma database linked to organization
       const userResponse = await fetch('/api/users', {

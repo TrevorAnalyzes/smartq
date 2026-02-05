@@ -27,14 +27,19 @@ export const callInitiationSchema = conversationSchema.extend({
 
 export const organizationSchema = z.object({
   name: z.string().min(1, 'Organization name is required').max(100, 'Name too long'),
-  domain: z.string().url('Valid domain required'),
-  plan: z.enum(['free', 'pro', 'enterprise']),
+  domain: z.string().min(1, 'Domain is required').max(100, 'Domain too long'),
+  plan: z.string().refine(
+    (val) => ['free', 'pro', 'enterprise', 'FREE', 'PRO', 'ENTERPRISE'].includes(val),
+    { message: 'Plan must be free, pro, or enterprise' }
+  ),
 })
 
 export const userSchema = z.object({
   email: z.string().email('Valid email required'),
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-  role: z.enum(['admin', 'manager', 'agent', 'viewer']),
+  role: z.enum(['ADMIN', 'MANAGER', 'AGENT', 'VIEWER', 'admin', 'manager', 'agent', 'viewer']),
+  organizationId: z.string().optional(),
+  permissions: z.array(z.string()).optional(),
 })
 
 export const organizationSettingsSchema = z.object({
