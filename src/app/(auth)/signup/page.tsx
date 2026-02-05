@@ -60,7 +60,8 @@ export default function SignupPage() {
 
       if (!orgResponse.ok) {
         const errorData = await orgResponse.json()
-        throw new Error(errorData.error || 'Failed to create organization')
+        console.error('Organization creation failed:', errorData)
+        throw new Error(errorData.error || errorData.details || 'Failed to create organization')
       }
 
       const organization = await orgResponse.json()
@@ -80,7 +81,8 @@ export default function SignupPage() {
 
       if (!userResponse.ok) {
         const errorData = await userResponse.json()
-        throw new Error(errorData.error || 'Failed to create user profile')
+        console.error('User creation failed:', errorData)
+        throw new Error(errorData.error || errorData.details || 'Failed to create user profile')
       }
 
       // 4. Store organizationId in Supabase user metadata
